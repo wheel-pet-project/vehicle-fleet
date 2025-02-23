@@ -12,7 +12,7 @@ public class VinShould
     public void CreateNewInstanceWithCorrectNumber()
     {
         // Arrange
-        var input = "1DW21OPD9VKM231MN";
+        var input = "SALYA2BN2KA791786";
 
         // Act
         var actual = Vin.Create(input);
@@ -30,17 +30,20 @@ public class VinShould
         // Arrange
 
         // Act
-        void Act() => Vin.Create(invalidNumber!);
+        void Act()
+        {
+            Vin.Create(invalidNumber!);
+        }
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
     }
 
     [Fact]
-    public void TrimINputNumber()
+    public void TrimInputNumber()
     {
         // Arrange
-        var input = "  1DW21OPD9VKM231MN  ";
+        var input = "  SALYA2BN2KA791786  ";
 
         // Act
         var actual = Vin.Create(input);
@@ -56,22 +59,54 @@ public class VinShould
         var numberWithInvalidLength = "1DW21OPD9VKM";
 
         // Act
-        void Act() => Vin.Create(numberWithInvalidLength);
+        void Act()
+        {
+            Vin.Create(numberWithInvalidLength);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
     }
 
     [Fact]
-    public void ChangeCharatersToUpperCase()
+    public void ChangeCharactersToUpperCase()
     {
         // Arrange
-        var input = "1dw21OPD9VKm231Mn";
+        var input = "salya2BN2ka791786";
 
         // Act
         var actual = Vin.Create(input);
 
         // Assert
         Assert.Equal(input.ToUpper(), actual.Number);
+    }
+
+    [Fact]
+    public void EqualOperatorReturnTrueForEqualNumbers()
+    {
+        // Arrange
+        var input = "SALYA2BN2KA791786";
+        var vin1 = Vin.Create(input);
+        var vin2 = Vin.Create(input);
+
+        // Act
+        var actual = vin1 == vin2;
+
+        // Assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public void NotEqualOperatorReturnTrueForNotEqualNumbers()
+    {
+        // Arrange
+        var vin1 = Vin.Create("SALYA2BN2KA791786");
+        var vin2 = Vin.Create("NMTDG26RX0R023893");
+
+        // Act
+        var actual = vin1 != vin2;
+
+        // Assert
+        Assert.True(actual);
     }
 }

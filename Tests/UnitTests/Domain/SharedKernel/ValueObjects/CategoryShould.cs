@@ -21,7 +21,7 @@ public class CategoryShould
         Assert.NotNull(category);
         Assert.Equal(symbol, category.Symbol);
     }
-    
+
     [Theory]
     [InlineData(' ')]
     [InlineData('Y')]
@@ -30,12 +30,15 @@ public class CategoryShould
         // Arrange
 
         // Act
-        void Act() => Category.Create(invalidName);
+        void Act()
+        {
+            Category.Create(invalidName);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
     }
-    
+
     [Fact]
     public void EqualOperatorReturnTrueForEqualCategories()
     {
@@ -45,7 +48,7 @@ public class CategoryShould
 
         // Act
         var actual = category1 == category2;
-        
+
         // Assert
         Assert.True(actual);
     }
@@ -59,7 +62,7 @@ public class CategoryShould
 
         // Act
         var actual = category1 != category2;
-        
+
         // Assert
         Assert.False(actual);
     }

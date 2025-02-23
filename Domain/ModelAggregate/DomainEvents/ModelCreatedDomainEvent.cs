@@ -1,6 +1,5 @@
 using Domain.SharedKernel;
 using Domain.SharedKernel.Exceptions.ArgumentException;
-using Domain.SharedKernel.ValueObjects;
 
 namespace Domain.ModelAggregate.DomainEvents;
 
@@ -13,20 +12,23 @@ public record ModelCreatedDomainEvent : DomainEvent
         decimal pricePerHour,
         decimal pricePerDay)
     {
-        if (modelId == Guid.Empty) 
-            throw new ValueIsRequiredException($"'{nameof(modelId)}' cannot be empty");
-        if (SharedKernel.ValueObjects.Category.GetSupportedCategories().Contains(category) is false) 
-            throw new ValueOutOfRangeException($"'{nameof(category)}' category is not supported");
+        if (modelId == Guid.Empty)
+            throw new ValueIsRequiredException($"{nameof(modelId)} cannot be empty");
+        if (char.IsBetween(category, 'A', 'Z') is false)
+            throw new ValueOutOfRangeException($"{nameof(category)} category character must be between 'A' and 'Z'");
         if (pricePerMinute <= 0 || pricePerHour <= 0 || pricePerDay <= 0)
-            throw new ValueOutOfRangeException($"prices must be greater than zero");
-        
+            throw new ValueOutOfRangeException("prices must be greater than zero");
+
         ModelId = modelId;
         Category = category;
+        PricePerMinute = pricePerMinute;
+        PricePerHour = pricePerHour;
+        PricePerDay = pricePerDay;
     }
-    
-    public Guid ModelId { get; private set; }
-    public char Category { get; private set; }
-    public decimal PricePerMinute { get; private set; }
-    public decimal PricePerHour { get; private set; }
-    public decimal PricePerDay { get; private set; }
+
+    public Guid ModelId { get; }
+    public char Category { get; }
+    public decimal PricePerMinute { get; }
+    public decimal PricePerHour { get; }
+    public decimal PricePerDay { get; }
 }

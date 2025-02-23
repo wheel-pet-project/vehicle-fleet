@@ -30,7 +30,10 @@ public class PlateNumberShould
         // Arrange
 
         // Act
-        void Act() => PlateNumber.Create(invalidNumber);
+        void Act()
+        {
+            PlateNumber.Create(invalidNumber);
+        }
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
@@ -57,7 +60,10 @@ public class PlateNumberShould
         // Arrange
 
         // Act
-        void Act() => PlateNumber.Create(invalidNumber);
+        void Act()
+        {
+            PlateNumber.Create(invalidNumber);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
@@ -81,15 +87,18 @@ public class PlateNumberShould
     [InlineData("К398ОТE77")]
     [InlineData("К39ОТ777")]
     [InlineData("К98ОТ7777")]
-    public void ThrowValueOutOfRangeExceptionIfNumberIsInvalid(string invalidNumber)
+    public void ThrowValueIsInvalidExceptionIfNumberIsInvalid(string invalidNumber)
     {
         // Arrange
 
         // Act
-        void Act() => PlateNumber.Create(invalidNumber);
+        void Act()
+        {
+            PlateNumber.Create(invalidNumber);
+        }
 
         // Assert
-        Assert.Throws<ValueOutOfRangeException>(Act);
+        Assert.Throws<ValueIsInvalidException>(Act);
     }
 
     [Fact]
@@ -99,9 +108,41 @@ public class PlateNumberShould
         var input = "E214UG77";
 
         // Act
-        void Act() => PlateNumber.Create(input);
+        void Act()
+        {
+            PlateNumber.Create(input);
+        }
 
         // Assert
-        Assert.Throws<ValueOutOfRangeException>(Act);
+        Assert.Throws<ValueIsInvalidException>(Act);
+    }
+
+    [Fact]
+    public void EqualOperatorReturnTrueForEqualNumbers()
+    {
+        // Arrange
+        var input = "К398ОТ777";
+        var number1 = PlateNumber.Create(input);
+        var number2 = PlateNumber.Create(input);
+
+        // Act
+        var actual = number1 == number2;
+
+        // Assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public void NotEqualOperatorReturnTrueForNotEqualNumbers()
+    {
+        // Arrange
+        var number1 = PlateNumber.Create("К398ОТ777");
+        var number2 = PlateNumber.Create("М124МК77");
+
+        // Act
+        var actual = number1 != number2;
+
+        // Assert
+        Assert.True(actual);
     }
 }

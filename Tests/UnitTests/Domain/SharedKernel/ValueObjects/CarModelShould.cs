@@ -21,7 +21,7 @@ public class CarModelShould
         Assert.NotNull(model);
         Assert.Equal(name, model.Name);
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -31,7 +31,10 @@ public class CarModelShould
         // Arrange
 
         // Act
-        void Act() => CarModel.Create(invalidName!);
+        void Act()
+        {
+            CarModel.Create(invalidName!);
+        }
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
@@ -62,7 +65,7 @@ public class CarModelShould
         // Assert
         Assert.Equal("Rio", model.Name);
     }
-    
+
     [Fact]
     public void EqualOperatorReturnTrueForEqualBrands()
     {
@@ -72,7 +75,7 @@ public class CarModelShould
 
         // Act
         var actual = model1 == model2;
-        
+
         // Assert
         Assert.True(actual);
     }
@@ -86,7 +89,7 @@ public class CarModelShould
 
         // Act
         var actual = model1 == model2;
-        
+
         // Assert
         Assert.False(actual);
     }

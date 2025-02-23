@@ -21,7 +21,7 @@ public class BrandShould
         Assert.NotNull(brand);
         Assert.Equal(name, brand.Name);
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -31,7 +31,10 @@ public class BrandShould
         // Arrange
 
         // Act
-        void Act() => Brand.Create(invalidName!);
+        void Act()
+        {
+            Brand.Create(invalidName!);
+        }
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
@@ -62,7 +65,7 @@ public class BrandShould
         // Assert
         Assert.Equal("Kia", brand.Name);
     }
-    
+
     [Fact]
     public void EqualOperatorReturnTrueForEqualBrands()
     {
@@ -72,7 +75,7 @@ public class BrandShould
 
         // Act
         var actual = brand1 == brand2;
-        
+
         // Assert
         Assert.True(actual);
     }
@@ -86,7 +89,7 @@ public class BrandShould
 
         // Act
         var actual = brand1 == brand2;
-        
+
         // Assert
         Assert.False(actual);
     }

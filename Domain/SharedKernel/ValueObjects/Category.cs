@@ -6,15 +6,17 @@ namespace Domain.SharedKernel.ValueObjects;
 public class Category : ValueObject
 {
     public static readonly char BCategory = 'B';
-    
-    private Category(){}
 
-    private Category(char category)
+    private Category()
+    {
+    }
+
+    private Category(char category) : this()
     {
         Symbol = category;
     }
-    
-    public char Symbol { get; private set; }
+
+    public char Symbol { get; }
 
     public static IEnumerable<char> GetSupportedCategories()
     {
