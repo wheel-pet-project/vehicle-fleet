@@ -20,7 +20,7 @@ public class Model : Aggregate
         Tariff = tariff;
     }
 
-    public Guid Id { get; private set; }
+    public Guid Id { get; }
     public Brand Brand { get; private set; } = null!;
     public CarModel CarModel { get; private set; } = null!;
     public Category Category { get; private set; } = null!;
@@ -33,12 +33,15 @@ public class Model : Aggregate
 
         Category = potentialCategory;
 
-        AddDomainEvent(new ModelCategoryUpdatedDomainEvent(Id, Category.Symbol));
+        AddDomainEvent(new ModelCategoryUpdatedDomainEvent(Id, Category.Character));
     }
 
-    public void UpdateTariff(decimal pricePerMinute = 0, decimal pricePerHour = 0, decimal pricePerDay = 0)
+    public void UpdateTariff(Tariff potentialTariff)
     {
-        Tariff.Update(pricePerMinute, pricePerHour, pricePerDay);
+        if (potentialTariff == null)
+            throw new ValueIsRequiredException($"{nameof(potentialTariff)} cannot be null");
+        
+        Tariff = potentialTariff;
 
         AddDomainEvent(new ModelTariffUpdatedDomainEvent(
             Id,
@@ -58,7 +61,7 @@ public class Model : Aggregate
 
         model.AddDomainEvent(new ModelCreatedDomainEvent(
             model.Id,
-            model.Category.Symbol,
+            model.Category.Character,
             model.Tariff.PricePerMinute,
             model.Tariff.PricePerHour,
             model.Tariff.PricePerDay));

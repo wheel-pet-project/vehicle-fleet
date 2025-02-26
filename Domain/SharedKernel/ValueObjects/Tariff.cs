@@ -1,9 +1,9 @@
 using CSharpFunctionalExtensions;
 using Domain.SharedKernel.Exceptions.ArgumentException;
 
-namespace Domain.ModelAggregate;
+namespace Domain.SharedKernel.ValueObjects;
 
-public sealed class Tariff : Entity<Guid>
+public sealed class Tariff : ValueObject
 {
     private Tariff()
     {
@@ -11,7 +11,6 @@ public sealed class Tariff : Entity<Guid>
 
     private Tariff(decimal pricePerMinute, decimal pricePerHour, decimal pricePerDay) : this()
     {
-        Id = Guid.NewGuid();
         PricePerMinute = pricePerMinute;
         PricePerHour = pricePerHour;
         PricePerDay = pricePerDay;
@@ -20,16 +19,6 @@ public sealed class Tariff : Entity<Guid>
     public decimal PricePerMinute { get; private set; }
     public decimal PricePerHour { get; private set; }
     public decimal PricePerDay { get; private set; }
-
-    public void Update(decimal pricePerMinute, decimal pricePerHour, decimal pricePerDay)
-    {
-        if (pricePerMinute < 0 || pricePerHour < 0 || pricePerDay < 0)
-            throw new ValueOutOfRangeException("prices for tariff must be greater than 0");
-        
-        if (pricePerMinute > 0) PricePerMinute = pricePerMinute;
-        if (pricePerHour > 0) PricePerHour = pricePerHour;
-        if (pricePerDay > 0) PricePerDay = pricePerDay;
-    }
 
     public static Tariff Create(decimal pricePerMinute, decimal pricePerHour, decimal pricePerDay)
     {
@@ -41,5 +30,12 @@ public sealed class Tariff : Entity<Guid>
             throw new ValueOutOfRangeException($"{nameof(pricePerDay)} must be greater than zero");
 
         return new Tariff(pricePerMinute, pricePerHour, pricePerDay);
+    }
+
+    protected override IEnumerable<object> GetEqualityComponents()
+    {
+        yield return PricePerMinute;
+        yield return PricePerHour;
+        yield return PricePerDay;
     }
 }

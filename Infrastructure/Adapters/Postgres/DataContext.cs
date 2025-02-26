@@ -43,7 +43,7 @@ internal sealed class ModelEntityTypeConfiguration : IEntityTypeConfiguration<Mo
 
         builder.OwnsOne(x => x.Category, cfg =>
         {
-            cfg.Property(x => x.Symbol).HasColumnName("category").IsRequired();
+            cfg.Property(x => x.Character).HasColumnName("category").IsRequired();
         });
 
         builder.OwnsOne(x => x.Tariff, cfg =>
@@ -66,8 +66,10 @@ internal sealed class VehicleEntityTypeConfiguration : IEntityTypeConfiguration<
         builder.HasKey(x => x.Id);
         
         builder.Property(x => x.Id).ValueGeneratedNever().HasColumnName("id").IsRequired();
+        builder.Property(x => x.ModelId).HasColumnName("model_id").IsRequired();
 
         builder.HasOne<Model>().WithMany().HasForeignKey(x => x.ModelId).HasConstraintName("FK_model_id").IsRequired();
+        
         builder.HasOne(x => x.Status)
             .WithMany()
             .HasForeignKey("status_id")
@@ -127,7 +129,7 @@ internal sealed class OutboxEventTypeConfiguration : IEntityTypeConfiguration<Ou
 
         builder.HasKey(x => x.EventId);
         
-        builder.Property(x => x.EventId).ValueGeneratedNever().IsRequired();
+        builder.Property(x => x.EventId).HasColumnName("event_id").ValueGeneratedNever().IsRequired();
         builder.Property(x => x.Type).HasColumnName("type").IsRequired();
         builder.Property(x => x.Content).HasColumnName("content").IsRequired();
         builder.Property(x => x.OccurredOnUtc).HasColumnName("occurred_on_utc").IsRequired();

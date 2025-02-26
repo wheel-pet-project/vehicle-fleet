@@ -23,7 +23,9 @@ public class IntegrationTestBase : IAsyncLifetime
     {
         await _postgreSqlContainer.StartAsync();
 
-        var options = new DbContextOptionsBuilder<DataContext>().UseNpgsql(_postgreSqlContainer.GetConnectionString(),
+        var connectionString = _postgreSqlContainer.GetConnectionString();
+        var connectionBuilder = new NpgsqlConnectionStringBuilder(connectionString) { IncludeErrorDetail = true };
+        var options = new DbContextOptionsBuilder<DataContext>().UseNpgsql(connectionBuilder.ConnectionString,
             npgsqlOptions => npgsqlOptions.MigrationsAssembly(typeof(DataContext).Assembly));
         Context = new DataContext(options.Options);
 

@@ -1,13 +1,14 @@
-using Domain.VehicleAggregate;
+using Domain.SharedKernel.ValueObjects;
 using FluentResults;
 using MediatR;
 
 namespace Application.UseCases.Commands.Vehicle.AddVehicle;
 
 public record AddVehicleRequest(
-    Guid CorrelationId,
     Guid ModelId,
-    Status Status,
     string PlateNumber,
+    Color Color,
     string Vin,
-    int FuelLevelPercents) : BaseRequest(CorrelationId), IRequest<Result>;
+    Location? Location = null) : IRequest<Result>;
+    
+public record Location(double Latitude, double Longitude);

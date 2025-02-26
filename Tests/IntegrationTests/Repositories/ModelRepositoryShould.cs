@@ -1,4 +1,3 @@
-using Application.Ports.Postgres;
 using Domain.ModelAggregate;
 using Domain.SharedKernel.ValueObjects;
 using Infrastructure.Adapters.Postgres;
@@ -12,8 +11,8 @@ namespace IntegrationTests.Repositories;
 public class ModelRepositoryShould : IntegrationTestBase
 {
     private readonly Model _model = Model.Create(Brand.Create("Kia"), CarModel.Create("Rio"),
-        Category.Create(Category.BCategory),
-        Tariff.Create(10.0M, 300.0M, 4000.0M));
+        Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
+    private readonly Tariff _tariff = Tariff.Create(120.0M, 300.0M, 4000.0M);
     
     [Fact]
     public async Task Add()
@@ -44,7 +43,7 @@ public class ModelRepositoryShould : IntegrationTestBase
         await uowForArrange.Commit();
         
         var (repository, uow) = repositoryAndUowAndUnitOfWorkBuilderBuilder.Build(Context);
-        _model.UpdateTariff(pricePerMinute: 30.0M);
+        _model.UpdateTariff(_tariff);
 
         // Act
         repository.Update(_model);

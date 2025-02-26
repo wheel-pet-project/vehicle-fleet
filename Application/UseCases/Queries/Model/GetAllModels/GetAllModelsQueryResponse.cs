@@ -11,5 +11,5 @@ public record GetAllModelsQueryResponse
     
     public IReadOnlyList<ModelShortView> Models => _models.AsReadOnly();
     
-    public record ModelShortView(Guid Id, string Brand, string Model);
+    public record ModelShortView(Guid Id, string Brand, string CarModel);
 }

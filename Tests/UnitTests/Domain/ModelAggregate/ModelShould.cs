@@ -9,6 +9,8 @@ namespace UnitTests.Domain.ModelAggregate;
 [TestSubject(typeof(Model))]
 public class ModelShould
 {
+    private readonly Model _model = Model.Create(Brand.Create("Kia"), CarModel.Create("Rio"),
+        Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
     private readonly Brand _brand = Brand.Create("Kia");
     private readonly CarModel _carModel = CarModel.Create("Rio");
     private readonly Category _category = Category.Create(Category.BCategory);
@@ -96,13 +98,12 @@ public class ModelShould
     {
         // Arrange
         var category = Category.Create(Category.BCategory);
-        var model = Model.Create(_brand, _carModel, _category, _tariff);
 
         // Act
-        model.UpdateCategory(category);
+        _model.UpdateCategory(category);
 
         // Assert
-        Assert.Equal(_category, model.Category);
+        Assert.Equal(_category, _model.Category);
     }
 
     [Fact]
@@ -110,23 +111,22 @@ public class ModelShould
     {
         // Arrange
         var category = Category.Create(Category.BCategory);
-        var model = Model.Create(_brand, _carModel, _category, _tariff);
+        _model.ClearDomainEvents();
 
         // Act
-        model.UpdateCategory(category);
+        _model.UpdateCategory(category);
 
         // Assert
-        Assert.NotEmpty(model.DomainEvents);
+        Assert.NotEmpty(_model.DomainEvents);
     }
 
     [Fact]
     public void ThrowValueIsRequiredExceptionIfCategoryForUpdateCategoryIsNull()
     {
         // Arrange
-        var model = Model.Create(_brand, _carModel, _category, _tariff);
 
         // Act
-        void Act() => model.UpdateCategory(null!);
+        void Act() => _model.UpdateCategory(null!);
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
@@ -137,13 +137,12 @@ public class ModelShould
     {
         // Arrange
         var tariff = Tariff.Create(20.0M, 600.0M, 8000.0M);
-        var model = Model.Create(_brand, _carModel, _category, tariff);
         
         // Act
-        model.UpdateTariff(30.0M, 700.0M, 9000.0M);
+        _model.UpdateTariff(tariff);
 
         // Assert
-        Assert.Equal(tariff, model.Tariff);
+        Assert.Equal(tariff, _model.Tariff);
     }
     
     [Fact]
@@ -151,12 +150,24 @@ public class ModelShould
     {
         // Arrange
         var tariff = Tariff.Create(20.0M, 600.0M, 8000.0M);
-        var model = Model.Create(_brand, _carModel, _category, tariff);
-
+        _model.ClearDomainEvents();
+        
         // Act
-        model.UpdateTariff(30.0M, 700.0M, 9000.0M);
+        _model.UpdateTariff(tariff);
 
         // Assert
-        Assert.NotEmpty(model.DomainEvents);
+        Assert.NotEmpty(_model.DomainEvents);
+    }
+
+    [Fact]
+    public void ThrowValueIsRequiredExceptionIfTariffIsNullWhenUpdatingTariff()
+    {
+        // Arrange
+
+        // Act
+        void Act() => _model.UpdateTariff(null!);
+
+        // Assert
+        Assert.Throws<ValueIsRequiredException>(Act);
     }
 }

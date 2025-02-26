@@ -1,5 +1,4 @@
 using Application.Ports.Postgres;
-using Domain.ModelAggregate;
 using Domain.SharedKernel.ValueObjects;
 using FluentResults;
 using MediatR;

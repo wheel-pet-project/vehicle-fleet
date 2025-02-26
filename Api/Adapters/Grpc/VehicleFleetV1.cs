@@ -13,6 +13,7 @@ public class VehicleFleetV1 : Greeter.GreeterBase
 
     public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
     {
+        context.Status = new Status(StatusCode.Internal, "Internal Server Error");
         return Task.FromResult(new HelloReply
         {
             Message = "Hello " + request.Name

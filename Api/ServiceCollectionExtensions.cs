@@ -25,7 +25,7 @@ public static class ServiceCollectionExtensions
             {
                 ConnectionStringBuilder =
                 {
-                    ApplicationName = "Driving_license#" + Environment.MachineName,
+                    ApplicationName = "Vehicle_fleet#" + Environment.MachineName,
                     Host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost",
                     Port = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5440"),
                     Database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "vehiclefleet_db",

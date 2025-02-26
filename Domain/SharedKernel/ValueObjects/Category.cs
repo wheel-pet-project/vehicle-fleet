@@ -13,10 +13,10 @@ public class Category : ValueObject
 
     private Category(char category) : this()
     {
-        Symbol = category;
+        Character = category;
     }
 
-    public char Symbol { get; }
+    public char Character { get; }
 
     public static IEnumerable<char> GetSupportedCategories()
     {
@@ -33,6 +33,6 @@ public class Category : ValueObject
 
     protected override IEnumerable<object> GetEqualityComponents()
     {
-        yield return Symbol;
+        yield return Character;
     }
 }

@@ -1,6 +1,6 @@
+using FluentResults;
+using MediatR;
+
 namespace Application.UseCases.Commands.Vehicle.DeleteVehicle;
 
-public class DeleteVehicleRequest
-{
-    
-}
+public record DeleteVehicleRequest(Guid VehicleId) :  IRequest<Result>;

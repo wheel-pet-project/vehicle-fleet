@@ -1,6 +1,6 @@
+using FluentResults;
+using MediatR;
+
 namespace Application.UseCases.Commands.Vehicle.SendToServiceVehicle;
 
-public class SendToServiceVehicleRequest
-{
-    
-}
+public record SendToServiceVehicleRequest(Guid VehicleId) : IRequest<Result>;

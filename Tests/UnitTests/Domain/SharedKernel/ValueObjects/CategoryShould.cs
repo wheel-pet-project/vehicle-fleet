@@ -19,7 +19,7 @@ public class CategoryShould
 
         // Assert
         Assert.NotNull(category);
-        Assert.Equal(symbol, category.Symbol);
+        Assert.Equal(symbol, category.Character);
     }
 
     [Theory]

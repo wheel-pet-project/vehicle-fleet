@@ -1,6 +1,6 @@
+using FluentResults;
+using MediatR;
+
 namespace Application.UseCases.Commands.Vehicle.MarkAsReadiedForReleaseVehicle;
 
-public class MarkAsReadiedForReleaseVehicleRequest
-{
-    
-}
+public record MarkAsReadiedForReleaseVehicleRequest(Guid VehicleId) : IRequest<Result>;

@@ -29,7 +29,7 @@ public sealed class Vehicle : Aggregate
         Location = location;
     }
     
-    public Guid Id { get; private set; }
+    public Guid Id { get; }
     public Guid ModelId { get; private set; }
     public Status Status { get; private set; }
     public PlateNumber PlateNumber { get; private set; }
@@ -93,15 +93,16 @@ public sealed class Vehicle : Aggregate
         PlateNumber plateNumber,
         Color color,
         Vin vin,
-        FuelLevel fuelLevel,
-        Location location)
+        Location? location = null,
+        FuelLevel? fuelLevel = null)
     {
         if (modelId == Guid.Empty) throw new ValueIsRequiredException($"{nameof(modelId)} cannot be empty");
         if (plateNumber == null) throw new ValueIsRequiredException($"{nameof(plateNumber)} cannot be null");
         if (color == null) throw new ValueIsRequiredException($"{nameof(color)} cannot be null");
         if (vin == null) throw new ValueIsRequiredException($"{nameof(vin)} cannot be null");
-        if (fuelLevel == null) throw new ValueIsRequiredException($"{nameof(fuelLevel)} cannot be null");
-        if (location == null) throw new ValueIsRequiredException($"{nameof(location)} cannot be null");
+        
+        if (location == null) location = Location.Create(56.0357178825, 37.7567042515); // Учинское вдхр.
+        if (fuelLevel == null) fuelLevel = FuelLevel.Create();
 
         var vehicle = new Vehicle(modelId, plateNumber, color, vin, fuelLevel, location);
         
