@@ -21,7 +21,7 @@ public class FuelLevelShould
         Assert.NotNull(actual);
         Assert.Equal(percents, actual.Percents);
     }
-    
+
     [Theory]
     [InlineData(-1)]
     [InlineData(101)]
@@ -30,7 +30,10 @@ public class FuelLevelShould
         // Arrange
 
         // Act
-        void Act() => FuelLevel.Create(invalidPercent);
+        void Act()
+        {
+            FuelLevel.Create(invalidPercent);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);

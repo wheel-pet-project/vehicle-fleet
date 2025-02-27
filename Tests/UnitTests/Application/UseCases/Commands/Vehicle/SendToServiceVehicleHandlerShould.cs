@@ -13,11 +13,11 @@ namespace UnitTests.Application.UseCases.Commands.Vehicle;
 public class SendToServiceVehicleHandlerShould
 {
     private readonly SendToServiceVehicleRequest _request = new(Guid.NewGuid());
-    
+
     private readonly global::Domain.VehicleAggregate.Vehicle _vehicleFromDb =
         global::Domain.VehicleAggregate.Vehicle.Create(Guid.NewGuid(), PlateNumber.Create("К333ОТ77"), Color.White,
             Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0));
-    
+
     private readonly Mock<IVehicleRepository> _vehicleRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly SendToServiceVehicleHandler _handler;
@@ -29,12 +29,12 @@ public class SendToServiceVehicleHandlerShould
         _handler = new SendToServiceVehicleHandler(_vehicleRepositoryMock.Object,
             _unitOfWorkMock.Object);
     }
-    
+
     [Fact]
     public async Task ReturnSuccess()
     {
         // Arrange
-        
+
         // Act
         var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
 
@@ -56,7 +56,7 @@ public class SendToServiceVehicleHandlerShould
         Assert.True(actual.IsFailed);
         Assert.IsType<NotFound>(actual.Errors[0]);
     }
-    
+
     [Fact]
     public async Task ReturnFailIfCommitFailed()
     {
@@ -69,7 +69,7 @@ public class SendToServiceVehicleHandlerShould
         // Assert
         Assert.True(actual.IsFailed);
     }
-    
+
     [Fact]
     public async Task VerifyCommitCall()
     {

@@ -28,7 +28,10 @@ public class StatusShould
         var name = "unsupported";
 
         // Act
-        void Act() => Status.FromName(name);
+        void Act()
+        {
+            Status.FromName(name);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
@@ -46,7 +49,7 @@ public class StatusShould
         // Assert
         Assert.Equal(Status.Added, actual);
     }
-    
+
     [Fact]
     public void FromIdThrowValueOutOfRangeExceptionIfStatusIdIsNotSupported()
     {
@@ -54,12 +57,15 @@ public class StatusShould
         var id = 434;
 
         // Act
-        void Act() => Status.FromId(id);
+        void Act()
+        {
+            Status.FromId(id);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
     }
-    
+
     [Fact]
     public void EqualOperatorShouldReturnTrueIfStatusesIsEqual()
     {
@@ -108,12 +114,15 @@ public class StatusShould
         var added = Status.Added;
 
         // Act
-        void Act() => added.CanBeChangedToThisStatus(null);
+        void Act()
+        {
+            added.CanBeChangedToThisStatus(null);
+        }
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
     }
-    
+
     [Fact]
     public void CanBeChangedToThisStatusReturnFalseForThisStatuses()
     {
@@ -129,10 +138,10 @@ public class StatusShould
         var addedToReleased = added.CanBeChangedToThisStatus(released);
         var addedToOccupied = added.CanBeChangedToThisStatus(occupied);
         var addedToServiced = added.CanBeChangedToThisStatus(serviced);
-        
+
         var readiedForReleasedToAdded = readiedForRelease.CanBeChangedToThisStatus(added);
         var readiedForReleasedToOccupied = readiedForRelease.CanBeChangedToThisStatus(occupied);
-        
+
         var releasedToAdded = released.CanBeChangedToThisStatus(added);
         var releasedToDeleted = released.CanBeChangedToThisStatus(deleted);
         var releasedToReadiedForRelease = released.CanBeChangedToThisStatus(readiedForRelease);
@@ -141,7 +150,7 @@ public class StatusShould
         var occupiedToReadiedForRelease = occupied.CanBeChangedToThisStatus(readiedForRelease);
         var occupiedToServiced = occupied.CanBeChangedToThisStatus(serviced);
         var occupiedToDeleted = occupied.CanBeChangedToThisStatus(deleted);
-        
+
         var servicedToAdded = serviced.CanBeChangedToThisStatus(added);
         var servicedToReleased = serviced.CanBeChangedToThisStatus(released);
         var servicedToOccupied = serviced.CanBeChangedToThisStatus(occupied);
@@ -151,27 +160,27 @@ public class StatusShould
         var deletedToReleased = deleted.CanBeChangedToThisStatus(released);
         var deletedToOccupied = deleted.CanBeChangedToThisStatus(occupied);
         var deletedToServiced = deleted.CanBeChangedToThisStatus(serviced);
-        
+
         // Assert
         Assert.False(addedToReleased);
         Assert.False(addedToOccupied);
-        
+
         Assert.False(readiedForReleasedToAdded);
         Assert.False(readiedForReleasedToOccupied);
-        
+
         Assert.False(releasedToAdded);
         Assert.False(releasedToDeleted);
         Assert.False(releasedToReadiedForRelease);
-        
+
         Assert.False(occupiedToAdded);
         Assert.False(occupiedToReadiedForRelease);
         Assert.False(occupiedToServiced);
         Assert.False(occupiedToDeleted);
-        
+
         Assert.False(servicedToAdded);
         Assert.False(servicedToReleased);
         Assert.False(servicedToOccupied);
-        
+
         Assert.False(deletedToAdded);
         Assert.False(deletedToReadiedForRelease);
         Assert.False(deletedToReleased);
@@ -194,33 +203,33 @@ public class StatusShould
         var addedToReadiedForRelease = added.CanBeChangedToThisStatus(readiedForRelease);
         var addedToDeleted = added.CanBeChangedToThisStatus(deleted);
         var addedToServiced = added.CanBeChangedToThisStatus(serviced);
-        
+
         var readiedForReleasedToReleased = readiedForRelease.CanBeChangedToThisStatus(released);
         var readiedForReleasedToDeleted = readiedForRelease.CanBeChangedToThisStatus(deleted);
         var readiedForReleasedToServiced = readiedForRelease.CanBeChangedToThisStatus(serviced);
-        
+
         var releasedToOccupied = released.CanBeChangedToThisStatus(occupied);
         var releasedToServiced = released.CanBeChangedToThisStatus(serviced);
 
         var occupiedToReleased = occupied.CanBeChangedToThisStatus(released);
-        
+
         var servicedToReadiedForRelease = serviced.CanBeChangedToThisStatus(readiedForRelease);
         var servicedToDeleted = serviced.CanBeChangedToThisStatus(deleted);
-        
+
         // Assert
         Assert.True(addedToReadiedForRelease);
         Assert.True(addedToDeleted);
         Assert.True(addedToServiced);
-        
+
         Assert.True(readiedForReleasedToReleased);
         Assert.True(readiedForReleasedToDeleted);
         Assert.True(readiedForReleasedToServiced);
-        
+
         Assert.True(releasedToOccupied);
         Assert.True(releasedToServiced);
 
         Assert.True(occupiedToReleased);
-        
+
         Assert.True(servicedToReadiedForRelease);
         Assert.True(servicedToDeleted);
     }

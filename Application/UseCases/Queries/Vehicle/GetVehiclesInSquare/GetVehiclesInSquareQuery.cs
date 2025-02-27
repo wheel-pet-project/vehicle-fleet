@@ -8,5 +8,5 @@ public record GetVehiclesInSquareQuery(
     Status FilteringStatus,
     LocationDto UpperLeftLocation,
     LocationDto LowerRightLocation) : IRequest<Result<GetVehiclesInSquareQueryResponse>>;
-    
+
 public record LocationDto(double Latitude, double Longitude);

@@ -11,7 +11,7 @@ namespace UnitTests.Application.UseCases.Commands.Model;
 public class AddModelHandlerShould
 {
     private readonly AddModelRequest _request = new("Kia", "Rio", 'B', 1, 2, 3);
-    
+
     private readonly Mock<IModelRepository> _modelRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly AddModelHandler _handler;
@@ -32,6 +32,19 @@ public class AddModelHandlerShould
 
         // Assert
         Assert.True(actual.IsSuccess);
+    }
+
+    [Fact]
+    public async Task ReturnModelId()
+    {
+        // Arrange
+
+        // Act
+        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+
+        // Assert
+        Assert.NotEqual(Guid.Empty, actual.Value.ModelId);
+        Assert.NotNull(actual.Value);
     }
 
     [Fact]

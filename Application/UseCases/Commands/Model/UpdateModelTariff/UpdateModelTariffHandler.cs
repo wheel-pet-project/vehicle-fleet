@@ -19,11 +19,11 @@ public class UpdateModelTariffHandler(
             new decimal(request.PricePerMinute),
             new decimal(request.PricePerHour),
             new decimal(request.PricePerDay));
-        
+
         model.UpdateTariff(newTariff);
-        
+
         modelRepository.Update(model);
-        
+
         return await unitOfWork.Commit();
     }
 }

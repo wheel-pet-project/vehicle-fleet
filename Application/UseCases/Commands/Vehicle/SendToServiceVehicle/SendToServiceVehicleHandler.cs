@@ -13,9 +13,9 @@ public class SendToServiceVehicleHandler(
     {
         var vehicle = await vehicleRepository.GetById(request.VehicleId);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
-        
+
         vehicle.MarkAsServiced();
-        
+
         vehicleRepository.Update(vehicle);
 
         return await unitOfWork.Commit();

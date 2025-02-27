@@ -16,9 +16,9 @@ public class UpdateModelCategoryHandler(
         if (model == null) return Result.Fail(new NotFound("Model not found"));
 
         var category = Category.Create(request.Category);
-        
+
         model.UpdateCategory(category);
-        
+
         modelRepository.Update(model);
 
         return await unitOfWork.Commit();

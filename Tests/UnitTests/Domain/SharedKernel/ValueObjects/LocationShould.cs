@@ -30,7 +30,10 @@ public class LocationShould
         // Arrange
 
         // Act
-        void Act() => Location.Create(-0.012423, 34.5678315);
+        void Act()
+        {
+            Location.Create(-0.012423, 34.5678315);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
@@ -42,7 +45,10 @@ public class LocationShould
         // Arrange
 
         // Act
-        void Act() => Location.Create(91.0124, 1.5678315);
+        void Act()
+        {
+            Location.Create(91.0124, 1.5678315);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
@@ -54,7 +60,10 @@ public class LocationShould
         // Arrange
 
         // Act
-        void Act() => Location.Create(34.5678315, -0.012423);
+        void Act()
+        {
+            Location.Create(34.5678315, -0.012423);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
@@ -66,7 +75,10 @@ public class LocationShould
         // Arrange
 
         // Act
-        void Act() => Location.Create(34.5678315, 180.924325);
+        void Act()
+        {
+            Location.Create(34.5678315, 180.924325);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);
@@ -83,7 +95,7 @@ public class LocationShould
 
         // Act
         var actual = location1 == location2;
-        
+
         // Assert
         Assert.True(actual);
     }
@@ -97,7 +109,7 @@ public class LocationShould
 
         // Act
         var actual = location1 != location2;
-        
+
         // Assert
         Assert.True(actual);
     }

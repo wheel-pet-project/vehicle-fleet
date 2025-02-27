@@ -9,27 +9,30 @@ namespace Application.UseCases.Queries.Vehicle.GetVehiclesInSquare;
 public class GetVehiclesInSquareQueryHandler(
     NpgsqlDataSource dataSource) : IRequestHandler<GetVehiclesInSquareQuery, Result<GetVehiclesInSquareQueryResponse>>
 {
-    public async Task<Result<GetVehiclesInSquareQueryResponse>> Handle(GetVehiclesInSquareQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetVehiclesInSquareQueryResponse>> Handle(
+        GetVehiclesInSquareQuery request,
+        CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(_sql, new { StatusId = request.FilteringStatus.Id, });
+        var command = new CommandDefinition(_sql, new { StatusId = request.FilteringStatus.Id });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehiclesEnumerable = await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command);
         var vehicles = vehiclesEnumerable.AsList();
 
         var vehiclesInSquare = GetVehiclesInSquare(vehicles,
-            upperLeftLocation: (request.UpperLeftLocation.Latitude, request.UpperLeftLocation.Longitude),
-            lowerRightLocation: (request.LowerRightLocation.Latitude, request.LowerRightLocation.Longitude));
-        
+            (request.UpperLeftLocation.Latitude, request.UpperLeftLocation.Longitude),
+            (request.LowerRightLocation.Latitude, request.LowerRightLocation.Longitude));
+
         return Result.Ok(new GetVehiclesInSquareQueryResponse(vehiclesInSquare.Select(x =>
-            new VehicleInSquareShortView(
-                x.Id,
-                x.Brand,
-                x.CarModel,
-                Color.FromName(x.Color),
-                x.Latitude,
-                x.Longitude)).ToList()));
-        
+                new VehicleInSquareShortView(
+                    x.Id,
+                    x.Brand,
+                    x.CarModel,
+                    Color.FromName(x.Color),
+                    x.Latitude,
+                    x.Longitude))
+            .ToList()));
+
         List<VehicleAggregatedShortDapperModel> GetVehiclesInSquare(
             List<VehicleAggregatedShortDapperModel> vehicles,
             (double latitude, double longitude) upperLeftLocation,
@@ -49,7 +52,7 @@ public class GetVehiclesInSquareQueryHandler(
         string Color,
         double Latitude,
         double Longitude);
-    
+
     private readonly string _sql =
         """
         SELECT vehicle.id AS Id,

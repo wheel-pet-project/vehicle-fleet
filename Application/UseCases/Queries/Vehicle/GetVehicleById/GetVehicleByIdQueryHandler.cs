@@ -11,21 +11,23 @@ namespace Application.UseCases.Queries.Vehicle.GetVehicleById;
 public class GetVehicleByIdQueryHandler(
     NpgsqlDataSource dataSource) : IRequestHandler<GetVehicleByIdQuery, Result<GetVehicleByIdQueryResponse>>
 {
-    public async Task<Result<GetVehicleByIdQueryResponse>> Handle(GetVehicleByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetVehicleByIdQueryResponse>> Handle(
+        GetVehicleByIdQuery request,
+        CancellationToken cancellationToken)
     {
         var command = new CommandDefinition(_sql, new { Id = request.VehicleId });
-        
+
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehicle = await connection.QuerySingleOrDefaultAsync<VehicleDapperModel>(command);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
 
         return Result.Ok(new GetVehicleByIdQueryResponse(
-            vehicle.Id, 
-            Status.FromId(vehicle.StatusId), 
+            vehicle.Id,
+            Status.FromId(vehicle.StatusId),
             vehicle.Brand,
-            vehicle.CarModel, 
-            Color.FromName(vehicle.Color), 
-            vehicle.PlateNumber, 
+            vehicle.CarModel,
+            Color.FromName(vehicle.Color),
+            vehicle.PlateNumber,
             vehicle.FuelLevelPercents,
             (double)vehicle.PricePerMinute,
             (double)vehicle.PricePerHour,
@@ -45,7 +47,7 @@ public class GetVehicleByIdQueryHandler(
         decimal PricePerHour,
         double Latitude,
         double Longitude);
-    
+
     private readonly string _sql =
         """
         SELECT vehicle.id AS Id,

@@ -13,9 +13,9 @@ public class MarkAsReadiedForReleaseVehicleHandler(
     {
         var vehicle = await vehicleRepository.GetById(request.VehicleId);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
-        
+
         vehicle.MarkAsReadiedForRelease();
-        
+
         vehicleRepository.Update(vehicle);
 
         return await unitOfWork.Commit();

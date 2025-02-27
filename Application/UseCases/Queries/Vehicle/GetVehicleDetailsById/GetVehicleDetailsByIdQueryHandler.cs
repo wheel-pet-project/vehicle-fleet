@@ -9,23 +9,26 @@ using Npgsql;
 namespace Application.UseCases.Queries.Vehicle.GetVehicleDetailsById;
 
 public class GetVehicleDetailsByIdQueryHandler(
-    NpgsqlDataSource dataSource) : IRequestHandler<GetVehicleDetailsByIdQuery, Result<GetVehicleDetailsByIdQueryResponse>>
+    NpgsqlDataSource dataSource)
+    : IRequestHandler<GetVehicleDetailsByIdQuery, Result<GetVehicleDetailsByIdQueryResponse>>
 {
-    public async Task<Result<GetVehicleDetailsByIdQueryResponse>> Handle(GetVehicleDetailsByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetVehicleDetailsByIdQueryResponse>> Handle(
+        GetVehicleDetailsByIdQuery request,
+        CancellationToken cancellationToken)
     {
         var command = new CommandDefinition(_sql, new { Id = request.VehicleId });
-        
+
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehicle = await connection.QuerySingleOrDefaultAsync<VehicleDetailsDapperModel>(command);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
 
         return Result.Ok(new GetVehicleDetailsByIdQueryResponse(
-            vehicle.Id, 
-            Status.FromId(vehicle.StatusId), 
+            vehicle.Id,
+            Status.FromId(vehicle.StatusId),
             vehicle.Brand,
-            vehicle.CarModel, 
-            Color.FromName(vehicle.Color), 
-            vehicle.PlateNumber, 
+            vehicle.CarModel,
+            Color.FromName(vehicle.Color),
+            vehicle.PlateNumber,
             vehicle.Vin,
             vehicle.FuelLevelPercents,
             (double)vehicle.PricePerMinute,
@@ -45,7 +48,7 @@ public class GetVehicleDetailsByIdQueryHandler(
         decimal PricePerMinute,
         decimal PricePerHour,
         decimal PricePerDay);
-    
+
     private readonly string _sql =
         """
         SELECT vehicle.id AS Id,

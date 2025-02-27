@@ -17,7 +17,7 @@ public class UpdateModelCategoryHandlerShould
     private readonly global::Domain.ModelAggregate.Model _modelFromDb = global::Domain.ModelAggregate.Model.Create(
         Brand.Create("Kia"), CarModel.Create("Rio"),
         Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
-    
+
     private readonly Mock<IModelRepository> _modelRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly UpdateModelCategoryHandler _handler;
@@ -68,7 +68,7 @@ public class UpdateModelCategoryHandlerShould
         // Assert
         Assert.True(actual.IsFailed);
     }
-    
+
     [Fact]
     public async Task VerifyCommitCall()
     {

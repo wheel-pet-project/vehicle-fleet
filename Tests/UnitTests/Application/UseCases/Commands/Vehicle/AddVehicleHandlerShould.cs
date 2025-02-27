@@ -14,11 +14,11 @@ public class AddVehicleHandlerShould
 {
     private readonly AddVehicleRequest _request = new(Guid.NewGuid(), "К513ОТ77", Color.White,
         "SALYA2BN2KA791786");
-    
+
     private readonly global::Domain.ModelAggregate.Model _modelFromDb = global::Domain.ModelAggregate.Model.Create(
         Brand.Create("Kia"), CarModel.Create("Rio"),
         Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
-    
+
     private readonly Mock<IModelRepository> _modelRepositoryMock = new();
     private readonly Mock<IVehicleRepository> _vehicleRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
@@ -36,10 +36,10 @@ public class AddVehicleHandlerShould
     public async Task ReturnSuccess()
     {
         // Arrange
-        
+
         // Act
         var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
-        
+
         // Assert
         Assert.True(actual.IsSuccess);
     }
@@ -71,7 +71,7 @@ public class AddVehicleHandlerShould
         // Assert
         Assert.True(actual.IsFailed);
     }
-    
+
     [Fact]
     public async Task VerifyCommitCall()
     {

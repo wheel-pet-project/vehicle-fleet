@@ -17,22 +17,23 @@ public class GetAllVehiclesQueryHandler(
             new
             {
                 StatusId = request.FilteringStatus.Id,
-                Offset = (request.Page - 1) * request.PageSize, 
+                Offset = (request.Page - 1) * request.PageSize,
                 Limit = request.PageSize
             });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehiclesEnumerable = await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command);
         var vehicles = vehiclesEnumerable.AsList();
-        
+
         return Result.Ok(new GetAllVehiclesQueryResponse(vehicles.Select(x =>
-                new VehicleAggregatedShortView(
+                new VehicleShortView(
                     x.Id,
                     x.Brand,
                     x.CarModel,
                     Color.FromName(x.Color),
                     x.Latitude,
-                    x.Longitude)).ToList()));
+                    x.Longitude))
+            .ToList()));
     }
 
     private record VehicleAggregatedShortDapperModel(
@@ -42,7 +43,7 @@ public class GetAllVehiclesQueryHandler(
         string Color,
         double Latitude,
         double Longitude);
-    
+
     private readonly string _sql =
         """
         SELECT vehicle.id AS Id,

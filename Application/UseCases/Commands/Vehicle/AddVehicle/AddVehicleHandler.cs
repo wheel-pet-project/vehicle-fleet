@@ -22,9 +22,9 @@ public class AddVehicleHandler(
         var location = request.Location != null
             ? Domain.SharedKernel.ValueObjects.Location.Create(request.Location.Latitude, request.Location.Longitude)
             : null;
-        
+
         var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id, plateNumber, color, vin, location);
-        
+
         await vehicleRepository.Add(vehicle);
 
         return await unitOfWork.Commit();

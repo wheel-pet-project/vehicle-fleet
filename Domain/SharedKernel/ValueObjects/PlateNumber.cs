@@ -35,8 +35,8 @@ public class PlateNumber : ValueObject
         // паттерн для обычных номерных знаков, знаком с регионом из 3 цифр и для классических (ретро) автомобилей 
         if (Regex.IsMatch(
                 plateNumber,
-                @"^(([АВЕКМНОРСТУХ]\d{3}(?<!000)[АВЕКМНОРСТУХ]{1,2})(\d{2,3}))|([ТСК][АВЕКМНОРСТУХ]{2}\d{3}(?<!000))(\d{2})$") 
-            == false) 
+                @"^(([АВЕКМНОРСТУХ]\d{3}(?<!000)[АВЕКМНОРСТУХ]{1,2})(\d{2,3}))|([ТСК][АВЕКМНОРСТУХ]{2}\d{3}(?<!000))(\d{2})$")
+            == false)
             throw new ValueIsInvalidException($"{nameof(plateNumber)} must be a valid number");
 
         return new PlateNumber(plateNumber);

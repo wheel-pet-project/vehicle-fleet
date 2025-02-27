@@ -40,7 +40,7 @@ public class Model : Aggregate
     {
         if (potentialTariff == null)
             throw new ValueIsRequiredException($"{nameof(potentialTariff)} cannot be null");
-        
+
         Tariff = potentialTariff;
 
         AddDomainEvent(new ModelTariffUpdatedDomainEvent(

@@ -18,7 +18,7 @@ public class IntegrationTestBase : IAsyncLifetime
 
     protected DataContext Context = null!;
     protected NpgsqlDataSource DataSource = null!;
-    
+
     public async ValueTask InitializeAsync()
     {
         await _postgreSqlContainer.StartAsync();

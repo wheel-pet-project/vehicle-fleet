@@ -2,12 +2,12 @@ using System.Diagnostics;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 
-namespace Api;
+namespace Api.Interceptors;
 
 public class TracingInterceptor : Interceptor
 {
     private readonly ActivitySource _activitySource = new("DrivingLicense");
-    
+
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(
         TRequest request,
         ServerCallContext context,
@@ -18,7 +18,7 @@ public class TracingInterceptor : Interceptor
             .SetTag("correlation-id",
                 context.RequestHeaders.FirstOrDefault(x => x.Key == "X-Correlation-Id")?.Value ??
                 "without correlation id");
-        
+
         return await continuation(request, context);
     }
 }

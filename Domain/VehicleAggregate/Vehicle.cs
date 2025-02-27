@@ -8,15 +8,17 @@ namespace Domain.VehicleAggregate;
 
 public sealed class Vehicle : Aggregate
 {
-    private Vehicle() { }
+    private Vehicle()
+    {
+    }
 
     private Vehicle(
-        Guid modelId, 
-        PlateNumber plateNumber, 
+        Guid modelId,
+        PlateNumber plateNumber,
         Color color,
-        Vin vin, 
-        FuelLevel fuelLevel, 
-        Location location) 
+        Vin vin,
+        FuelLevel fuelLevel,
+        Location location)
         : this()
     {
         Id = Guid.NewGuid();
@@ -28,7 +30,7 @@ public sealed class Vehicle : Aggregate
         FuelLevel = fuelLevel;
         Location = location;
     }
-    
+
     public Guid Id { get; }
     public Guid ModelId { get; private set; }
     public Status Status { get; private set; }
@@ -42,9 +44,9 @@ public sealed class Vehicle : Aggregate
     {
         if (Status.CanBeChangedToThisStatus(Status.ReadiedForRelease) == false)
             throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
-        
+
         Status = Status.ReadiedForRelease;
-        
+
         AddDomainEvent(new VehicleReadiedForReleaseDomainEvent(Id));
     }
 
@@ -52,9 +54,9 @@ public sealed class Vehicle : Aggregate
     {
         if (Status.CanBeChangedToThisStatus(Status.Released) == false)
             throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
-        
+
         Status = Status.Released;
-        
+
         AddDomainEvent(new VehicleReleasedDomainEvent(Id));
     }
 
@@ -62,9 +64,9 @@ public sealed class Vehicle : Aggregate
     {
         if (Status.CanBeChangedToThisStatus(Status.Occupied) == false)
             throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
-        
+
         Status = Status.Occupied;
-        
+
         AddDomainEvent(new VehicleOccupiedDomainEvent(Id));
     }
 
@@ -72,9 +74,9 @@ public sealed class Vehicle : Aggregate
     {
         if (Status.CanBeChangedToThisStatus(Status.Serviced) == false)
             throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
-        
+
         Status = Status.Serviced;
-        
+
         AddDomainEvent(new VehicleServicedDomainEvent(Id));
     }
 
@@ -82,12 +84,12 @@ public sealed class Vehicle : Aggregate
     {
         if (Status.CanBeChangedToThisStatus(Status.Deleted) == false)
             throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
-        
+
         Status = Status.Deleted;
-        
+
         AddDomainEvent(new VehicleDeletedDomainEvent(Id));
     }
-    
+
     public static Vehicle Create(
         Guid modelId,
         PlateNumber plateNumber,
@@ -100,14 +102,14 @@ public sealed class Vehicle : Aggregate
         if (plateNumber == null) throw new ValueIsRequiredException($"{nameof(plateNumber)} cannot be null");
         if (color == null) throw new ValueIsRequiredException($"{nameof(color)} cannot be null");
         if (vin == null) throw new ValueIsRequiredException($"{nameof(vin)} cannot be null");
-        
+
         if (location == null) location = Location.Create(56.0357178825, 37.7567042515); // Учинское вдхр.
         if (fuelLevel == null) fuelLevel = FuelLevel.Create();
 
         var vehicle = new Vehicle(modelId, plateNumber, color, vin, fuelLevel, location);
-        
+
         vehicle.AddDomainEvent(new VehicleAddedDomainEvent(vehicle.Id, vehicle.ModelId));
-        
+
         return vehicle;
     }
 }

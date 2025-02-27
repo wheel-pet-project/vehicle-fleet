@@ -1,5 +1,3 @@
-
-
 using Application.UseCases.Queries.Vehicle.GetVehicleById;
 using Domain.SharedKernel.Errors;
 using Domain.SharedKernel.ValueObjects;
@@ -51,22 +49,22 @@ public class GetVehicleByIdQueryHandlerShould : IntegrationTestBase
         Assert.True(actual.IsFailed);
         Assert.IsType<NotFound>(actual.Errors[0]);
     }
-    
+
     private async Task<(Domain.ModelAggregate.Model, Domain.VehicleAggregate.Vehicle)> AddVehicle()
     {
         var model = Domain.ModelAggregate.Model.Create(Brand.Create("Kia"), CarModel.Create("Rio"),
             Category.Create('B'), Tariff.Create(1, 2, 3));
-        
+
         await Context.Models.AddAsync(model);
         await Context.SaveChangesAsync();
-        
+
         var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
-                Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create());
-        
+            Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create());
+
         Context.Attach(vehicle.Status);
         await Context.Vehicles.AddAsync(vehicle);
         await Context.SaveChangesAsync();
-        
+
         return (model, vehicle);
     }
 }

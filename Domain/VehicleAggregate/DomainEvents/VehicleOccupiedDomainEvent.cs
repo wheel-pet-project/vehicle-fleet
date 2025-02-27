@@ -8,9 +8,9 @@ public record VehicleOccupiedDomainEvent : DomainEvent
     public VehicleOccupiedDomainEvent(Guid vehicleId)
     {
         if (vehicleId == Guid.Empty) throw new ValueIsRequiredException($"{nameof(vehicleId)} cannot be empty");
-        
+
         VehicleId = vehicleId;
     }
-    
+
     public Guid VehicleId { get; }
 }

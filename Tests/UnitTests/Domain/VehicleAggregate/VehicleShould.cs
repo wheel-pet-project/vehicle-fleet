@@ -16,7 +16,7 @@ public class VehicleShould
     private readonly Vin _vin = Vin.Create("SALYA2BN2KA791786");
     private readonly FuelLevel _fuelLevel = FuelLevel.Create();
     private readonly Location _location = Location.Create(10.0, 10.0);
-    
+
     [Fact]
     public void CreateNewInstanceWithCorrectValues()
     {
@@ -42,7 +42,10 @@ public class VehicleShould
         var emptyId = Guid.Empty;
 
         // Act
-        void Act() => Vehicle.Create(emptyId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        void Act()
+        {
+            Vehicle.Create(emptyId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        }
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
@@ -54,7 +57,10 @@ public class VehicleShould
         // Arrange
 
         // Act
-        void Act() => Vehicle.Create(_modelId, null!, _color, _vin, _location, _fuelLevel);
+        void Act()
+        {
+            Vehicle.Create(_modelId, null!, _color, _vin, _location, _fuelLevel);
+        }
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
@@ -66,7 +72,10 @@ public class VehicleShould
         // Arrange
 
         // Act
-        void Act() => Vehicle.Create(_modelId, _plateNumber, null!, _vin, _location, _fuelLevel);
+        void Act()
+        {
+            Vehicle.Create(_modelId, _plateNumber, null!, _vin, _location, _fuelLevel);
+        }
 
         // Assert
     }
@@ -77,7 +86,10 @@ public class VehicleShould
         // Arrange
 
         // Act
-        void Act() => Vehicle.Create(_modelId, _plateNumber, _color, null!, _location, _fuelLevel);
+        void Act()
+        {
+            Vehicle.Create(_modelId, _plateNumber, _color, null!, _location, _fuelLevel);
+        }
 
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
@@ -154,7 +166,10 @@ public class VehicleShould
         vehicle.Release();
 
         // Act
-        void Act() => vehicle.MarkAsReadiedForRelease();
+        void Act()
+        {
+            vehicle.MarkAsReadiedForRelease();
+        }
 
         // Assert
         Assert.Throws<DomainRulesViolationException>(Act);
@@ -181,7 +196,7 @@ public class VehicleShould
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
         vehicle.MarkAsReadiedForRelease();
         vehicle.ClearDomainEvents();
-        
+
         // Act
         vehicle.Release();
 
@@ -196,7 +211,10 @@ public class VehicleShould
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
 
         // Act
-        void Act() => vehicle.Release();
+        void Act()
+        {
+            vehicle.Release();
+        }
 
         // Assert
         Assert.Throws<DomainRulesViolationException>(Act);
@@ -209,7 +227,7 @@ public class VehicleShould
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
         vehicle.MarkAsReadiedForRelease();
         vehicle.Release();
-        
+
         // Act
         vehicle.Occupy();
 
@@ -240,7 +258,10 @@ public class VehicleShould
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
 
         // Act
-        void Act() => vehicle.Occupy();
+        void Act()
+        {
+            vehicle.Occupy();
+        }
 
         // Assert
         Assert.Throws<DomainRulesViolationException>(Act);
@@ -271,7 +292,7 @@ public class VehicleShould
         // Assert
         Assert.NotEmpty(vehicle.DomainEvents);
     }
-    
+
     [Fact]
     public void ThrowDomainRulesViolationExceptionIfMarkingAsServicedForInvalidStatus()
     {
@@ -282,7 +303,10 @@ public class VehicleShould
         vehicle.Occupy();
 
         // Act
-        void Act() => vehicle.MarkAsServiced();
+        void Act()
+        {
+            vehicle.MarkAsServiced();
+        }
 
         // Assert
         Assert.Throws<DomainRulesViolationException>(Act);
@@ -313,7 +337,7 @@ public class VehicleShould
         // Assert
         Assert.NotEmpty(vehicle.DomainEvents);
     }
-    
+
     [Fact]
     public void ThrowDomainRulesViolationExceptionIfDeletingForInvalidStatus()
     {
@@ -324,7 +348,10 @@ public class VehicleShould
         vehicle.Occupy();
 
         // Act
-        void Act() => vehicle.Delete();
+        void Act()
+        {
+            vehicle.Delete();
+        }
 
         // Assert
         Assert.Throws<DomainRulesViolationException>(Act);

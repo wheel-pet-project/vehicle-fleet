@@ -26,7 +26,7 @@ public class GetAllModelsQueryHandlerShould : IntegrationTestBase
         Assert.Equal(expectedModels[0].Brand.Name, actual.Value.Models[0].Brand);
         Assert.Equal(expectedModels[0].CarModel.Name, actual.Value.Models[0].CarModel);
     }
-    
+
     [Fact]
     public async Task ReturnAllModels()
     {
@@ -63,10 +63,10 @@ public class GetAllModelsQueryHandlerShould : IntegrationTestBase
             .Select(i => Domain.ModelAggregate.Model.Create(Brand.Create($"Kia{i}"), CarModel.Create($"Rio{i}"),
                 Category.Create('B'), Tariff.Create(1, 2, 3)))
             .ToList();
-        
+
         await Context.Models.AddRangeAsync(models);
         await Context.SaveChangesAsync();
-        
+
         return models;
     }
 }

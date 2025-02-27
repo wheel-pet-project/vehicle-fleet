@@ -30,7 +30,8 @@ public static class ServiceCollectionExtensions
                     Port = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5440"),
                     Database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "vehiclefleet_db",
                     Username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
-                    Password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password"
+                    Password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password",
+                    BrowsableConnectionString = false
                 }
             };
 
@@ -49,7 +50,7 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     public static IServiceCollection RegisterSerilog(this IServiceCollection services)
     {
         Log.Logger = new LoggerConfiguration()
@@ -70,18 +71,17 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<IModelRepository, ModelRepository>();
         services.AddTransient<IVehicleRepository, VehicleRepository>();
-        
+
         return services;
     }
 
     public static IServiceCollection RegisterUnitOfWork(this IServiceCollection services)
     {
         services.AddTransient<IUnitOfWork, UnitOfWork>();
-        
+
         return services;
     }
-    
-    
+
 
     public static IServiceCollection RegisterMassTransit(this IServiceCollection services)
     {
@@ -89,7 +89,7 @@ public static class ServiceCollectionExtensions
 
         services.AddMassTransit(x =>
         {
-            x.UsingInMemory();
+            x.UsingInMemory((context, transport) => { });
 
             x.AddRider(rider =>
             {
@@ -100,36 +100,36 @@ public static class ServiceCollectionExtensions
 
         return services;
     }
-    
+
     public static IServiceCollection RegisterOutboxAndActualityObserverBackgroundJobs(this IServiceCollection services)
     {
         services.AddQuartz(configure =>
         {
-        var outboxJobKey = new JobKey(nameof(OutboxBackgroundJob));
-        configure
-            .AddJob<OutboxBackgroundJob>(j => j.WithIdentity(outboxJobKey))
-            .AddTrigger(trigger => trigger.ForJob(outboxJobKey)
-                .WithSimpleSchedule(scheduleBuilder => scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
-        
-        //     var actualityObserverJobKey = new JobKey(nameof(ActualityObserverBackgroundJob));
-        //     configure
-        //         .AddJob<ActualityObserverBackgroundJob>(j => j.WithIdentity(actualityObserverJobKey))
-        //         .AddTrigger(trigger => trigger.ForJob(actualityObserverJobKey)
-        //             .WithSimpleSchedule(scheduleBuilder => scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
+            var outboxJobKey = new JobKey(nameof(OutboxBackgroundJob));
+            configure
+                .AddJob<OutboxBackgroundJob>(j => j.WithIdentity(outboxJobKey))
+                .AddTrigger(trigger => trigger.ForJob(outboxJobKey)
+                    .WithSimpleSchedule(scheduleBuilder => scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
+
+            //     var actualityObserverJobKey = new JobKey(nameof(ActualityObserverBackgroundJob));
+            //     configure
+            //         .AddJob<ActualityObserverBackgroundJob>(j => j.WithIdentity(actualityObserverJobKey))
+            //         .AddTrigger(trigger => trigger.ForJob(actualityObserverJobKey)
+            //             .WithSimpleSchedule(scheduleBuilder => scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
         });
-        
+
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
-        
+
         return services;
     }
-    
+
     public static IServiceCollection RegisterTelemetry(this IServiceCollection services)
     {
         services.AddOpenTelemetry()
             .WithMetrics(builder =>
             {
                 builder.AddPrometheusExporter();
-        
+
                 builder.AddMeter("Microsoft.AspNetCore.Hosting",
                     "Microsoft.AspNetCore.Server.Kestrel");
                 builder.AddView("http.server.request.duration",
@@ -154,7 +154,7 @@ public static class ServiceCollectionExtensions
                     .AddSource("MassTransit")
                     .AddJaegerExporter();
             });
-        
+
         return services;
     }
 
@@ -164,25 +164,25 @@ public static class ServiceCollectionExtensions
         {
             var connectionBuilder = new NpgsqlConnectionStringBuilder
             {
-                ApplicationName = "Identity" + Environment.MachineName,
+                ApplicationName = "Vehicle_fleet#" + Environment.MachineName,
                 Host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost",
-                Port = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5430"),
+                Port = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5440"),
                 Database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "vehiclefleet_db",
                 Username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
                 Password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password",
                 BrowsableConnectionString = false
             };
-        
+
             return connectionBuilder.ConnectionString;
         };
-        
+
         services.AddGrpcHealthChecks()
             .AddNpgSql(getConnectionString(), timeout: TimeSpan.FromSeconds(10))
             .AddKafka(cfg =>
                     cfg.BootstrapServers = (Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS")
                                             ?? "localhost:9092").Split("__")[0],
                 timeout: TimeSpan.FromSeconds(10));
-        
+
         return services;
     }
 }

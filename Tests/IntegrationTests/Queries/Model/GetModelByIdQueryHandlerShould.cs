@@ -44,15 +44,15 @@ public class GetModelByIdQueryHandlerShould : IntegrationTestBase
         Assert.True(actual.IsFailed);
         Assert.IsType<NotFound>(actual.Errors[0]);
     }
-    
+
     private async Task<Domain.ModelAggregate.Model> AddModel()
     {
         var model = Domain.ModelAggregate.Model.Create(Brand.Create("Kia"), CarModel.Create("Rio"),
             Category.Create('B'), Tariff.Create(1, 2, 3));
-        
+
         await Context.Models.AddAsync(model);
         await Context.SaveChangesAsync();
-        
+
         return model;
     }
 }

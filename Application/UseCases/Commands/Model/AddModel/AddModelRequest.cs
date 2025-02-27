@@ -9,4 +9,4 @@ public record AddModelRequest(
     char Category,
     double PricePerMinute,
     double PricePerHour,
-    double PricePerDay) : IRequest<Result>;
+    double PricePerDay) : IRequest<Result<AddModelResponse>>;

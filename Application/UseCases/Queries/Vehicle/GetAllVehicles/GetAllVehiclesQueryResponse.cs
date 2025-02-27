@@ -4,16 +4,17 @@ namespace Application.UseCases.Queries.Vehicle.GetAllVehicles;
 
 public record GetAllVehiclesQueryResponse
 {
-    private readonly List<VehicleAggregatedShortView> _vehicles;
-    public GetAllVehiclesQueryResponse(List<VehicleAggregatedShortView> vehicles)
+    private readonly List<VehicleShortView> _vehicles;
+
+    public GetAllVehiclesQueryResponse(List<VehicleShortView> vehicles)
     {
         _vehicles = vehicles;
     }
-    
-    public IReadOnlyList<VehicleAggregatedShortView> Vehicles => _vehicles;
+
+    public IReadOnlyList<VehicleShortView> Vehicles => _vehicles;
 }
 
-public record VehicleAggregatedShortView(
+public record VehicleShortView(
     Guid Id,
     string Brand,
     string CarModel,

@@ -13,12 +13,13 @@ public class VehicleRepositoryShould : IntegrationTestBase
 {
     private readonly Model _model = Model.Create(Brand.Create("Kia"), CarModel.Create("Rio"),
         Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
+
     private readonly PlateNumber _plateNumber = PlateNumber.Create("К333ОТ77");
     private readonly Color _color = Color.Red;
     private readonly Vin _vin = Vin.Create("SALYA2BN2KA791786");
     private readonly FuelLevel _fuelLevel = FuelLevel.Create();
     private readonly Location _location = Location.Create(10.0, 10.0);
-    
+
     [Fact]
     public async Task Add()
     {
@@ -46,10 +47,10 @@ public class VehicleRepositoryShould : IntegrationTestBase
         var vehicle = Vehicle.Create(_model.Id, _plateNumber, _color, _vin, _location, _fuelLevel);
         var repositoryAnUowBuilder = new RepositoryAndUnitOfWorkBuilder();
         var (repositoryForArrange, uowForArrange) = repositoryAnUowBuilder.Build(Context);
-        
+
         await repositoryForArrange.Add(vehicle);
         await uowForArrange.Commit();
-        
+
         var (repository, uow) = repositoryAnUowBuilder.Build(Context);
         vehicle.MarkAsReadiedForRelease();
 
@@ -81,7 +82,7 @@ public class VehicleRepositoryShould : IntegrationTestBase
         vehicle.ClearDomainEvents();
         Assert.Equivalent(vehicle, actual);
     }
-    
+
     [Fact]
     public async Task GetAll()
     {
@@ -110,7 +111,9 @@ public class VehicleRepositoryShould : IntegrationTestBase
 
     private class RepositoryAndUnitOfWorkBuilder
     {
-        public (VehicleRepository, Infrastructure.Adapters.Postgres.UnitOfWork) Build(DataContext context) =>
-            (new VehicleRepository(context), new Infrastructure.Adapters.Postgres.UnitOfWork(context));
+        public (VehicleRepository, Infrastructure.Adapters.Postgres.UnitOfWork) Build(DataContext context)
+        {
+            return (new VehicleRepository(context), new Infrastructure.Adapters.Postgres.UnitOfWork(context));
+        }
     }
 }

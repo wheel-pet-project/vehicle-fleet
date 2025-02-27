@@ -11,15 +11,17 @@ public sealed class Status : Entity<int>
     public static readonly Status Occupied = new(4, nameof(Occupied).ToLowerInvariant());
     public static readonly Status Serviced = new(5, nameof(Serviced).ToLowerInvariant());
     public static readonly Status Deleted = new(6, nameof(Deleted).ToLowerInvariant());
-    
-    private Status() { }
+
+    private Status()
+    {
+    }
 
     public Status(int id, string name) : this()
     {
         Id = id;
         Name = name;
     }
-    
+
     public string Name { get; private set; }
 
     public bool CanBeChangedToThisStatus(Status potentialStatus)
@@ -27,11 +29,11 @@ public sealed class Status : Entity<int>
         if (potentialStatus is null) throw new ValueIsRequiredException($"{nameof(potentialStatus)} cannot be null");
         if (!All().Contains(potentialStatus))
             throw new ValueOutOfRangeException($"{nameof(potentialStatus)} cannot be unsupported");
-        
+
         return potentialStatus switch
         {
             _ when this == potentialStatus => false,
-            _ when potentialStatus == Serviced && 
+            _ when potentialStatus == Serviced &&
                    (this == Serviced || this == Occupied || this == Deleted) is false => true,
             _ when potentialStatus == ReadiedForRelease && this == Added => true,
             _ when potentialStatus == Deleted && this == Added => true,
@@ -44,7 +46,7 @@ public sealed class Status : Entity<int>
             _ => false
         };
     }
-    
+
     public static IEnumerable<Status> All()
     {
         return

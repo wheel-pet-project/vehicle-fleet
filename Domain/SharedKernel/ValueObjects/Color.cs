@@ -14,8 +14,10 @@ public sealed class Color : ValueObject
     public static readonly Color Orange = new(nameof(Orange).ToLowerInvariant());
     public static readonly Color Green = new(nameof(Green).ToLowerInvariant());
     public static readonly Color Beige = new(nameof(Beige).ToLowerInvariant());
-    
-    private Color() { }
+
+    private Color()
+    {
+    }
 
     private Color(string color) : this()
     {
@@ -24,18 +26,21 @@ public sealed class Color : ValueObject
 
     public string Name { get; }
 
-    public static IEnumerable<Color> All() =>
-    [
-        White,
-        Grey,
-        Black,
-        Blue,
-        Red,
-        Yellow,
-        Orange,
-        Green,
-        Beige
-    ];
+    public static IEnumerable<Color> All()
+    {
+        return
+        [
+            White,
+            Grey,
+            Black,
+            Blue,
+            Red,
+            Yellow,
+            Orange,
+            Green,
+            Beige
+        ];
+    }
 
     public static Color FromName(string name)
     {
@@ -43,15 +48,15 @@ public sealed class Color : ValueObject
         if (color == null)
             throw new ValueOutOfRangeException(
                 $"{nameof(name)} unknown color or null, color must be one of: {string.Join(' ', All())}");
-        
+
         return color;
     }
-    
+
     public override string ToString()
     {
         return Name.ToLowerInvariant();
     }
-    
+
     protected override IEnumerable<object> GetEqualityComponents()
     {
         yield return Name;

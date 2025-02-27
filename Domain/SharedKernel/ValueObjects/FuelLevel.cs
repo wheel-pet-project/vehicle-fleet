@@ -16,7 +16,7 @@ public class FuelLevel : ValueObject
     {
         Percents = levelPercents;
     }
-    
+
     public int Percents { get; }
 
     public static FuelLevel Create(int levelPercents = 0)

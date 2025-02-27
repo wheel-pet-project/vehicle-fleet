@@ -66,25 +66,25 @@ public class GetVehiclesInSquareQueryHandlerShould : IntegrationTestBase
         // Assert
         Assert.Empty(actual.Value.Vehicles);
     }
-    
+
     private async Task<(Domain.ModelAggregate.Model, List<Domain.VehicleAggregate.Vehicle>)> AddModelAndVehicles(
         int vehiclesCount)
     {
         var model = Domain.ModelAggregate.Model.Create(Brand.Create("Kia"), CarModel.Create("Rio"),
             Category.Create('B'), Tariff.Create(1, 2, 3));
-        
+
         await Context.Models.AddAsync(model);
         await Context.SaveChangesAsync();
-        
+
         var vehicles = Enumerable.Range(0, vehiclesCount)
             .Select(_ => Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
                 Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create()))
             .ToList();
-        
+
         Context.AttachRange(vehicles.Select(x => x.Status).ToList());
         await Context.Vehicles.AddRangeAsync(vehicles);
         await Context.SaveChangesAsync();
-        
+
         return (model, vehicles);
     }
 }

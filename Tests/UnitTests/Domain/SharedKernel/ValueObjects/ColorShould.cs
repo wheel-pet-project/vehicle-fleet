@@ -13,7 +13,7 @@ public class ColorShould
     {
         // Arrange
         var redColorName = Color.Red.ToString();
-        
+
         // Act
         var actual = Color.FromName(redColorName);
 
@@ -28,7 +28,10 @@ public class ColorShould
         var coralСolorName = "Coral";
 
         // Act
-        void Act() => Color.FromName(coralСolorName);
+        void Act()
+        {
+            Color.FromName(coralСolorName);
+        }
 
         // Assert
         Assert.Throws<ValueOutOfRangeException>(Act);

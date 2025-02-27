@@ -12,8 +12,9 @@ public class ModelRepositoryShould : IntegrationTestBase
 {
     private readonly Model _model = Model.Create(Brand.Create("Kia"), CarModel.Create("Rio"),
         Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
+
     private readonly Tariff _tariff = Tariff.Create(120.0M, 300.0M, 4000.0M);
-    
+
     [Fact]
     public async Task Add()
     {
@@ -24,7 +25,7 @@ public class ModelRepositoryShould : IntegrationTestBase
         // Act
         await repository.Add(_model);
         await uow.Commit();
-        
+
         // Assert
         _model.ClearDomainEvents();
         var modelFromDb = await repository.GetById(_model.Id);
@@ -38,17 +39,17 @@ public class ModelRepositoryShould : IntegrationTestBase
         // Arrange
         var repositoryAndUowAndUnitOfWorkBuilderBuilder = new RepositoryAndUnitOfWorkBuilder();
         var (repositoryForArrange, uowForArrange) = repositoryAndUowAndUnitOfWorkBuilderBuilder.Build(Context);
-        
+
         await repositoryForArrange.Add(_model);
         await uowForArrange.Commit();
-        
+
         var (repository, uow) = repositoryAndUowAndUnitOfWorkBuilderBuilder.Build(Context);
         _model.UpdateTariff(_tariff);
 
         // Act
         repository.Update(_model);
         await uow.Commit();
-        
+
         // Assert
         _model.ClearDomainEvents();
         var modelFromDb = await repository.GetById(_model.Id);
@@ -65,19 +66,21 @@ public class ModelRepositoryShould : IntegrationTestBase
 
         await repository.Add(_model);
         await uow.Commit();
-        
+
         // Act
         var actual = await repository.GetById(_model.Id);
-        
+
         // Assert
         _model.ClearDomainEvents();
         Assert.NotNull(actual);
         Assert.Equivalent(_model, actual);
     }
-    
+
     private class RepositoryAndUnitOfWorkBuilder
     {
-        public (ModelRepository, Infrastructure.Adapters.Postgres.UnitOfWork) Build(DataContext context) =>
-            (new ModelRepository(context), new Infrastructure.Adapters.Postgres.UnitOfWork(context));
+        public (ModelRepository, Infrastructure.Adapters.Postgres.UnitOfWork) Build(DataContext context)
+        {
+            return (new ModelRepository(context), new Infrastructure.Adapters.Postgres.UnitOfWork(context));
+        }
     }
 }

@@ -9,20 +9,22 @@ namespace Application.UseCases.Queries.Model.GetModelById;
 public class GetModelByIdQueryHandler(
     NpgsqlDataSource dataSource) : IRequestHandler<GetModelByIdQuery, Result<GetModelByIdQueryResponse>>
 {
-    public async Task<Result<GetModelByIdQueryResponse>> Handle(GetModelByIdQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetModelByIdQueryResponse>> Handle(
+        GetModelByIdQuery request,
+        CancellationToken cancellationToken)
     {
         var command = new CommandDefinition(_sql, new { Id = request.ModelId });
-        
+
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var model = await connection.QuerySingleOrDefaultAsync<ModelDapperModel>(command);
         if (model == null) return Result.Fail(new NotFound("Model not found"));
 
-        return Result.Ok(new GetModelByIdQueryResponse(model.Id, 
-            model.Brand, 
-            model.CarModel, 
+        return Result.Ok(new GetModelByIdQueryResponse(model.Id,
+            model.Brand,
+            model.CarModel,
             model.Category,
-            (double)model.PricePerMinute, 
-            (double)model.PricePerHour, 
+            (double)model.PricePerMinute,
+            (double)model.PricePerHour,
             (double)model.PricePerDay));
     }
 

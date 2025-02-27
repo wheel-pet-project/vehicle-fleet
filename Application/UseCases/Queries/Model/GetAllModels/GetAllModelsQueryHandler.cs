@@ -8,7 +8,9 @@ namespace Application.UseCases.Queries.Model.GetAllModels;
 public class GetAllModelsQueryHandler(
     NpgsqlDataSource dataSource) : IRequestHandler<GetAllModelsQuery, Result<GetAllModelsQueryResponse>>
 {
-    public async Task<Result<GetAllModelsQueryResponse>> Handle(GetAllModelsQuery request, CancellationToken cancellationToken)
+    public async Task<Result<GetAllModelsQueryResponse>> Handle(
+        GetAllModelsQuery request,
+        CancellationToken cancellationToken)
     {
         var command = new CommandDefinition(_sql,
             new { Offset = (request.Page - 1) * request.PageSize, Limit = request.PageSize });
@@ -18,7 +20,8 @@ public class GetAllModelsQueryHandler(
         var models = modelsEnumerable.AsList();
 
         var response = new GetAllModelsQueryResponse(models.Select(x =>
-            new GetAllModelsQueryResponse.ModelShortView(x.Id, x.Brand, x.CarModel)).ToList());
+                new GetAllModelsQueryResponse.ModelShortView(x.Id, x.Brand, x.CarModel))
+            .ToList());
 
         return response;
     }
