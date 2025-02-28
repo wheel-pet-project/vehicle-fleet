@@ -19,8 +19,8 @@ public class GetVehiclesInSquareQueryHandlerShould : IntegrationTestBase
         // Act
         var actual = await queryHandler.Handle(
             new GetVehiclesInSquareQuery(Status.Added,
-                new LocationDto(expectedVehicles[0].Location.Latitude + 1, expectedVehicles[0].Location.Longitude + 1),
-                new LocationDto(expectedVehicles[0].Location.Latitude - 1, expectedVehicles[0].Location.Longitude - 1)),
+                new LocationDto(expectedVehicles[0].Location.Latitude - 1, expectedVehicles[0].Location.Longitude + 1),
+                new LocationDto(expectedVehicles[0].Location.Latitude + 1, expectedVehicles[0].Location.Longitude - 1)),
             TestContext.Current.CancellationToken);
 
         // Assert

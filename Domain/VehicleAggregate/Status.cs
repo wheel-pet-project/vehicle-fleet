@@ -1,5 +1,6 @@
 using CSharpFunctionalExtensions;
 using Domain.SharedKernel.Exceptions.ArgumentException;
+using Domain.SharedKernel.Exceptions.DomainRulesViolationException;
 
 namespace Domain.VehicleAggregate;
 
@@ -32,7 +33,8 @@ public sealed class Status : Entity<int>
 
         return potentialStatus switch
         {
-            _ when this == potentialStatus => false,
+            _ when this == potentialStatus => throw new DomainRulesViolationException(
+                "Vehicle already have this status", isAlreadyInThisState: true),
             _ when potentialStatus == Serviced &&
                    (this == Serviced || this == Occupied || this == Deleted) is false => true,
             _ when potentialStatus == ReadiedForRelease && this == Added => true,

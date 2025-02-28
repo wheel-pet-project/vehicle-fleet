@@ -6,7 +6,7 @@ namespace Api.Interceptors;
 
 public class TracingInterceptor : Interceptor
 {
-    private readonly ActivitySource _activitySource = new("DrivingLicense");
+    private readonly ActivitySource _activitySource = new("VehicleFleet");
 
     public override async Task<TResponse> UnaryServerHandler<TRequest, TResponse>(
         TRequest request,
@@ -16,7 +16,9 @@ public class TracingInterceptor : Interceptor
         using var activity = _activitySource
             .StartActivity($"handling {request.GetType().Name}")!
             .SetTag("correlation-id",
-                context.RequestHeaders.FirstOrDefault(x => x.Key == "X-Correlation-Id")?.Value ??
+                context.RequestHeaders.FirstOrDefault(x =>
+                        x.Key.Equals("X-Correlation-Id", StringComparison.InvariantCultureIgnoreCase))
+                    ?.Value ??
                 "without correlation id");
 
         return await continuation(request, context);
