@@ -1,3 +1,4 @@
+using Domain.SharedKernel.Exceptions.AlreadyHaveThisState;
 using Domain.SharedKernel.Exceptions.ArgumentException;
 using Domain.VehicleAggregate;
 using JetBrains.Annotations;
@@ -95,16 +96,16 @@ public class StatusShould
     }
 
     [Fact]
-    public void CanBeChangedToThisStatusReturnFalseForEqualStatus()
+    public void CanBeChangedToThisStatusThrowAlreadyHaveThisStateExceptionIfPotentialStatusIsEqualCurrent()
     {
         // Arrange
         var added = Status.Added;
 
         // Act
-        var actual = added.CanBeChangedToThisStatus(Status.Added);
+        void Act() => added.CanBeChangedToThisStatus(Status.Added);
 
         // Assert
-        Assert.False(actual);
+        Assert.Throws<AlreadyHaveThisStateException>(Act);
     }
 
     [Fact]

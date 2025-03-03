@@ -1,7 +1,5 @@
-using Dapper;
 using Domain.SharedKernel;
 using Domain.VehicleAggregate.DomainEvents;
-using Infrastructure.Adapters.Postgres;
 using Infrastructure.Adapters.Postgres.Outbox;
 using JetBrains.Annotations;
 using MediatR;

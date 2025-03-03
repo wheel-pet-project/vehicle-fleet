@@ -1,7 +1,7 @@
 using System.Collections.Concurrent;
 using Dapper;
 using Domain.SharedKernel;
-using Domain.SharedKernel.Exceptions.DomainRulesViolationException;
+using Domain.SharedKernel.Exceptions.AlreadyHaveThisState;
 using JsonNet.ContractResolvers;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -40,7 +40,7 @@ public class OutboxBackgroundJob(
                 .AsReadOnly();
 
             var publishTasks = domainEvents
-                .Select(domainEvent => PublishToMediatr(domainEvent, updateQueue,
+                .Select(domainEvent => PublishToMediator(domainEvent, updateQueue,
                     jobExecutionContext.CancellationToken))
                 .ToList()
                 .AsReadOnly();
@@ -67,7 +67,7 @@ public class OutboxBackgroundJob(
 
         return;
 
-        async Task PublishToMediatr(
+        async Task PublishToMediator(
             DomainEvent @event,
             ConcurrentQueue<Guid> updateQueue,
             CancellationToken cancellationToken)
@@ -77,13 +77,13 @@ public class OutboxBackgroundJob(
                 await mediator.Publish(@event, cancellationToken);
                 updateQueue.Enqueue(@event.EventId);
             }
-            catch (DomainRulesViolationException e) when (e is { IsAlreadyInThisState: true })
+            catch (AlreadyHaveThisStateException)
             {
                 updateQueue.Enqueue(@event.EventId);
             }
             catch (Exception e)
             {
-                logger.LogError("Failed of processing outbox events and save update, exception: {e}", e);
+                logger.LogError("Fail in processing outbox events, exception: {e}", e);
             }
         }
     }

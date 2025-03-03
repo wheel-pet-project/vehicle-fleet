@@ -9,6 +9,6 @@ public record AddVehicleRequest(
     string PlateNumber,
     Color Color,
     string Vin,
-    Location? Location = null) : IRequest<Result>;
+    Location? Location = null) : IRequest<Result<AddVehicleResponse>>;
 
 public record Location(double Latitude, double Longitude);

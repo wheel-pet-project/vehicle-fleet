@@ -9,9 +9,9 @@ namespace Application.UseCases.Commands.Vehicle.AddVehicle;
 public class AddVehicleHandler(
     IModelRepository modelRepository,
     IVehicleRepository vehicleRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<AddVehicleRequest, Result>
+    IUnitOfWork unitOfWork) : IRequestHandler<AddVehicleRequest, Result<AddVehicleResponse>>
 {
-    public async Task<Result> Handle(AddVehicleRequest request, CancellationToken cancellationToken)
+    public async Task<Result<AddVehicleResponse>> Handle(AddVehicleRequest request, CancellationToken cancellationToken)
     {
         var model = await modelRepository.GetById(request.ModelId);
         if (model == null) return Result.Fail(new NotFound("Model not found"));
@@ -27,6 +27,8 @@ public class AddVehicleHandler(
 
         await vehicleRepository.Add(vehicle);
 
-        return await unitOfWork.Commit();
+        var commitResult = await unitOfWork.Commit();
+
+        return commitResult.IsSuccess ? Result.Ok(new AddVehicleResponse(model.Id)) : commitResult;
     }
 }
