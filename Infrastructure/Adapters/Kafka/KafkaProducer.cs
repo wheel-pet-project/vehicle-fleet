@@ -18,8 +18,7 @@ public class KafkaProducer(
 
     public async Task Publish(ModelCreatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, ModelCreated>(
+        var producer = topicProducerProvider.GetProducer<string, ModelCreated>(
                 new Uri($"topic:{_topicsConfiguration.ModelCreatedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
@@ -30,8 +29,7 @@ public class KafkaProducer(
 
     public async Task Publish(ModelCategoryUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, ModelCategoryUpdated>(
+        var producer = topicProducerProvider.GetProducer<string, ModelCategoryUpdated>(
                 new Uri($"topic:{_topicsConfiguration.ModelCategoryUpdatedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
@@ -42,8 +40,7 @@ public class KafkaProducer(
 
     public async Task Publish(ModelTariffUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, ModelTariffUpdated>(
+        var producer = topicProducerProvider.GetProducer<string, ModelTariffUpdated>(
                 new Uri($"topic:{_topicsConfiguration.ModelTariffUpdatedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
@@ -55,8 +52,7 @@ public class KafkaProducer(
 
     public async Task Publish(VehicleAddedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, VehicleAdded>(
+        var producer = topicProducerProvider.GetProducer<string, VehicleAdded>(
                 new Uri($"topic:{_topicsConfiguration.VehicleAddedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
@@ -67,8 +63,7 @@ public class KafkaProducer(
 
     public async Task Publish(VehicleDeletedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, VehicleDeleted>(
+        var producer = topicProducerProvider.GetProducer<string, VehicleDeleted>(
                 new Uri($"topic:{_topicsConfiguration.VehicleDeletedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
@@ -79,8 +74,7 @@ public class KafkaProducer(
 
     public async Task Publish(VehicleReadiedForReleaseDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, VehicleReadiedForRelease>(
+        var producer = topicProducerProvider.GetProducer<string, VehicleReadiedForRelease>(
                 new Uri($"topic:{_topicsConfiguration.VehicleReadiedForReleaseTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
@@ -91,8 +85,7 @@ public class KafkaProducer(
 
     public async Task Publish(VehicleOccupiedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, VehicleOccupied>(
+        var producer = topicProducerProvider.GetProducer<string, VehicleOccupied>(
                 new Uri($"topic:{_topicsConfiguration.VehicleOccupiedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
@@ -103,8 +96,7 @@ public class KafkaProducer(
 
     public async Task Publish(VehicleReleasedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, VehicleReleased>(
+        var producer = topicProducerProvider.GetProducer<string, VehicleReleased>(
                 new Uri($"topic:{_topicsConfiguration.VehicleReleasedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
@@ -115,8 +107,7 @@ public class KafkaProducer(
 
     public async Task Publish(VehicleServicedDomainEvent domainEvent, CancellationToken cancellationToken)
     {
-        var producer =
-            topicProducerProvider.GetProducer<string, VehicleServiced>(
+        var producer = topicProducerProvider.GetProducer<string, VehicleServiced>(
                 new Uri($"topic:{_topicsConfiguration.VehicleServicedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),

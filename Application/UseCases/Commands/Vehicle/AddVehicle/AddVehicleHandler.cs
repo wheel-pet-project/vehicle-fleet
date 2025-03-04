@@ -29,6 +29,6 @@ public class AddVehicleHandler(
 
         var commitResult = await unitOfWork.Commit();
 
-        return commitResult.IsSuccess ? Result.Ok(new AddVehicleResponse(model.Id)) : commitResult;
+        return commitResult.IsSuccess ? Result.Ok(new AddVehicleResponse(vehicle.Id)) : commitResult;
     }
 }

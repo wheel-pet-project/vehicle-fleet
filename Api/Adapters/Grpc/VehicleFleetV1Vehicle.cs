@@ -5,6 +5,8 @@ using Application.UseCases.Commands.Vehicle.ReleaseVehicle;
 using Application.UseCases.Commands.Vehicle.SendToServiceVehicle;
 using Application.UseCases.Queries.Vehicle.GetAllVehicles;
 using Application.UseCases.Queries.Vehicle.GetVehicleById;
+using Application.UseCases.Queries.Vehicle.GetVehicleDetailsById;
+using Application.UseCases.Queries.Vehicle.GetVehiclesInSquare;
 using Grpc.Core;
 using Proto.VehicleFleetV1;
 using Location = Application.UseCases.Commands.Vehicle.AddVehicle.Location;
@@ -96,23 +98,72 @@ public partial class VehicleFleetV1 : VehicleFleet.VehicleFleetBase
     {
         var result = await mediator.Send(new GetVehicleByIdQuery(Guid.Parse(request.VehicleId)));
 
-        throw new NotImplementedException();
-        // return result.IsSuccess
-        //     ? new GetVehicleByIdRes()
-        //     {
-        //         Brand = 
-        //     }
+        return result.IsSuccess
+            ? new GetVehicleByIdRes
+            {
+                VehicleId = result.Value.Id.ToString(),
+                Status = statusMapper.DomainToProto(result.Value.Status),
+                Brand = result.Value.Brand,
+                CarModel = result.Value.CarModel,
+                Color = colorMapper.DomainToProto(result.Value.Color),
+                PlateNumber = result.Value.PlateNumber,
+                FuelLevelPercents = result.Value.FuelLevelPercents,
+                Location = new Proto.VehicleFleetV1.Location
+                {
+                    Latitude = result.Value.Latitude,
+                    Longitude = result.Value.Longitude
+                },
+                PricePerMin = result.Value.PricePerMinute,
+                PricePerHour = result.Value.PricePerHour
+            }
+            : ParseErrorToRpcException<GetVehicleByIdRes>(result.Errors);
     }
 
     public override async Task<GetVehicleDetailsByIdRes> GetVehicleDetailsById(GetVehicleDetailsByIdReq request, ServerCallContext context)
     {
-        throw new NotImplementedException();
-        // return base.GetVehicleDetailsById(request, context);
+        var result = await mediator.Send(new GetVehicleDetailsByIdQuery(Guid.Parse(request.VehicleId)));
+
+        return result.IsSuccess
+            ? new GetVehicleDetailsByIdRes()
+            {
+                VehicleId = result.Value.Id.ToString(),
+                Status = statusMapper.DomainToProto(result.Value.Status),
+                Brand = result.Value.Brand,
+                CarModel = result.Value.CarModel,
+                Color = colorMapper.DomainToProto(result.Value.Color),
+                PlateNumber = result.Value.PlateNumber,
+                Vin = result.Value.Vin,
+                FuelLevelPercents = result.Value.FuelLevelPercents,
+                PricePerMin = result.Value.PricePerMinute,
+                PricePerHour = result.Value.PricePerHour,
+                PricePerDay = result.Value.PricePerDay
+            }
+            : ParseErrorToRpcException<GetVehicleDetailsByIdRes>(result.Errors);
     }
 
     public override async Task<GetVehiclesInSquareRes> GetVehiclesInSquare(GetVehiclesInSquareReq request, ServerCallContext context)
     {
-        throw new NotImplementedException();
-        // return base.GetVehiclesInSquare(request, context);
+        var result = await mediator.Send(new GetVehiclesInSquareQuery(
+            statusMapper.ProtoToDomain(request.FilteringStatus), 
+            new LocationDto(request.UpperLeftLocation.Latitude, request.UpperLeftLocation.Longitude),
+            new LocationDto(request.LowerRightLocation.Latitude, request.LowerRightLocation.Longitude)));
+
+        if (result.IsFailed) return ParseErrorToRpcException<GetVehiclesInSquareRes>(result.Errors);
+        
+        var response = new GetVehiclesInSquareRes();
+        response.Vehicles.AddRange(result.Value.Vehicles.Select(x => new GetVehiclesInSquareRes.Types.VehicleInSquareShortView()
+        {
+            VehicleId = x.Id.ToString(),
+            Brand = x.Brand,
+            CarModel = x.CarModel,
+            Color = colorMapper.DomainToProto(x.Color),
+            Location = new Proto.VehicleFleetV1.Location
+            {
+                Latitude = x.Latitude, 
+                Longitude = x.Longitude
+            }
+        }));
+        
+        return response;
     }
 }

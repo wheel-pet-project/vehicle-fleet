@@ -1,4 +1,11 @@
+using System.Reflection;
+using Api.Adapters.Grpc.Mapper;
+using Application.Ports.Kafka;
 using Application.Ports.Postgres;
+using Application.UseCases.Commands.Model.AddModel;
+using From.VehicleFleetKafkaEvents.Model;
+using From.VehicleFleetKafkaEvents.Vehicle;
+using Infrastructure.Adapters.Kafka;
 using Infrastructure.Adapters.Postgres;
 using Infrastructure.Adapters.Postgres.Outbox;
 using Infrastructure.Adapters.Postgres.Repositories;
@@ -51,6 +58,13 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection RegisterMediatorAndHandlers(this IServiceCollection services)
+    {
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AddModelHandler).Assembly));
+        
+        return services;
+    }
+
     public static IServiceCollection RegisterSerilog(this IServiceCollection services)
     {
         Log.Logger = new LoggerConfiguration()
@@ -82,17 +96,58 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection RegisterMappers(this IServiceCollection services)
+    {
+        services.AddScoped<ColorMapper>();
+        services.AddScoped<StatusMapper>();
+        
+        return services;
+    }
 
     public static IServiceCollection RegisterMassTransit(this IServiceCollection services)
     {
-        // services.AddTransient<IMessageBus, KafkaProducer>();
+        const string modelCreatedTopic = "model-created-topic";
+        const string modelCategoryUpdatedTopic = "model-category-updated-topic";
+        const string modelTariffUpdatedTopic = "model-tariff-updated-topic";
+        const string vehicleAddedTopic = "vehicle-added-topic";
+        const string vehicleDeletedTopic = "vehicle-deleted-topic";
+        const string vehicleOccupiedTopic = "vehicle-occupied-topic";
+        const string vehicleReadiedForReleasesTopic = "vehicle-readied-for-releases-topic";
+        const string vehicleReleasedTopic = "vehicle-released-topic";
+        const string vehicleServicedTopic = "vehicle-serviced-topic";
+
+        services.Configure<KafkaTopicsConfiguration>(config =>
+        {
+            config.ModelCreatedTopic = modelCreatedTopic;
+            config.ModelCategoryUpdatedTopic = modelCategoryUpdatedTopic;
+            config.ModelTariffUpdatedTopic = modelTariffUpdatedTopic;
+            config.VehicleAddedTopic = vehicleAddedTopic;
+            config.VehicleDeletedTopic = vehicleDeletedTopic;
+            config.VehicleOccupiedTopic = vehicleOccupiedTopic;
+            config.VehicleReadiedForReleaseTopic = vehicleReadiedForReleasesTopic;
+            config.VehicleReleasedTopic = vehicleReleasedTopic;
+            config.VehicleServicedTopic = vehicleServicedTopic;
+        });
+        
+        services.AddTransient<IMessageBus, KafkaProducer>();
 
         services.AddMassTransit(x =>
         {
-            x.UsingInMemory((context, transport) => { });
+            x.UsingInMemory();
 
             x.AddRider(rider =>
             {
+                rider.AddProducer<string, ModelCreated>(modelCreatedTopic);
+                rider.AddProducer<string, ModelCategoryUpdated>(modelCategoryUpdatedTopic);
+                rider.AddProducer<string, ModelTariffUpdated>(modelTariffUpdatedTopic);
+                
+                rider.AddProducer<string, VehicleAdded>(vehicleAddedTopic);
+                rider.AddProducer<string, VehicleDeleted>(vehicleDeletedTopic);
+                rider.AddProducer<string, VehicleOccupied>(vehicleOccupiedTopic);
+                rider.AddProducer<string, VehicleReadiedForRelease>(vehicleReadiedForReleasesTopic);
+                rider.AddProducer<string, VehicleReleased>(vehicleReleasedTopic);
+                rider.AddProducer<string, VehicleServiced>(vehicleServicedTopic);
+                
                 rider.UsingKafka((_, k) =>
                     k.Host((Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9092").Split("__")));
             });
@@ -101,7 +156,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection RegisterOutboxAndActualityObserverBackgroundJobs(this IServiceCollection services)
+    public static IServiceCollection RegisterInboxAndOutboxBackgroundJobs(this IServiceCollection services)
     {
         services.AddQuartz(configure =>
         {

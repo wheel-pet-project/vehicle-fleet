@@ -7,7 +7,14 @@
       "launchBrowser": false,
       "applicationUrl": "http://localhost:6300",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "POSTGRES_HOST": "localhost",
+        "POSTGRES_PORT": "5440",
+        "POSTGRES_DB": "vehiclefleet_db",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "password",
+        "BOOTSTRAP_SERVERS": "localhost:9092",
+        "MONGO_CONNECTION_STRING": "mongodb://carsharing:12s56daw4gby@localhost:27017/vehiclefleet?authSource=admin"
       }
     },
     "https": {
@@ -16,7 +23,14 @@
       "launchBrowser": false,
       "applicationUrl": "https://localhost:6301;http://localhost:6300",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "POSTGRES_HOST": "localhost",
+        "POSTGRES_PORT": "5440",
+        "POSTGRES_DB": "vehiclefleet_db",
+        "POSTGRES_USER": "postgres",
+        "POSTGRES_PASSWORD": "password",
+        "BOOTSTRAP_SERVERS": "localhost:9092",
+        "MONGO_CONNECTION_STRING": "mongodb://carsharing:12s56daw4gby@localhost:27017/vehiclefleet?authSource=admin"
       }
     }
   }

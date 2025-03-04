@@ -17,7 +17,16 @@ public class Program
             options.Interceptors.Add<LoggingInterceptor>();
         });
 
-        services.RegisterPostgresContextAndDataSource();
+        services
+            .RegisterPostgresContextAndDataSource()
+            .RegisterMediatorAndHandlers()
+            .RegisterUnitOfWork()
+            .RegisterRepositories()
+            .RegisterMappers()
+            .RegisterMassTransit()
+            .RegisterInboxAndOutboxBackgroundJobs()
+            .RegisterTelemetry()
+            .RegisterHealthCheckV1();
 
         var app = builder.Build();
 

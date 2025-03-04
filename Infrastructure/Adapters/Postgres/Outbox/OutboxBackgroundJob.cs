@@ -83,7 +83,7 @@ public class OutboxBackgroundJob(
             }
             catch (Exception e)
             {
-                logger.LogError("Fail in processing outbox events, exception: {e}", e);
+                logger.LogError("Fail in processing outbox events, exception: {@e}", e);
             }
         }
     }

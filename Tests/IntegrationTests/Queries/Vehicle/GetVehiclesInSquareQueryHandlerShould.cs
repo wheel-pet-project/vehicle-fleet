@@ -19,8 +19,10 @@ public class GetVehiclesInSquareQueryHandlerShould : IntegrationTestBase
         // Act
         var actual = await queryHandler.Handle(
             new GetVehiclesInSquareQuery(Status.Added,
-                new LocationDto(expectedVehicles[0].Location.Latitude - 1, expectedVehicles[0].Location.Longitude + 1),
-                new LocationDto(expectedVehicles[0].Location.Latitude + 1, expectedVehicles[0].Location.Longitude - 1)),
+                new LocationDto(expectedVehicles[0].Location.Latitude + 0.00001, 
+                    expectedVehicles[0].Location.Longitude - 0.00001),
+                new LocationDto(expectedVehicles[0].Location.Latitude - 0.00001, 
+                    expectedVehicles[0].Location.Longitude + 0.00001)),
             TestContext.Current.CancellationToken);
 
         // Assert
@@ -43,8 +45,10 @@ public class GetVehiclesInSquareQueryHandlerShould : IntegrationTestBase
         // Act
         var actual = await queryHandler.Handle(
             new GetVehiclesInSquareQuery(Status.Added,
-                new LocationDto(expectedVehicles[0].Location.Latitude - 1, expectedVehicles[0].Location.Longitude + 1),
-                new LocationDto(expectedVehicles[0].Location.Latitude + 1, expectedVehicles[0].Location.Longitude - 1)),
+                new LocationDto(expectedVehicles[0].Location.Latitude + 0.00001, 
+                    expectedVehicles[0].Location.Longitude - 0.00001),
+                new LocationDto(expectedVehicles[0].Location.Latitude - 0.00001, 
+                    expectedVehicles[0].Location.Longitude + 0.00001)),
             TestContext.Current.CancellationToken);
 
         // Assert
@@ -78,7 +82,7 @@ public class GetVehiclesInSquareQueryHandlerShould : IntegrationTestBase
 
         var vehicles = Enumerable.Range(0, vehiclesCount)
             .Select(_ => Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
-                Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create()))
+                Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0000, 10.0000), FuelLevel.Create()))
             .ToList();
 
         Context.AttachRange(vehicles.Select(x => x.Status).ToList());

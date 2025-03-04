@@ -19,7 +19,7 @@ public class ExceptionHandlerInterceptor(ILogger<ExceptionHandlerInterceptor> lo
         }
         catch (NpgsqlException ex)
         {
-            logger.LogError("NpgsqlException handled: {exception}", ex);
+            logger.LogError("NpgsqlException handled: {@exception}", ex);
             throw new RpcException(new Status(StatusCode.Unavailable, "Db unavailable, please try again later."));
         }
         catch (ArgumentException ex)
@@ -40,8 +40,8 @@ public class ExceptionHandlerInterceptor(ILogger<ExceptionHandlerInterceptor> lo
         catch (Exception ex) when (ex is not RpcException)
         {
             logger.LogCritical(
-                "[EXCEPTION] type: {type}, message: {description}, exception: {@exception}, inner exception: {@innerException}",
-                ex.GetType().Name, ex.Message, ex, ex.InnerException);
+                "[EXCEPTION] type: {type}, exception: {@exception}",
+                ex.GetType().Name, ex);
             throw new RpcException(new Status(StatusCode.Internal, "Internal server error"));
         }
     }

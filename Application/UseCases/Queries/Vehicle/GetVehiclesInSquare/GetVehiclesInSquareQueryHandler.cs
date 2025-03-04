@@ -39,8 +39,8 @@ public class GetVehiclesInSquareQueryHandler(
             (double latitude, double longitude) lowerRightLocation)
         {
             return vehicles.Where(x =>
-                    x.Latitude >= upperLeftLocation.latitude && x.Latitude <= lowerRightLocation.latitude &&
-                    x.Longitude >= lowerRightLocation.longitude && x.Longitude <= upperLeftLocation.longitude)
+                    x.Latitude <= upperLeftLocation.latitude && x.Latitude >= lowerRightLocation.latitude &&
+                    x.Longitude <= lowerRightLocation.longitude && x.Longitude >= upperLeftLocation.longitude)
                 .ToList();
         }
     }
