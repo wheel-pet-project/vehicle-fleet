@@ -13,17 +13,21 @@ public class GetVehiclesInSquareQueryHandler(
         GetVehiclesInSquareQuery request,
         CancellationToken cancellationToken)
     {
+        var upperLeftLocation = Location.Create(request.UpperLeftLocation.Latitude, 
+            request.UpperLeftLocation.Longitude);
+        var lowerRightLocation = Location.Create(request.LowerRightLocation.Latitude, 
+            request.LowerRightLocation.Longitude);
+        
         var command = new CommandDefinition(_sql, new { StatusId = request.FilteringStatus.Id });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-        var vehiclesEnumerable = await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command);
-        var vehicles = vehiclesEnumerable.AsList();
+        var vehicles = (await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command)).AsList();
+        
+        var vehiclesInSquare = vehicles
+            .Where(x => Location.Create(x.Latitude, x.Longitude).InSquare(upperLeftLocation, lowerRightLocation))
+            .ToList();
 
-        var vehiclesInSquare = GetVehiclesInSquare(vehicles,
-            (request.UpperLeftLocation.Latitude, request.UpperLeftLocation.Longitude),
-            (request.LowerRightLocation.Latitude, request.LowerRightLocation.Longitude));
-
-        return Result.Ok(new GetVehiclesInSquareQueryResponse(vehiclesInSquare.Select(x =>
+        return Result.Ok(new GetVehiclesInSquareQueryResponse(vehiclesInSquare.Select(x => 
                 new VehicleInSquareShortView(
                     x.Id,
                     x.Brand,
@@ -32,17 +36,6 @@ public class GetVehiclesInSquareQueryHandler(
                     x.Latitude,
                     x.Longitude))
             .ToList()));
-
-        List<VehicleAggregatedShortDapperModel> GetVehiclesInSquare(
-            List<VehicleAggregatedShortDapperModel> vehicles,
-            (double latitude, double longitude) upperLeftLocation,
-            (double latitude, double longitude) lowerRightLocation)
-        {
-            return vehicles.Where(x =>
-                    x.Latitude <= upperLeftLocation.latitude && x.Latitude >= lowerRightLocation.latitude &&
-                    x.Longitude <= lowerRightLocation.longitude && x.Longitude >= upperLeftLocation.longitude)
-                .ToList();
-        }
     }
 
     private record VehicleAggregatedShortDapperModel(

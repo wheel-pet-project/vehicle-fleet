@@ -127,4 +127,56 @@ public class LocationShould
         // Assert
         Assert.True(actual);
     }
+
+    [Fact]
+    public void InSquareWithLocationsAsBordersReturnTrue()
+    {
+        // Arrange
+        var location = Location.Create(1.00000, 1.00000);
+
+        // Act
+        var actual = location.InSquare(Location.Create(1.00001, 0.99999), Location.Create(0.99999, 1.00001));
+
+        // Assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public void InSquareWithLocationsAsBordersReturnFalse()
+    {
+        // Arrange
+        var location = Location.Create(1.00000, 1.00000);
+
+        // Act
+        var actual = location.InSquare(Location.Create(1.00001, 1.1000), Location.Create(1.1, 1.2));
+
+        // Assert
+        Assert.False(actual);
+    }
+
+    [Fact]
+    public void InSquareWithSizeInDegreeReturnTrue()
+    {
+        // Arrange
+        var location = Location.Create(1.00000, 1.00000);
+
+        // Act
+        var actual = location.InSquare(0.00001, location);
+
+        // Assert
+        Assert.True(actual);
+    }
+
+    [Fact]
+    public void InSquareWithSizeInDegreeReturnFalse()
+    {
+        // Arrange
+        var location = Location.Create(1.00000, 1.00000);
+
+        // Act
+        var actual = Location.Create(1.00002, 1.00002).InSquare(0.00001, location);
+
+        // Assert
+        Assert.False(actual);
+    }
 }

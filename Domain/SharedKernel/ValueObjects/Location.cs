@@ -18,6 +18,23 @@ public class Location : ValueObject
     public double Latitude { get; }
     public double Longitude { get; }
 
+    public bool InSquare(double sizeInDegree, Location center)
+    {
+        if (sizeInDegree <= 0)
+            throw new ValueOutOfRangeException($"{nameof(sizeInDegree)} must be greater than 0");
+        
+        return Latitude <= center.Latitude + sizeInDegree
+               && Latitude >= center.Latitude - sizeInDegree
+               && Longitude <= center.Longitude + sizeInDegree
+               && Longitude >= center.Longitude - sizeInDegree;
+    }
+
+    public bool InSquare(Location upperLeftLocation, Location lowerRightLocation)
+    {
+        return Latitude <= upperLeftLocation.Latitude && Latitude >= lowerRightLocation.Latitude &&
+               Longitude <= lowerRightLocation.Longitude && Longitude >= upperLeftLocation.Longitude;
+    }
+
     public static Location Create(double latitude, double longitude)
     {
         if (latitude is < 0 or > 90)

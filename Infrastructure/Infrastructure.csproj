@@ -29,7 +29,6 @@
 
     <ItemGroup>
         <Folder Include="Adapters\Postgres\Migrations\"/>
-        <Folder Include="Adapters\Redis\"/>
     </ItemGroup>
 
     <ItemGroup>
