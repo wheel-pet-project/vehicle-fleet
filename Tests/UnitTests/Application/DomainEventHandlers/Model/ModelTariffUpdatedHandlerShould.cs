@@ -11,9 +11,9 @@ namespace UnitTests.Application.DomainEventHandlers.Model;
 public class ModelTariffUpdatedHandlerShould
 {
     private readonly ModelTariffUpdatedDomainEvent _event = new(Guid.NewGuid(), 1.0M, 1.0M, 1.0M);
-    
+
     private readonly Mock<IMessageBus> _messageBusMock = new();
-    
+
     [Fact]
     public async Task CallMessageBusPublish()
     {

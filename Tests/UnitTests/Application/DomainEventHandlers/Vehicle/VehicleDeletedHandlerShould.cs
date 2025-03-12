@@ -11,9 +11,9 @@ namespace UnitTests.Application.DomainEventHandlers.Vehicle;
 public class VehicleDeletedHandlerShould
 {
     private readonly VehicleDeletedDomainEvent _event = new(Guid.NewGuid());
-    
+
     private readonly Mock<IMessageBus> _messageBusMock = new();
-    
+
     [Fact]
     public async Task CallMessageBusPublish()
     {

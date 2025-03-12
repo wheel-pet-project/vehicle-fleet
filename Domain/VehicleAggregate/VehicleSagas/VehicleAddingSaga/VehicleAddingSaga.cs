@@ -9,13 +9,13 @@ public sealed class VehicleAddingSaga : Saga
     private VehicleAddingSaga()
     {
     }
-    
+
     private VehicleAddingSaga(Guid vehicleId) : this()
     {
         VehicleId = vehicleId;
         State = VehicleAddingSagaState.Added;
     }
-    
+
     public Guid VehicleId { get; }
     public VehicleAddingSagaState State { get; private set; }
 

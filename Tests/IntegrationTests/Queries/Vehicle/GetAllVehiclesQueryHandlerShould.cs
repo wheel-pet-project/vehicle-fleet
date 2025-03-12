@@ -33,9 +33,8 @@ public class GetAllVehiclesQueryHandlerShould : IntegrationTestBase
     [Fact]
     public async Task ReturnAllVehicles()
     {
-        // TODO: вернуться к проблеме
         // Arrange
-        var (expectedModel, expectedVehicles) = await AddModelAndVehicles(1);
+        var (expectedModel, expectedVehicles) = await AddModelAndVehicles(2);
         var queryHandler = new GetAllVehiclesQueryHandler(DataSource);
 
         // Act
@@ -44,6 +43,7 @@ public class GetAllVehiclesQueryHandlerShould : IntegrationTestBase
 
         // Assert
         Assert.NotEmpty(actual.Value.Vehicles);
+        Assert.Equal(expectedVehicles.Count, actual.Value.Vehicles.Count);
         Assert.Contains(expectedVehicles[0].Id, actual.Value.Vehicles.Select(x => x.Id).ToList());
         Assert.Equal(expectedModel.Brand.Name, actual.Value.Vehicles[0].Brand);
         Assert.Equal(expectedModel.CarModel.Name, actual.Value.Vehicles[0].CarModel);
@@ -73,14 +73,18 @@ public class GetAllVehiclesQueryHandlerShould : IntegrationTestBase
         await Context.Models.AddAsync(model);
         await Context.SaveChangesAsync();
 
-        var vehicles = Enumerable.Range(0, vehiclesCount)
-            .Select(_ => Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
-                Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create()))
-            .ToList();
+        var vehicles = new List<Domain.VehicleAggregate.Vehicle>();
+        for (var i = 0; i < vehiclesCount; i++)
+        {
+            var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
+                Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create());
+            vehicles.Add(vehicle);
 
-        Context.AttachRange(vehicles.Select(x => x.Status).ToList());
-        await Context.Vehicles.AddRangeAsync(vehicles);
-        await Context.SaveChangesAsync();
+            Context.Attach(vehicle.Status);
+            await Context.Vehicles.AddAsync(vehicle);
+            await Context.SaveChangesAsync();
+            Context.ChangeTracker.Clear();
+        }
 
         return (model, vehicles);
     }

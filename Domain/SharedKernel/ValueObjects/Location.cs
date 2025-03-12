@@ -22,7 +22,7 @@ public class Location : ValueObject
     {
         if (sizeInDegree <= 0)
             throw new ValueOutOfRangeException($"{nameof(sizeInDegree)} must be greater than 0");
-        
+
         return Latitude <= center.Latitude + sizeInDegree
                && Latitude >= center.Latitude - sizeInDegree
                && Longitude <= center.Longitude + sizeInDegree

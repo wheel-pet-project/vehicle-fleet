@@ -102,7 +102,10 @@ public class StatusShould
         var added = Status.Added;
 
         // Act
-        void Act() => added.CanBeChangedToThisStatus(Status.Added);
+        void Act()
+        {
+            added.CanBeChangedToThisStatus(Status.Added);
+        }
 
         // Assert
         Assert.Throws<AlreadyHaveThisStateException>(Act);

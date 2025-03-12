@@ -12,7 +12,7 @@ namespace UnitTests.Application.UseCases.Commands.Vehicle;
 [TestSubject(typeof(AddVehicleHandler))]
 public class AddVehicleHandlerShould
 {
-    private readonly AddVehicleRequest _request = new(Guid.NewGuid(), "К513ОТ77", Color.White,
+    private readonly AddVehicleCommand _command = new(Guid.NewGuid(), "К513ОТ77", Color.White,
         "SALYA2BN2KA791786");
 
     private readonly global::Domain.ModelAggregate.Model _modelFromDb = global::Domain.ModelAggregate.Model.Create(
@@ -38,7 +38,7 @@ public class AddVehicleHandlerShould
         // Arrange
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsSuccess);
@@ -52,7 +52,7 @@ public class AddVehicleHandlerShould
             .ReturnsAsync((global::Domain.ModelAggregate.Model?)null);
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -66,7 +66,7 @@ public class AddVehicleHandlerShould
         _unitOfWorkMock.Setup(x => x.Commit()).ReturnsAsync(Result.Fail("error"));
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -78,7 +78,7 @@ public class AddVehicleHandlerShould
         // Arrange
 
         // Act
-        await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.Commit(), Times.Once);

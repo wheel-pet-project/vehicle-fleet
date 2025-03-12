@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.UseCases.Commands.Model.AddModel;
 
-public record AddModelRequest(
+public record AddModelCommand(
     string Brand,
     string CarModel,
     char Category,

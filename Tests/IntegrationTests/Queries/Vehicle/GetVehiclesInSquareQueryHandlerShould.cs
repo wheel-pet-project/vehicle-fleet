@@ -19,9 +19,9 @@ public class GetVehiclesInSquareQueryHandlerShould : IntegrationTestBase
         // Act
         var actual = await queryHandler.Handle(
             new GetVehiclesInSquareQuery(Status.Added,
-                new LocationDto(expectedVehicles[0].Location.Latitude + 0.00001, 
+                new LocationDto(expectedVehicles[0].Location.Latitude + 0.00001,
                     expectedVehicles[0].Location.Longitude - 0.00001),
-                new LocationDto(expectedVehicles[0].Location.Latitude - 0.00001, 
+                new LocationDto(expectedVehicles[0].Location.Latitude - 0.00001,
                     expectedVehicles[0].Location.Longitude + 0.00001)),
             TestContext.Current.CancellationToken);
 
@@ -37,17 +37,16 @@ public class GetVehiclesInSquareQueryHandlerShould : IntegrationTestBase
     [Fact]
     public async Task ReturnVehiclesInSquare()
     {
-        // TODO: решить проблему
         // Arrange
-        var (expectedModel, expectedVehicles) = await AddModelAndVehicles(1);
+        var (_, expectedVehicles) = await AddModelAndVehicles(2);
         var queryHandler = new GetVehiclesInSquareQueryHandler(DataSource);
 
         // Act
         var actual = await queryHandler.Handle(
             new GetVehiclesInSquareQuery(Status.Added,
-                new LocationDto(expectedVehicles[0].Location.Latitude + 0.00001, 
+                new LocationDto(expectedVehicles[0].Location.Latitude + 0.00001,
                     expectedVehicles[0].Location.Longitude - 0.00001),
-                new LocationDto(expectedVehicles[0].Location.Latitude - 0.00001, 
+                new LocationDto(expectedVehicles[0].Location.Latitude - 0.00001,
                     expectedVehicles[0].Location.Longitude + 0.00001)),
             TestContext.Current.CancellationToken);
 
@@ -80,14 +79,18 @@ public class GetVehiclesInSquareQueryHandlerShould : IntegrationTestBase
         await Context.Models.AddAsync(model);
         await Context.SaveChangesAsync();
 
-        var vehicles = Enumerable.Range(0, vehiclesCount)
-            .Select(_ => Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
-                Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0000, 10.0000), FuelLevel.Create()))
-            .ToList();
+        var vehicles = new List<Domain.VehicleAggregate.Vehicle>();
+        for (var i = 0; i < vehiclesCount; i++)
+        {
+            var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
+                Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create());
+            vehicles.Add(vehicle);
 
-        Context.AttachRange(vehicles.Select(x => x.Status).ToList());
-        await Context.Vehicles.AddRangeAsync(vehicles);
-        await Context.SaveChangesAsync();
+            Context.Attach(vehicle.Status);
+            await Context.Vehicles.AddAsync(vehicle);
+            await Context.SaveChangesAsync();
+            Context.ChangeTracker.Clear();
+        }
 
         return (model, vehicles);
     }

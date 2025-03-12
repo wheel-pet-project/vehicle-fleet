@@ -8,14 +8,14 @@ namespace Application.UseCases.Commands.Model.UpdateModelCategory;
 
 public class UpdateModelCategoryHandler(
     IModelRepository modelRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<UpdateModelCategoryRequest, Result>
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateModelCategoryCommand, Result>
 {
-    public async Task<Result> Handle(UpdateModelCategoryRequest request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateModelCategoryCommand command, CancellationToken cancellationToken)
     {
-        var model = await modelRepository.GetById(request.ModelId);
+        var model = await modelRepository.GetById(command.ModelId);
         if (model == null) return Result.Fail(new NotFound("Model not found"));
 
-        var category = Category.Create(request.Category);
+        var category = Category.Create(command.Category);
 
         model.UpdateCategory(category);
 

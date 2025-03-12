@@ -13,7 +13,7 @@ public class VehicleOccupiedDomainEventShould
     {
         // Arrange
         var vehicleId = Guid.NewGuid();
-        
+
         // Act
         var actual = new VehicleOccupiedDomainEvent(vehicleId);
 
@@ -21,12 +21,12 @@ public class VehicleOccupiedDomainEventShould
         Assert.NotNull(actual);
         Assert.Equal(vehicleId, actual.VehicleId);
     }
-    
+
     [Fact]
     public void ThrowValueIsRequiredExceptionIfVehicleIdIsEmpty()
     {
         // Arrange
-        
+
         // Act
         void Act()
         {

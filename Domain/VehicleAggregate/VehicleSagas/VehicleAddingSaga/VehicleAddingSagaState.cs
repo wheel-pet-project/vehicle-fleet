@@ -5,11 +5,13 @@ namespace Domain.VehicleAggregate.VehicleSagas.VehicleAddingSaga;
 public sealed class VehicleAddingSagaState
 {
     public static readonly VehicleAddingSagaState Added = new(1, nameof(Added).ToLowerInvariant());
+
     public static readonly VehicleAddingSagaState WaitingOtherServices =
         new(2, nameof(WaitingOtherServices).ToLowerInvariant());
+
     public static readonly VehicleAddingSagaState ReadiedForRelease =
         new(3, nameof(ReadiedForRelease).ToLowerInvariant());
-    
+
     private VehicleAddingSagaState()
     {
     }

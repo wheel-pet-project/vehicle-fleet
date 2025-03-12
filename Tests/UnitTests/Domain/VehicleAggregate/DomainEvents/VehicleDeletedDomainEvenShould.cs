@@ -13,7 +13,7 @@ public class VehicleDeletedDomainEvenShould
     {
         // Arrange
         var vehicleId = Guid.NewGuid();
-        
+
         // Act
         var actual = new VehicleDeletedDomainEvent(vehicleId);
 
@@ -21,12 +21,12 @@ public class VehicleDeletedDomainEvenShould
         Assert.NotNull(actual);
         Assert.Equal(vehicleId, actual.VehicleId);
     }
-    
+
     [Fact]
     public void ThrowValueIsRequiredExceptionIfVehicleIdIsEmpty()
     {
         // Arrange
-        
+
         // Act
         void Act()
         {

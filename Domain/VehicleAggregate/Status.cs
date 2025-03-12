@@ -23,7 +23,7 @@ public sealed class Status : Entity<int>
         Name = name;
     }
 
-    public string Name { get; private set; }
+    public string Name { get; private set; } = null!;
 
     public bool CanBeChangedToThisStatus(Status potentialStatus)
     {
@@ -33,7 +33,8 @@ public sealed class Status : Entity<int>
 
         return potentialStatus switch
         {
-            _ when this == potentialStatus => throw new AlreadyHaveThisStateException("Vehicle already have this status"),
+            _ when this == potentialStatus => throw new AlreadyHaveThisStateException(
+                "Vehicle already have this status"),
             _ when potentialStatus == Serviced &&
                    (this == Serviced || this == Occupied || this == Deleted) is false => true,
             _ when potentialStatus == ReadiedForRelease && this == Added => true,
@@ -89,5 +90,20 @@ public sealed class Status : Entity<int>
     public static bool operator !=(Status a, Status b)
     {
         return !(a == b);
+    }
+
+    private bool Equals(Status other)
+    {
+        return base.Equals(other) && Name == other.Name;
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return ReferenceEquals(this, obj) || (obj is Status other && Equals(other));
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(base.GetHashCode(), Id);
     }
 }

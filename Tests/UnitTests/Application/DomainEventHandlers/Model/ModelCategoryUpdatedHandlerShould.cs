@@ -11,9 +11,9 @@ namespace UnitTests.Application.DomainEventHandlers.Model;
 public class ModelCategoryUpdatedHandlerShould
 {
     private readonly ModelCategoryUpdatedDomainEvent _event = new(Guid.NewGuid(), 'B');
-    
+
     private readonly Mock<IMessageBus> _messageBusMock = new();
-    
+
     [Fact]
     public async Task CallMessageBusPublish()
     {
@@ -24,7 +24,8 @@ public class ModelCategoryUpdatedHandlerShould
         await handler.Handle(_event, TestContext.Current.CancellationToken);
 
         // Assert
-        _messageBusMock.Verify(x => x.Publish(It.IsAny<ModelCategoryUpdatedDomainEvent>(), It.IsAny<CancellationToken>()),
+        _messageBusMock.Verify(
+            x => x.Publish(It.IsAny<ModelCategoryUpdatedDomainEvent>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

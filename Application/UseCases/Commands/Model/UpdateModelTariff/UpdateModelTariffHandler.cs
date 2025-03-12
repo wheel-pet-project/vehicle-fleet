@@ -8,17 +8,17 @@ namespace Application.UseCases.Commands.Model.UpdateModelTariff;
 
 public class UpdateModelTariffHandler(
     IModelRepository modelRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<UpdateModelTariffRequest, Result>
+    IUnitOfWork unitOfWork) : IRequestHandler<UpdateModelTariffCommand, Result>
 {
-    public async Task<Result> Handle(UpdateModelTariffRequest request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(UpdateModelTariffCommand command, CancellationToken cancellationToken)
     {
-        var model = await modelRepository.GetById(request.ModelId);
+        var model = await modelRepository.GetById(command.ModelId);
         if (model == null) return Result.Fail(new NotFound("Model not found"));
 
         var newTariff = Tariff.Create(
-            new decimal(request.PricePerMinute),
-            new decimal(request.PricePerHour),
-            new decimal(request.PricePerDay));
+            new decimal(command.PricePerMinute),
+            new decimal(command.PricePerHour),
+            new decimal(command.PricePerDay));
 
         model.UpdateTariff(newTariff);
 

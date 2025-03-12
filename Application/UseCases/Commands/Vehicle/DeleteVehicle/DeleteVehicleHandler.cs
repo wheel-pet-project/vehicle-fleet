@@ -7,11 +7,11 @@ namespace Application.UseCases.Commands.Vehicle.DeleteVehicle;
 
 public class DeleteVehicleHandler(
     IVehicleRepository vehicleRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<DeleteVehicleRequest, Result>
+    IUnitOfWork unitOfWork) : IRequestHandler<DeleteVehicleCommand, Result>
 {
-    public async Task<Result> Handle(DeleteVehicleRequest request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(DeleteVehicleCommand command, CancellationToken cancellationToken)
     {
-        var vehicle = await vehicleRepository.GetById(request.VehicleId);
+        var vehicle = await vehicleRepository.GetById(command.VehicleId);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
 
         vehicle.Delete();

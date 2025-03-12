@@ -7,11 +7,11 @@ namespace Application.UseCases.Commands.Vehicle.SendToServiceVehicle;
 
 public class SendToServiceVehicleHandler(
     IVehicleRepository vehicleRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<SendToServiceVehicleRequest, Result>
+    IUnitOfWork unitOfWork) : IRequestHandler<SendToServiceVehicleCommand, Result>
 {
-    public async Task<Result> Handle(SendToServiceVehicleRequest request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(SendToServiceVehicleCommand command, CancellationToken cancellationToken)
     {
-        var vehicle = await vehicleRepository.GetById(request.VehicleId);
+        var vehicle = await vehicleRepository.GetById(command.VehicleId);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
 
         vehicle.MarkAsServiced();

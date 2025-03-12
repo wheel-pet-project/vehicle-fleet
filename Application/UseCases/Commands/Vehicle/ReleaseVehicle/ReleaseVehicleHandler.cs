@@ -7,11 +7,11 @@ namespace Application.UseCases.Commands.Vehicle.ReleaseVehicle;
 
 public class ReleaseVehicleHandler(
     IVehicleRepository vehicleRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<ReleaseVehicleRequest, Result>
+    IUnitOfWork unitOfWork) : IRequestHandler<ReleaseVehicleCommand, Result>
 {
-    public async Task<Result> Handle(ReleaseVehicleRequest request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(ReleaseVehicleCommand command, CancellationToken cancellationToken)
     {
-        var vehicle = await vehicleRepository.GetById(request.VehicleId);
+        var vehicle = await vehicleRepository.GetById(command.VehicleId);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
 
         vehicle.Release();

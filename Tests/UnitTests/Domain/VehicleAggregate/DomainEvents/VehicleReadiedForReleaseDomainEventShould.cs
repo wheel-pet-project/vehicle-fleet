@@ -13,7 +13,7 @@ public class VehicleReadiedForReleaseDomainEventShould
     {
         // Arrange
         var vehicleId = Guid.NewGuid();
-        
+
         // Act
         var actual = new VehicleReadiedForReleaseDomainEvent(vehicleId);
 
@@ -21,12 +21,12 @@ public class VehicleReadiedForReleaseDomainEventShould
         Assert.NotNull(actual);
         Assert.Equal(vehicleId, actual.VehicleId);
     }
-    
+
     [Fact]
     public void ThrowValueIsRequiredExceptionIfVehicleIdIsEmpty()
     {
         // Arrange
-        
+
         // Act
         void Act()
         {

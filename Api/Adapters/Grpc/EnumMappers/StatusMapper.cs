@@ -2,7 +2,7 @@ using Domain.SharedKernel.Exceptions.ArgumentException;
 using Proto.VehicleFleetV1;
 using DomainStatus = Domain.VehicleAggregate.Status;
 
-namespace Api.Adapters.Grpc.Mapper;
+namespace Api.Adapters.Grpc.EnumMappers;
 
 public class StatusMapper
 {

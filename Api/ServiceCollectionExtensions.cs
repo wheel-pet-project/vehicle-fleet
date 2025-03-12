@@ -1,5 +1,5 @@
 using System.Reflection;
-using Api.Adapters.Grpc.Mapper;
+using Api.Adapters.Grpc.EnumMappers;
 using Application.Ports.Kafka;
 using Application.Ports.Postgres;
 using Application.UseCases.Commands.Model.AddModel;
@@ -61,7 +61,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection RegisterMediatorAndHandlers(this IServiceCollection services)
     {
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AddModelHandler).Assembly));
-        
+
         return services;
     }
 
@@ -100,7 +100,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddScoped<ColorMapper>();
         services.AddScoped<StatusMapper>();
-        
+
         return services;
     }
 
@@ -128,7 +128,7 @@ public static class ServiceCollectionExtensions
             config.VehicleReleasedTopic = vehicleReleasedTopic;
             config.VehicleServicedTopic = vehicleServicedTopic;
         });
-        
+
         services.AddTransient<IMessageBus, KafkaProducer>();
 
         services.AddMassTransit(x =>
@@ -140,14 +140,14 @@ public static class ServiceCollectionExtensions
                 rider.AddProducer<string, ModelCreated>(modelCreatedTopic);
                 rider.AddProducer<string, ModelCategoryUpdated>(modelCategoryUpdatedTopic);
                 rider.AddProducer<string, ModelTariffUpdated>(modelTariffUpdatedTopic);
-                
+
                 rider.AddProducer<string, VehicleAdded>(vehicleAddedTopic);
                 rider.AddProducer<string, VehicleDeleted>(vehicleDeletedTopic);
                 rider.AddProducer<string, VehicleOccupied>(vehicleOccupiedTopic);
                 rider.AddProducer<string, VehicleReadiedForRelease>(vehicleReadiedForReleasesTopic);
                 rider.AddProducer<string, VehicleReleased>(vehicleReleasedTopic);
                 rider.AddProducer<string, VehicleServiced>(vehicleServicedTopic);
-                
+
                 rider.UsingKafka((_, k) =>
                     k.Host((Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9092").Split("__")));
             });
@@ -200,7 +200,7 @@ public static class ServiceCollectionExtensions
             .WithTracing(builder =>
             {
                 builder
-                    .AddGrpcClientInstrumentation()
+                    .AddGrpcCoreInstrumentation()
                     .AddAspNetCoreInstrumentation()
                     .AddNpgsql()
                     .SetResourceBuilder(ResourceBuilder.CreateDefault()

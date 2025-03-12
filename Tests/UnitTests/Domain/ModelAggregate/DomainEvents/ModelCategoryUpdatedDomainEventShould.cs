@@ -10,7 +10,7 @@ public class ModelCategoryUpdatedDomainEventShould
 {
     private readonly Guid _modelId = Guid.NewGuid();
     private readonly char _category = 'B';
-    
+
     [Fact]
     public void CreateNewInstanceWithCorrectValues()
     {
@@ -29,7 +29,7 @@ public class ModelCategoryUpdatedDomainEventShould
     public void ThrowValueIsRequiredExceptionIfModelIdIsEmpty()
     {
         // Arrange
-        
+
         // Act
         void Act()
         {
@@ -56,7 +56,7 @@ public class ModelCategoryUpdatedDomainEventShould
 
 
         // Assert
-        
+
         Assert.Throws<ValueOutOfRangeException>(Act);
     }
 }

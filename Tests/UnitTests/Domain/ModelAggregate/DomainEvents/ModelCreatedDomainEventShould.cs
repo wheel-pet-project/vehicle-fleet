@@ -13,7 +13,7 @@ public class ModelCreatedDomainEventShould
     private readonly decimal _pricePerMinute = 1.0M;
     private readonly decimal _pricePerHour = 2.0M;
     private readonly decimal _pricePerDay = 3.0M;
-    
+
     [Fact]
     public void CreateNewInstanceWithCorrectValues()
     {
@@ -30,12 +30,12 @@ public class ModelCreatedDomainEventShould
         Assert.Equal(_pricePerHour, actual.PricePerHour);
         Assert.Equal(_pricePerDay, actual.PricePerDay);
     }
-    
+
     [Fact]
     public void ThrowValueIsRequiredExceptionIfModelIdIsEmpty()
     {
         // Arrange
-        
+
         // Act
         void Act()
         {
@@ -62,7 +62,7 @@ public class ModelCreatedDomainEventShould
 
 
         // Assert
-        
+
         Assert.Throws<ValueOutOfRangeException>(Act);
     }
 
@@ -71,8 +71,8 @@ public class ModelCreatedDomainEventShould
     [InlineData(0, -1, 0)]
     [InlineData(0, 0, -1)]
     public void ThrowOutOfRangeExceptionIfOneOfPricesLessThanZero(
-        decimal pricePerMinute, 
-        decimal pricePerHour, 
+        decimal pricePerMinute,
+        decimal pricePerHour,
         decimal pricePerDay)
     {
         // Arrange
@@ -85,7 +85,7 @@ public class ModelCreatedDomainEventShould
 
 
         // Assert
-        
+
         Assert.Throws<ValueOutOfRangeException>(Act);
     }
 }

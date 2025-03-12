@@ -10,7 +10,7 @@ namespace UnitTests.Application.UseCases.Commands.Model;
 [TestSubject(typeof(AddModelHandler))]
 public class AddModelHandlerShould
 {
-    private readonly AddModelRequest _request = new("Kia", "Rio", 'B', 1, 2, 3);
+    private readonly AddModelCommand _command = new("Kia", "Rio", 'B', 1, 2, 3);
 
     private readonly Mock<IModelRepository> _modelRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
@@ -28,7 +28,7 @@ public class AddModelHandlerShould
         // Arrange
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsSuccess);
@@ -40,7 +40,7 @@ public class AddModelHandlerShould
         // Arrange
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotEqual(Guid.Empty, actual.Value.ModelId);
@@ -54,7 +54,7 @@ public class AddModelHandlerShould
         _unitOfWorkMock.Setup(x => x.Commit()).ReturnsAsync(Result.Fail("error"));
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -66,7 +66,7 @@ public class AddModelHandlerShould
         // Arrange
 
         // Act
-        await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.Commit(), Times.Once);

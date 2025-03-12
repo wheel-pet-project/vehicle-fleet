@@ -11,9 +11,9 @@ namespace UnitTests.Application.DomainEventHandlers.Vehicle;
 public class VehicleReadiedForReleaseHandlerShould
 {
     private readonly VehicleReadiedForReleaseDomainEvent _event = new(Guid.NewGuid());
-    
+
     private readonly Mock<IMessageBus> _messageBusMock = new();
-    
+
     [Fact]
     public async Task CallMessageBusPublish()
     {

@@ -12,7 +12,7 @@ namespace UnitTests.Application.UseCases.Commands.Vehicle;
 [TestSubject(typeof(ReleaseVehicleHandler))]
 public class ReleaseVehicleHandlerShould
 {
-    private readonly ReleaseVehicleRequest _request = new(Guid.NewGuid());
+    private readonly ReleaseVehicleCommand _command = new(Guid.NewGuid());
 
     private readonly global::Domain.VehicleAggregate.Vehicle _vehicleFromDb =
         global::Domain.VehicleAggregate.Vehicle.Create(Guid.NewGuid(), PlateNumber.Create("К333ОТ77"), Color.White,
@@ -38,7 +38,7 @@ public class ReleaseVehicleHandlerShould
         // Arrange
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsSuccess);
@@ -52,7 +52,7 @@ public class ReleaseVehicleHandlerShould
             .ReturnsAsync((global::Domain.VehicleAggregate.Vehicle?)null);
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -66,7 +66,7 @@ public class ReleaseVehicleHandlerShould
         _unitOfWorkMock.Setup(x => x.Commit()).ReturnsAsync(Result.Fail("error"));
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -78,7 +78,7 @@ public class ReleaseVehicleHandlerShould
         // Arrange
 
         // Act
-        await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.Commit(), Times.Once);

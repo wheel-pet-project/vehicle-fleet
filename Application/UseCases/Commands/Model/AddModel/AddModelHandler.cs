@@ -7,17 +7,17 @@ namespace Application.UseCases.Commands.Model.AddModel;
 
 public class AddModelHandler(
     IModelRepository modelRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<AddModelRequest, Result<AddModelResponse>>
+    IUnitOfWork unitOfWork) : IRequestHandler<AddModelCommand, Result<AddModelResponse>>
 {
-    public async Task<Result<AddModelResponse>> Handle(AddModelRequest request, CancellationToken cancellationToken)
+    public async Task<Result<AddModelResponse>> Handle(AddModelCommand command, CancellationToken cancellationToken)
     {
-        var brand = Brand.Create(request.Brand);
-        var carModel = CarModel.Create(request.CarModel);
-        var category = Category.Create(request.Category);
+        var brand = Brand.Create(command.Brand);
+        var carModel = CarModel.Create(command.CarModel);
+        var category = Category.Create(command.Category);
         var tariff = Tariff.Create(
-            new decimal(request.PricePerMinute),
-            new decimal(request.PricePerHour),
-            new decimal(request.PricePerDay));
+            new decimal(command.PricePerMinute),
+            new decimal(command.PricePerHour),
+            new decimal(command.PricePerDay));
 
         var model = Domain.ModelAggregate.Model.Create(brand, carModel, category, tariff);
 

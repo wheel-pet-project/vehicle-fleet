@@ -4,7 +4,8 @@ using MediatR;
 
 namespace Application.DomainEventHandlers.Vehicle;
 
-public class VehicleReadiedForReleaseHandler(IMessageBus messageBus) : INotificationHandler<VehicleReadiedForReleaseDomainEvent>
+public class VehicleReadiedForReleaseHandler(IMessageBus messageBus)
+    : INotificationHandler<VehicleReadiedForReleaseDomainEvent>
 {
     public async Task Handle(VehicleReadiedForReleaseDomainEvent domainEvent, CancellationToken cancellationToken)
     {

@@ -4,7 +4,7 @@ using MediatR;
 
 namespace Application.UseCases.Commands.Vehicle.AddVehicle;
 
-public record AddVehicleRequest(
+public record AddVehicleCommand(
     Guid ModelId,
     string PlateNumber,
     Color Color,

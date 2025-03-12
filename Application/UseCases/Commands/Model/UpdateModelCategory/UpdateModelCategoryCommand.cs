@@ -3,6 +3,6 @@ using MediatR;
 
 namespace Application.UseCases.Commands.Model.UpdateModelCategory;
 
-public record UpdateModelCategoryRequest(
+public record UpdateModelCategoryCommand(
     Guid ModelId,
     char Category) : IRequest<Result>;

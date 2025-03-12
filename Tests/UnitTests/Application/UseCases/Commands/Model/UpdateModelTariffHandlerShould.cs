@@ -12,7 +12,7 @@ namespace UnitTests.Application.UseCases.Commands.Model;
 [TestSubject(typeof(UpdateModelTariffHandler))]
 public class UpdateModelTariffHandlerShould
 {
-    private readonly UpdateModelTariffRequest _request = new(Guid.NewGuid(), 1, 2, 3);
+    private readonly UpdateModelTariffCommand _command = new(Guid.NewGuid(), 1, 2, 3);
 
     private readonly global::Domain.ModelAggregate.Model _modelFromDb = global::Domain.ModelAggregate.Model.Create(
         Brand.Create("Kia"), CarModel.Create("Rio"),
@@ -35,7 +35,7 @@ public class UpdateModelTariffHandlerShould
         // Arrange
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsSuccess);
@@ -49,7 +49,7 @@ public class UpdateModelTariffHandlerShould
             .ReturnsAsync(null as global::Domain.ModelAggregate.Model);
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -63,7 +63,7 @@ public class UpdateModelTariffHandlerShould
         _unitOfWorkMock.Setup(x => x.Commit()).ReturnsAsync(Result.Fail("error"));
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -75,7 +75,7 @@ public class UpdateModelTariffHandlerShould
         // Arrange
 
         // Act
-        await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.Commit(), Times.Once);

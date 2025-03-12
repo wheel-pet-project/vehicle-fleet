@@ -3,7 +3,7 @@ using MediatR;
 
 namespace Application.UseCases.Commands.Model.UpdateModelTariff;
 
-public record UpdateModelTariffRequest(
+public record UpdateModelTariffCommand(
     Guid ModelId,
     double PricePerMinute,
     double PricePerHour,

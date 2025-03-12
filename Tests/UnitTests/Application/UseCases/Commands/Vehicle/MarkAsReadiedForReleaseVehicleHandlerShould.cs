@@ -12,7 +12,7 @@ namespace UnitTests.Application.UseCases.Commands.Vehicle;
 [TestSubject(typeof(MarkAsReadiedForReleaseVehicleHandler))]
 public class MarkAsReadiedForReleaseVehicleHandlerShould
 {
-    private readonly MarkAsReadiedForReleaseVehicleRequest _request = new(Guid.NewGuid());
+    private readonly MarkAsReadiedForReleaseVehicleCommand _command = new(Guid.NewGuid());
 
     private readonly global::Domain.VehicleAggregate.Vehicle _vehicleFromDb =
         global::Domain.VehicleAggregate.Vehicle.Create(Guid.NewGuid(), PlateNumber.Create("К333ОТ77"), Color.White,
@@ -36,7 +36,7 @@ public class MarkAsReadiedForReleaseVehicleHandlerShould
         // Arrange
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsSuccess);
@@ -50,7 +50,7 @@ public class MarkAsReadiedForReleaseVehicleHandlerShould
             .ReturnsAsync((global::Domain.VehicleAggregate.Vehicle?)null);
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -64,7 +64,7 @@ public class MarkAsReadiedForReleaseVehicleHandlerShould
         _unitOfWorkMock.Setup(x => x.Commit()).ReturnsAsync(Result.Fail("error"));
 
         // Act
-        var actual = await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         Assert.True(actual.IsFailed);
@@ -76,7 +76,7 @@ public class MarkAsReadiedForReleaseVehicleHandlerShould
         // Arrange
 
         // Act
-        await _handler.Handle(_request, TestContext.Current.CancellationToken);
+        await _handler.Handle(_command, TestContext.Current.CancellationToken);
 
         // Assert
         _unitOfWorkMock.Verify(x => x.Commit(), Times.Once);
