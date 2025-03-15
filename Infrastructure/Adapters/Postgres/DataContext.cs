@@ -110,6 +110,11 @@ internal sealed class OutboxEventTypeConfiguration : IEntityTypeConfiguration<Ou
         builder.ToTable("outbox");
 
         builder.HasKey(x => x.EventId);
+        
+        builder.HasIndex(x => new { x.OccurredOnUtc, x.ProcessedOnUtc }, "IX_outbox_messages_unprocessed")
+            .IncludeProperties(x => new { x.EventId, x.Type })
+            .IsDescending(false, false)
+            .HasFilter("processed_on_utc IS NULL");
 
         builder.Property(x => x.EventId).HasColumnName("event_id").ValueGeneratedNever().IsRequired();
         builder.Property(x => x.Type).HasColumnName("type").IsRequired();

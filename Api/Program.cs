@@ -26,6 +26,7 @@ public class Program
             .RegisterMassTransit()
             .RegisterInboxAndOutboxBackgroundJobs()
             .RegisterTelemetry()
+            .RegisterSerilog()
             .RegisterHealthCheckV1();
 
         var app = builder.Build();
