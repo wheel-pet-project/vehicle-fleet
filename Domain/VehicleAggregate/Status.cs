@@ -6,12 +6,15 @@ namespace Domain.VehicleAggregate;
 
 public sealed class Status : Entity<int>
 {
-    public static readonly Status Added = new(1, nameof(Added).ToLowerInvariant());
-    public static readonly Status ReadiedForRelease = new(2, nameof(ReadiedForRelease).ToLowerInvariant());
-    public static readonly Status Released = new(3, nameof(Released).ToLowerInvariant());
-    public static readonly Status Occupied = new(4, nameof(Occupied).ToLowerInvariant());
-    public static readonly Status Serviced = new(5, nameof(Serviced).ToLowerInvariant());
-    public static readonly Status Deleted = new(6, nameof(Deleted).ToLowerInvariant());
+    
+    public static readonly Status AddingInProgress = new(1, nameof(AddingInProgress).ToLowerInvariant());
+    public static readonly Status Added = new(2, nameof(Added).ToLowerInvariant());
+    public static readonly Status NotAdded = new(3, nameof(NotAdded).ToLowerInvariant());
+    public static readonly Status ReadiedForRelease = new(4, nameof(ReadiedForRelease).ToLowerInvariant());
+    public static readonly Status Released = new(5, nameof(Released).ToLowerInvariant());
+    public static readonly Status Occupied = new(6, nameof(Occupied).ToLowerInvariant());
+    public static readonly Status Serviced = new(7, nameof(Serviced).ToLowerInvariant());
+    public static readonly Status Deleted = new(8, nameof(Deleted).ToLowerInvariant());
 
     private Status()
     {
@@ -36,7 +39,10 @@ public sealed class Status : Entity<int>
             _ when this == potentialStatus => throw new AlreadyHaveThisStateException(
                 "Vehicle already have this status"),
             _ when potentialStatus == Serviced &&
-                   (this == Serviced || this == Occupied || this == Deleted) is false => true,
+                   (this == Serviced || this == Occupied || this == Deleted ||
+                    this == AddingInProgress || this == NotAdded) is false => true,
+            _ when potentialStatus == Added && this == AddingInProgress => true,
+            _ when potentialStatus == NotAdded && this == AddingInProgress => true,
             _ when potentialStatus == ReadiedForRelease && this == Added => true,
             _ when potentialStatus == Deleted && this == Added => true,
             _ when potentialStatus == Released && this == ReadiedForRelease => true,
@@ -53,7 +59,9 @@ public sealed class Status : Entity<int>
     {
         return
         [
+            AddingInProgress,
             Added,
+            NotAdded,
             ReadiedForRelease,
             Released,
             Occupied,

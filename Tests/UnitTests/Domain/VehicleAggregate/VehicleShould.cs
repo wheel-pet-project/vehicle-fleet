@@ -132,10 +132,65 @@ public class VehicleShould
     }
 
     [Fact]
+    public void MarkAsAddedChangeStatus()
+    {
+        // Arrange
+        var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location);
+
+        // Act
+        vehicle.MarkAsAdded();
+
+        // Assert
+        Assert.Equal(Status.Added, vehicle.Status);
+    }
+
+    [Fact]
+    public void MarkAsAddedThrowDomainRulesViolationExceptionIfVehicleCannotBeChangedToThisStatus()
+    {
+        // Arrange
+        var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location);
+        vehicle.MarkAsNotAdded();
+
+        // Act
+        void Act() => vehicle.MarkAsAdded();
+
+        // Assert
+        Assert.Throws<DomainRulesViolationException>(Act);
+    }
+
+    [Fact]
+    public void MarkAsNotAddedChangeStatus()
+    {
+        // Arrange
+        var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location);
+        
+        // Act
+        vehicle.MarkAsNotAdded();
+
+        // Assert
+        Assert.Equal(Status.NotAdded, vehicle.Status);
+    }
+
+    [Fact]
+    public void MarkAsNotAddedThrowDomainRulesViolationExceptionIfVehicleCannotBeChangedToThisStatus()
+    {
+        // Arrange
+        var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location);
+        vehicle.MarkAsAdded();
+
+        // Act
+        void Act() => vehicle.MarkAsNotAdded();
+
+        // Assert
+        Assert.Throws<DomainRulesViolationException>(Act);
+    }
+    
+    [Fact]
     public void MarkAsReadiedForRelease()
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
 
         // Act
         vehicle.MarkAsReadiedForRelease();
@@ -149,6 +204,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
 
         // Act
         vehicle.MarkAsReadiedForRelease();
@@ -162,6 +218,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
         vehicle.Release();
 
@@ -180,6 +237,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
 
         // Act
@@ -194,6 +252,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
         vehicle.ClearDomainEvents();
 
@@ -209,6 +268,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
 
         // Act
         void Act()
@@ -225,6 +285,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
         vehicle.Release();
 
@@ -240,6 +301,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
         vehicle.Release();
         vehicle.ClearDomainEvents();
@@ -256,6 +318,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
 
         // Act
         void Act()
@@ -268,10 +331,11 @@ public class VehicleShould
     }
 
     [Fact]
-    public void MarkAsServiced()
+    public void MarkAsServicedChangeStatus()
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
 
         // Act
         vehicle.MarkAsServiced();
@@ -285,6 +349,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
 
         // Act
         vehicle.MarkAsServiced();
@@ -298,6 +363,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
         vehicle.Release();
         vehicle.Occupy();
@@ -317,6 +383,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
 
         // Act
         vehicle.Delete();
@@ -330,6 +397,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
 
         // Act
         vehicle.Delete();
@@ -343,6 +411,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
+        vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
         vehicle.Release();
         vehicle.Occupy();

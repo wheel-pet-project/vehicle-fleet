@@ -23,7 +23,7 @@ public sealed class Vehicle : Aggregate
     {
         Id = Guid.NewGuid();
         ModelId = modelId;
-        Status = Status.Added;
+        Status = Status.AddingInProgress;
         PlateNumber = plateNumber;
         Color = color;
         Vin = vin;
@@ -33,17 +33,33 @@ public sealed class Vehicle : Aggregate
 
     public Guid Id { get; }
     public Guid ModelId { get; private set; }
-    public Status Status { get; private set; }
-    public PlateNumber PlateNumber { get; private set; }
-    public Color Color { get; private set; }
-    public Vin Vin { get; private set; }
-    public FuelLevel FuelLevel { get; private set; }
-    public Location Location { get; private set; }
+    public Status Status { get; private set; } = null!;
+    public PlateNumber PlateNumber { get; private set; } = null!;
+    public Color Color { get; private set; } = null!;
+    public Vin Vin { get; private set; } = null!;
+    public FuelLevel FuelLevel { get; private set; } = null!;
+    public Location Location { get; private set; } = null!;
 
+    public void MarkAsAdded()
+    {
+        if (Status.CanBeChangedToThisStatus(Status.Added) == false) throw new DomainRulesViolationException(
+            $"Vehicle cannot be marked as added in '{Status.Name}' status");
+        
+        Status = Status.Added;
+    }
+    
+    public void MarkAsNotAdded()
+    {
+        if (Status.CanBeChangedToThisStatus(Status.NotAdded) == false) throw new DomainRulesViolationException(
+            $"Vehicle cannot be marked as not added in '{Status.Name}' status");
+        
+        Status = Status.NotAdded;
+    }
+    
     public void MarkAsReadiedForRelease()
     {
-        if (Status.CanBeChangedToThisStatus(Status.ReadiedForRelease) == false)
-            throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
+        if (Status.CanBeChangedToThisStatus(Status.ReadiedForRelease) == false) throw new DomainRulesViolationException(
+            $"Vehicle cannot be marked as readied for release in '{Status.Name}' status");
 
         Status = Status.ReadiedForRelease;
 
@@ -53,7 +69,7 @@ public sealed class Vehicle : Aggregate
     public void Release()
     {
         if (Status.CanBeChangedToThisStatus(Status.Released) == false)
-            throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
+            throw new DomainRulesViolationException($"Vehicle cannot release in '{Status.Name}' status");
 
         Status = Status.Released;
 
@@ -63,7 +79,7 @@ public sealed class Vehicle : Aggregate
     public void Occupy()
     {
         if (Status.CanBeChangedToThisStatus(Status.Occupied) == false)
-            throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
+            throw new DomainRulesViolationException($"Vehicle cannot be occupied in '{Status.Name}' status");
 
         Status = Status.Occupied;
 
@@ -73,7 +89,7 @@ public sealed class Vehicle : Aggregate
     public void MarkAsServiced()
     {
         if (Status.CanBeChangedToThisStatus(Status.Serviced) == false)
-            throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
+            throw new DomainRulesViolationException($"Vehicle cannot be serviced in '{Status.Name}' status");
 
         Status = Status.Serviced;
 
@@ -83,7 +99,7 @@ public sealed class Vehicle : Aggregate
     public void Delete()
     {
         if (Status.CanBeChangedToThisStatus(Status.Deleted) == false)
-            throw new DomainRulesViolationException("Cannot change the to this status of the vehicle");
+            throw new DomainRulesViolationException($"Vehicle cannot be deleted in '{Status.Name}' status");
 
         Status = Status.Deleted;
 
