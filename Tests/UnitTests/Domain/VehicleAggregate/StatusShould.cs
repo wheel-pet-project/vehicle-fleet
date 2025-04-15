@@ -141,7 +141,6 @@ public class StatusShould
         // Act
         var addedToReleased = added.CanBeChangedToThisStatus(released);
         var addedToOccupied = added.CanBeChangedToThisStatus(occupied);
-        var addedToServiced = added.CanBeChangedToThisStatus(serviced);
 
         var readiedForReleasedToAdded = readiedForRelease.CanBeChangedToThisStatus(added);
         var readiedForReleasedToOccupied = readiedForRelease.CanBeChangedToThisStatus(occupied);

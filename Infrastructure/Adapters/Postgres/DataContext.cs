@@ -40,9 +40,9 @@ internal sealed class ModelEntityTypeConfiguration : IEntityTypeConfiguration<Mo
 
         builder.OwnsOne(x => x.Tariff, cfg =>
         {
-            cfg.Property(x => x.PricePerMinute).HasColumnName("price_per_minute").IsRequired();
-            cfg.Property(x => x.PricePerHour).HasColumnName("price_per_hour").IsRequired();
-            cfg.Property(x => x.PricePerDay).HasColumnName("price_per_day").IsRequired();
+            cfg.Property(x => x.PricePerMinute).HasPrecision(10, 2).HasColumnName("price_per_minute").IsRequired();
+            cfg.Property(x => x.PricePerHour).HasPrecision(10, 2).HasColumnName("price_per_hour").IsRequired();
+            cfg.Property(x => x.PricePerDay).HasPrecision(10, 2).HasColumnName("price_per_day").IsRequired();
         });
 
         builder.Ignore(x => x.DomainEvents);

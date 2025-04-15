@@ -22,8 +22,12 @@ public class KafkaProducer(
             new Uri($"topic:{_topicsConfiguration.ModelCreatedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
-            new ModelCreated(domainEvent.EventId, domainEvent.ModelId, domainEvent.Category, domainEvent.PricePerMinute,
-                domainEvent.PricePerHour, domainEvent.PricePerDay),
+            new ModelCreated(domainEvent.EventId, 
+                domainEvent.ModelId, 
+                domainEvent.Category, 
+                (double)domainEvent.PricePerMinute,
+                (double)domainEvent.PricePerHour, 
+                (double)domainEvent.PricePerDay),
             SetMessageId<ModelCreated, ModelCreatedDomainEvent>(domainEvent), cancellationToken);
     }
 
@@ -44,8 +48,12 @@ public class KafkaProducer(
             new Uri($"topic:{_topicsConfiguration.ModelTariffUpdatedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
-            new ModelTariffUpdated(domainEvent.EventId, domainEvent.ModelId, domainEvent.PricePerMinute,
-                domainEvent.PricePerHour, domainEvent.PricePerDay),
+            new ModelTariffUpdated(
+                domainEvent.EventId, 
+                domainEvent.ModelId,
+                (double)domainEvent.PricePerMinute,
+                (double)domainEvent.PricePerHour, 
+                (double)domainEvent.PricePerDay),
             SetMessageId<ModelTariffUpdated, ModelTariffUpdatedDomainEvent>(domainEvent),
             cancellationToken);
     }

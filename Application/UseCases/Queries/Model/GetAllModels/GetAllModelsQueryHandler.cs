@@ -9,11 +9,15 @@ public class GetAllModelsQueryHandler(
     NpgsqlDataSource dataSource) : IRequestHandler<GetAllModelsQuery, Result<GetAllModelsQueryResponse>>
 {
     public async Task<Result<GetAllModelsQueryResponse>> Handle(
-        GetAllModelsQuery request,
+        GetAllModelsQuery query,
         CancellationToken cancellationToken)
     {
         var command = new CommandDefinition(_sql,
-            new { Offset = (request.Page - 1) * request.PageSize, Limit = request.PageSize });
+            new
+            {
+                Offset = CalculateOffset(query.Page, query.PageSize), 
+                Limit = query.PageSize
+            });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var modelsEnumerable = await connection.QueryAsync<ModelShortDapperModel>(command);
@@ -24,6 +28,16 @@ public class GetAllModelsQueryHandler(
             .ToList());
 
         return response;
+    }
+    
+    private int CalculateOffset(int? page, int? pageSize)
+    {
+        page ??= 1;
+        pageSize ??= 10;
+        
+        return page.Value < 1
+            ? 1
+            : (page.Value - 1) * pageSize.Value;
     }
 
     private record ModelShortDapperModel(Guid Id, string Brand, string CarModel);

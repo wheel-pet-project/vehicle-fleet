@@ -16,7 +16,7 @@ namespace Api.Adapters.Grpc;
 /// <summary>
 /// Часть класса gRPC API, работающая с сущностью ТС
 /// </summary>
-public partial class VehicleFleetV1 : VehicleFleet.VehicleFleetBase
+public partial class VehicleFleetV1
 {
     public override async Task<AddVehicleRes> AddVehicle(AddVehicleReq request, ServerCallContext context)
     {

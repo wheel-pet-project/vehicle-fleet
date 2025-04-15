@@ -14,6 +14,9 @@ using Status = Grpc.Core.Status;
 
 namespace Api.Adapters.Grpc;
 
+/// <summary>
+/// Часть класса gRPC API, работающая с моделью ТС
+/// </summary>
 public partial class VehicleFleetV1(
     IMediator mediator,
     ColorMapper colorMapper,

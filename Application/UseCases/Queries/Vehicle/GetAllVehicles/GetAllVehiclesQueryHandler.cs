@@ -10,15 +10,15 @@ public class GetAllVehiclesQueryHandler(
     NpgsqlDataSource dataSource) : IRequestHandler<GetAllVehiclesQuery, Result<GetAllVehiclesQueryResponse>>
 {
     public async Task<Result<GetAllVehiclesQueryResponse>> Handle(
-        GetAllVehiclesQuery request,
+        GetAllVehiclesQuery query,
         CancellationToken cancellationToken)
     {
         var command = new CommandDefinition(_sql,
             new
             {
-                StatusId = request.FilteringStatus.Id,
-                Offset = (request.Page - 1) * request.PageSize,
-                Limit = request.PageSize
+                StatusId = query.FilteringStatus.Id,
+                Offset = CalculateOffset(query.Page, query.PageSize),
+                Limit = query.PageSize
             });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
@@ -34,6 +34,16 @@ public class GetAllVehiclesQueryHandler(
                     x.Latitude,
                     x.Longitude))
             .ToList()));
+    }
+    
+    private int CalculateOffset(int? page, int? pageSize)
+    {
+        page ??= 1;
+        pageSize ??= 10;
+        
+        return page.Value < 1
+            ? 1
+            : (page.Value - 1) * pageSize.Value;
     }
 
     private record VehicleAggregatedShortDapperModel(

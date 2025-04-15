@@ -10,6 +10,7 @@ using Infrastructure.Adapters.Postgres;
 using Infrastructure.Adapters.Postgres.Outbox;
 using Infrastructure.Adapters.Postgres.Repositories;
 using MassTransit;
+using MassTransit.KafkaIntegration.Serializers;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using OpenTelemetry.Metrics;
@@ -134,7 +135,7 @@ public static class ServiceCollectionExtensions
         services.AddMassTransit(x =>
         {
             x.UsingInMemory();
-
+            
             x.AddRider(rider =>
             {
                 rider.AddProducer<string, ModelCreated>(modelCreatedTopic);
@@ -147,9 +148,9 @@ public static class ServiceCollectionExtensions
                 rider.AddProducer<string, VehicleReadiedForRelease>(vehicleReadiedForReleasesTopic);
                 rider.AddProducer<string, VehicleReleased>(vehicleReleasedTopic);
                 rider.AddProducer<string, VehicleServiced>(vehicleServicedTopic);
-
-                rider.UsingKafka((_, k) =>
-                    k.Host((Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9092").Split("__")));
+                
+                rider.UsingKafka((_, k) => k.Host((Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9092")
+                    .Split("__")));
             });
         });
 
@@ -165,12 +166,6 @@ public static class ServiceCollectionExtensions
                 .AddJob<OutboxBackgroundJob>(j => j.WithIdentity(outboxJobKey))
                 .AddTrigger(trigger => trigger.ForJob(outboxJobKey)
                     .WithSimpleSchedule(scheduleBuilder => scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
-
-            //     var actualityObserverJobKey = new JobKey(nameof(ActualityObserverBackgroundJob));
-            //     configure
-            //         .AddJob<ActualityObserverBackgroundJob>(j => j.WithIdentity(actualityObserverJobKey))
-            //         .AddTrigger(trigger => trigger.ForJob(actualityObserverJobKey)
-            //             .WithSimpleSchedule(scheduleBuilder => scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
         });
 
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
