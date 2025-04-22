@@ -5,17 +5,18 @@ using Xunit;
 
 namespace UnitTests.Domain.VehicleAggregate.DomainEvents;
 
-[TestSubject(typeof(VehicleOccupiedDomainEvent))]
-public class VehicleOccupiedDomainEventShould
+[TestSubject(typeof(VehicleOccupyingProcessedDomainEvent))]
+public class VehicleOccupyingProcessedDomainEventShould
 {
     [Fact]
     public void CreateNewInstanceWithCorrectValues()
     {
         // Arrange
         var vehicleId = Guid.NewGuid();
+        var bookingId = Guid.NewGuid();
 
         // Act
-        var actual = new VehicleOccupiedDomainEvent(vehicleId);
+        var actual = new VehicleOccupyingProcessedDomainEvent(vehicleId, bookingId, true);
 
         // Assert
         Assert.NotNull(actual);
@@ -30,7 +31,22 @@ public class VehicleOccupiedDomainEventShould
         // Act
         void Act()
         {
-            new VehicleOccupiedDomainEvent(Guid.Empty);
+            new VehicleOccupyingProcessedDomainEvent(Guid.Empty, Guid.NewGuid(), true);
+        }
+
+        // Assert
+        Assert.Throws<ValueIsRequiredException>(Act);
+    }
+
+    [Fact]
+    public void ThrowValueIsRequiredExceptionIfBookingIdIsEmpty()
+    {
+        // Arrange
+
+        // Act
+        void Act()
+        {
+            new VehicleOccupyingProcessedDomainEvent(Guid.NewGuid(), Guid.Empty, true);
         }
 
         // Assert

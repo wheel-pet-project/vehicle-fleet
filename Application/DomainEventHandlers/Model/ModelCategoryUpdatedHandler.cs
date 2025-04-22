@@ -4,9 +4,12 @@ using MediatR;
 
 namespace Application.DomainEventHandlers.Model;
 
-public class ModelCategoryUpdatedHandler(IMessageBus messageBus) : INotificationHandler<ModelCategoryUpdatedDomainEvent>
+public class ModelCategoryUpdatedHandler(IMessageBus messageBus)
+    : INotificationHandler<ModelCategoryUpdatedDomainEvent>
 {
-    public async Task Handle(ModelCategoryUpdatedDomainEvent domainEvent, CancellationToken cancellationToken)
+    public async Task Handle(
+        ModelCategoryUpdatedDomainEvent domainEvent,
+        CancellationToken cancellationToken)
     {
         await messageBus.Publish(domainEvent, cancellationToken);
     }

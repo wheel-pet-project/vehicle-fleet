@@ -9,7 +9,9 @@ public class AddModelHandler(
     IModelRepository modelRepository,
     IUnitOfWork unitOfWork) : IRequestHandler<AddModelCommand, Result<AddModelResponse>>
 {
-    public async Task<Result<AddModelResponse>> Handle(AddModelCommand command, CancellationToken cancellationToken)
+    public async Task<Result<AddModelResponse>> Handle(
+        AddModelCommand command,
+        CancellationToken cancellationToken)
     {
         var brand = Brand.Create(command.Brand);
         var carModel = CarModel.Create(command.CarModel);
@@ -25,6 +27,8 @@ public class AddModelHandler(
 
         var transactionResult = await unitOfWork.Commit();
 
-        return transactionResult.IsSuccess ? Result.Ok(new AddModelResponse(model.Id)) : transactionResult;
+        return transactionResult.IsSuccess
+            ? Result.Ok(new AddModelResponse(model.Id))
+            : transactionResult;
     }
 }

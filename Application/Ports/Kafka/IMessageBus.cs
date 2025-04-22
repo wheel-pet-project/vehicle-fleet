@@ -15,9 +15,13 @@ public interface IMessageBus
 
     Task Publish(VehicleDeletedDomainEvent domainEvent, CancellationToken cancellationToken);
 
-    Task Publish(VehicleReadiedForReleaseDomainEvent domainEvent, CancellationToken cancellationToken);
+    Task Publish(
+        VehicleReadiedForReleaseDomainEvent domainEvent,
+        CancellationToken cancellationToken);
 
-    Task Publish(VehicleOccupiedDomainEvent domainEvent, CancellationToken cancellationToken);
+    Task Publish(
+        VehicleOccupyingProcessedDomainEvent domainEvent,
+        CancellationToken cancellationToken);
 
     Task Publish(VehicleReleasedDomainEvent domainEvent, CancellationToken cancellationToken);
 

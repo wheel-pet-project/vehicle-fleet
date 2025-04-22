@@ -9,7 +9,8 @@ using Npgsql;
 namespace Application.UseCases.Queries.Vehicle.GetVehicleById;
 
 public class GetVehicleByIdQueryHandler(
-    NpgsqlDataSource dataSource) : IRequestHandler<GetVehicleByIdQuery, Result<GetVehicleByIdQueryResponse>>
+    NpgsqlDataSource dataSource)
+    : IRequestHandler<GetVehicleByIdQuery, Result<GetVehicleByIdQueryResponse>>
 {
     public async Task<Result<GetVehicleByIdQueryResponse>> Handle(
         GetVehicleByIdQuery request,

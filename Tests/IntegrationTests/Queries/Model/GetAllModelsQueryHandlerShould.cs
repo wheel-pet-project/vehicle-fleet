@@ -60,7 +60,8 @@ public class GetAllModelsQueryHandlerShould : IntegrationTestBase
     private async Task<List<Domain.ModelAggregate.Model>> AddModels(int count)
     {
         var models = Enumerable.Range(1, count)
-            .Select(i => Domain.ModelAggregate.Model.Create(Brand.Create($"Kia{i}"), CarModel.Create($"Rio{i}"),
+            .Select(i => Domain.ModelAggregate.Model.Create(Brand.Create($"Kia{i}"),
+                CarModel.Create($"Rio{i}"),
                 Category.Create('B'), Tariff.Create(1, 2, 3)))
             .ToList();
 

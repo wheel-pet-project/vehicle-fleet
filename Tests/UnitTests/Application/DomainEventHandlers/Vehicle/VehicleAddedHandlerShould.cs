@@ -24,7 +24,8 @@ public class VehicleAddedHandlerShould
         await handler.Handle(_event, TestContext.Current.CancellationToken);
 
         // Assert
-        _messageBusMock.Verify(x => x.Publish(It.IsAny<VehicleAddedDomainEvent>(), It.IsAny<CancellationToken>()),
+        _messageBusMock.Verify(
+            x => x.Publish(It.IsAny<VehicleAddedDomainEvent>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

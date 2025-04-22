@@ -37,7 +37,8 @@ public class UnitOfWorkShould : IntegrationTestBase
         // Assert
         var outboxEvent = Context.Outbox.FirstOrDefault();
         var eventParsedContent =
-            JsonConvert.DeserializeObject<DomainEvent>(outboxEvent!.Content, _jsonSerializerSettings);
+            JsonConvert.DeserializeObject<DomainEvent>(outboxEvent!.Content,
+                _jsonSerializerSettings);
         Assert.NotNull(eventParsedContent);
         Assert.Equivalent(expectedDomainEvent, eventParsedContent);
     }

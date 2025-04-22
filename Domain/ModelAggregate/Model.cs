@@ -53,8 +53,10 @@ public class Model : Aggregate
     public static Model Create(Brand brand, CarModel carModel, Category category, Tariff tariff)
     {
         if (brand == null) throw new ValueIsRequiredException($"{nameof(brand)} cannot be null");
-        if (carModel == null) throw new ValueIsRequiredException($"{nameof(carModel)} cannot be null");
-        if (category == null) throw new ValueIsRequiredException($"{nameof(category)} cannot be null");
+        if (carModel == null)
+            throw new ValueIsRequiredException($"{nameof(carModel)} cannot be null");
+        if (category == null)
+            throw new ValueIsRequiredException($"{nameof(category)} cannot be null");
         if (tariff == null) throw new ValueIsRequiredException($"{nameof(tariff)} cannot be null");
 
         var model = new Model(brand, carModel, category, tariff);

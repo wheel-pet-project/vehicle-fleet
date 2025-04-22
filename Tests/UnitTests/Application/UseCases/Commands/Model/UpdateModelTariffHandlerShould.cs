@@ -14,9 +14,10 @@ public class UpdateModelTariffHandlerShould
 {
     private readonly UpdateModelTariffCommand _command = new(Guid.NewGuid(), 1, 2, 3);
 
-    private readonly global::Domain.ModelAggregate.Model _modelFromDb = global::Domain.ModelAggregate.Model.Create(
-        Brand.Create("Kia"), CarModel.Create("Rio"),
-        Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
+    private readonly global::Domain.ModelAggregate.Model _modelFromDb =
+        global::Domain.ModelAggregate.Model.Create(
+            Brand.Create("Kia"), CarModel.Create("Rio"),
+            Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
 
     private readonly Mock<IModelRepository> _modelRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
@@ -26,7 +27,8 @@ public class UpdateModelTariffHandlerShould
     {
         _modelRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).ReturnsAsync(_modelFromDb);
         _unitOfWorkMock.Setup(x => x.Commit()).ReturnsAsync(Result.Ok);
-        _handler = new UpdateModelTariffHandler(_modelRepositoryMock.Object, _unitOfWorkMock.Object);
+        _handler =
+            new UpdateModelTariffHandler(_modelRepositoryMock.Object, _unitOfWorkMock.Object);
     }
 
     [Fact]

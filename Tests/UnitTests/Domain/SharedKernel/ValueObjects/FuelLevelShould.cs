@@ -25,7 +25,8 @@ public class FuelLevelShould
     [Theory]
     [InlineData(-1)]
     [InlineData(101)]
-    public void ThrowValueOutOfRangeExceptionIfLevelPercentageIsLessThan0OrGreater100(int invalidPercent)
+    public void ThrowValueOutOfRangeExceptionIfLevelPercentageIsLessThan0OrGreater100(
+        int invalidPercent)
     {
         // Arrange
 

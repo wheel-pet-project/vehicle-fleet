@@ -19,7 +19,8 @@ public class GetVehicleDetailsByIdQueryHandler(
         var command = new CommandDefinition(_sql, new { Id = request.VehicleId });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-        var vehicle = await connection.QuerySingleOrDefaultAsync<VehicleDetailsDapperModel>(command);
+        var vehicle =
+            await connection.QuerySingleOrDefaultAsync<VehicleDetailsDapperModel>(command);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
 
         return Result.Ok(new GetVehicleDetailsByIdQueryResponse(

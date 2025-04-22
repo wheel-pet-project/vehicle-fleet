@@ -32,7 +32,8 @@ public class Location : ValueObject
     public bool InSquare(Location upperLeftLocation, Location lowerRightLocation)
     {
         return Latitude <= upperLeftLocation.Latitude && Latitude >= lowerRightLocation.Latitude &&
-               Longitude <= lowerRightLocation.Longitude && Longitude >= upperLeftLocation.Longitude;
+               Longitude <= lowerRightLocation.Longitude &&
+               Longitude >= upperLeftLocation.Longitude;
     }
 
     public static Location Create(double latitude, double longitude)

@@ -44,7 +44,9 @@ public sealed class Color : ValueObject
 
     public static Color FromName(string name)
     {
-        var color = All().SingleOrDefault(s => string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        var color = All()
+            .SingleOrDefault(s =>
+                string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
         if (color == null)
             throw new ValueOutOfRangeException(
                 $"{nameof(name)} unknown color or null, color must be one of: {string.Join(' ', All())}");

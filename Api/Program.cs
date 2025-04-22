@@ -20,7 +20,9 @@ public class Program
         services
             .RegisterPostgresContextAndDataSource()
             .RegisterMediatorAndHandlers()
+            .RegisterInbox()
             .RegisterUnitOfWork()
+            .RegisterSagaVehicleAdding()
             .RegisterRepositories()
             .RegisterMappers()
             .RegisterMassTransit()
@@ -33,6 +35,7 @@ public class Program
 
         app.MapGrpcService<VehicleFleetV1>();
         app.MapGrpcHealthChecksService();
+
 
         app.Run();
     }

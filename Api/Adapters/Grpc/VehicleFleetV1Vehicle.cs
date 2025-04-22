@@ -18,23 +18,30 @@ namespace Api.Adapters.Grpc;
 /// </summary>
 public partial class VehicleFleetV1
 {
-    public override async Task<AddVehicleRes> AddVehicle(AddVehicleReq request, ServerCallContext context)
+    public override async Task<AddVehicleRes> AddVehicle(
+        AddVehicleReq request,
+        ServerCallContext context)
     {
         var result = await mediator.Send(new AddVehicleCommand(
             ParseGuidOrThrow(request.ModelId),
             request.PlateNumber,
             colorMapper.ProtoToDomain(request.Color),
             request.Vin,
-            request.Location is not null ? new Location(request.Location.Latitude, request.Location.Longitude) : null));
+            request.Location is not null
+                ? new Location(request.Location.Latitude, request.Location.Longitude)
+                : null));
 
         return result.IsSuccess
             ? new AddVehicleRes { VehicleId = result.Value.VehicleId.ToString() }
             : ParseErrorToRpcException<AddVehicleRes>(result.Errors);
     }
 
-    public override async Task<DeleteVehicleRes> DeleteVehicle(DeleteVehicleReq request, ServerCallContext context)
+    public override async Task<DeleteVehicleRes> DeleteVehicle(
+        DeleteVehicleReq request,
+        ServerCallContext context)
     {
-        var result = await mediator.Send(new DeleteVehicleCommand(ParseGuidOrThrow(request.VehicleId)));
+        var result =
+            await mediator.Send(new DeleteVehicleCommand(ParseGuidOrThrow(request.VehicleId)));
 
         return result.IsSuccess
             ? new DeleteVehicleRes()
@@ -45,16 +52,21 @@ public partial class VehicleFleetV1
         MarkAsReadiedForReleaseVehicleReq request,
         ServerCallContext context)
     {
-        var result = await mediator.Send(new MarkAsReadiedForReleaseVehicleCommand(ParseGuidOrThrow(request.VehicleId)));
+        var result =
+            await mediator.Send(
+                new MarkAsReadiedForReleaseVehicleCommand(ParseGuidOrThrow(request.VehicleId)));
 
         return result.IsSuccess
             ? new MarkAsReadiedForReleaseVehicleRes()
             : ParseErrorToRpcException<MarkAsReadiedForReleaseVehicleRes>(result.Errors);
     }
 
-    public override async Task<ReleaseVehicleRes> ReleaseVehicle(ReleaseVehicleReq request, ServerCallContext context)
+    public override async Task<ReleaseVehicleRes> ReleaseVehicle(
+        ReleaseVehicleReq request,
+        ServerCallContext context)
     {
-        var result = await mediator.Send(new ReleaseVehicleCommand(ParseGuidOrThrow(request.VehicleId)));
+        var result =
+            await mediator.Send(new ReleaseVehicleCommand(ParseGuidOrThrow(request.VehicleId)));
 
         return result.IsSuccess
             ? new ReleaseVehicleRes()
@@ -65,14 +77,18 @@ public partial class VehicleFleetV1
         SendToServiceVehicleReq request,
         ServerCallContext context)
     {
-        var result = await mediator.Send(new SendToServiceVehicleCommand(ParseGuidOrThrow(request.VehicleId)));
+        var result =
+            await mediator.Send(
+                new SendToServiceVehicleCommand(ParseGuidOrThrow(request.VehicleId)));
 
         return result.IsSuccess
             ? new SendToServiceVehicleRes()
             : ParseErrorToRpcException<SendToServiceVehicleRes>(result.Errors);
     }
 
-    public override async Task<GetAllVehiclesRes> GetAllVehicles(GetAllVehiclesReq request, ServerCallContext context)
+    public override async Task<GetAllVehiclesRes> GetAllVehicles(
+        GetAllVehiclesReq request,
+        ServerCallContext context)
     {
         var result = await mediator.Send(new GetAllVehiclesQuery(
             statusMapper.ProtoToDomain(request.FilteringStatus),
@@ -82,25 +98,29 @@ public partial class VehicleFleetV1
         if (result.IsFailed) ParseErrorToRpcException<GetAllModelsRes>(result.Errors);
 
         var response = new GetAllVehiclesRes();
-        response.Vehicles.AddRange(result.Value.Vehicles.Select(x => new GetAllVehiclesRes.Types.VehicleShortView
-        {
-            VehicleId = x.Id.ToString(),
-            Brand = x.Brand,
-            CarModel = x.CarModel,
-            Color = colorMapper.DomainToProto(x.Color),
-            Location = new Proto.VehicleFleetV1.Location
+        response.Vehicles.AddRange(result.Value.Vehicles.Select(x =>
+            new GetAllVehiclesRes.Types.VehicleShortView
             {
-                Latitude = x.Latitude,
-                Longitude = x.Longitude
-            }
-        }));
+                VehicleId = x.Id.ToString(),
+                Brand = x.Brand,
+                CarModel = x.CarModel,
+                Color = colorMapper.DomainToProto(x.Color),
+                Location = new Proto.VehicleFleetV1.Location
+                {
+                    Latitude = x.Latitude,
+                    Longitude = x.Longitude
+                }
+            }));
 
         return response;
     }
 
-    public override async Task<GetVehicleByIdRes> GetVehicleById(GetVehicleByIdReq request, ServerCallContext context)
+    public override async Task<GetVehicleByIdRes> GetVehicleById(
+        GetVehicleByIdReq request,
+        ServerCallContext context)
     {
-        var result = await mediator.Send(new GetVehicleByIdQuery(ParseGuidOrThrow(request.VehicleId)),
+        var result = await mediator.Send(
+            new GetVehicleByIdQuery(ParseGuidOrThrow(request.VehicleId)),
             context.CancellationToken);
 
         return result.IsSuccess
@@ -128,11 +148,12 @@ public partial class VehicleFleetV1
         GetVehicleDetailsByIdReq request,
         ServerCallContext context)
     {
-        var result = await mediator.Send(new GetVehicleDetailsByIdQuery(ParseGuidOrThrow(request.VehicleId)),
+        var result = await mediator.Send(
+            new GetVehicleDetailsByIdQuery(ParseGuidOrThrow(request.VehicleId)),
             context.CancellationToken);
 
         return result.IsSuccess
-            ? new GetVehicleDetailsByIdRes()
+            ? new GetVehicleDetailsByIdRes
             {
                 VehicleId = result.Value.Id.ToString(),
                 Status = statusMapper.DomainToProto(result.Value.Status),
@@ -155,15 +176,17 @@ public partial class VehicleFleetV1
     {
         var result = await mediator.Send(new GetVehiclesInSquareQuery(
                 statusMapper.ProtoToDomain(request.FilteringStatus),
-                new LocationDto(request.UpperLeftLocation.Latitude, request.UpperLeftLocation.Longitude),
-                new LocationDto(request.LowerRightLocation.Latitude, request.LowerRightLocation.Longitude)),
+                new LocationDto(request.UpperLeftLocation.Latitude,
+                    request.UpperLeftLocation.Longitude),
+                new LocationDto(request.LowerRightLocation.Latitude,
+                    request.LowerRightLocation.Longitude)),
             context.CancellationToken);
 
         if (result.IsFailed) return ParseErrorToRpcException<GetVehiclesInSquareRes>(result.Errors);
 
         var response = new GetVehiclesInSquareRes();
         response.Vehicles.AddRange(result.Value.Vehicles.Select(x =>
-            new GetVehiclesInSquareRes.Types.VehicleInSquareShortView()
+            new GetVehiclesInSquareRes.Types.VehicleInSquareShortView
             {
                 VehicleId = x.Id.ToString(),
                 Brand = x.Brand,

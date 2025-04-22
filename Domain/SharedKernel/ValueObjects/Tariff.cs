@@ -23,7 +23,8 @@ public sealed class Tariff : ValueObject
     public static Tariff Create(decimal pricePerMinute, decimal pricePerHour, decimal pricePerDay)
     {
         if (pricePerMinute <= 0)
-            throw new ValueOutOfRangeException($"{nameof(pricePerMinute)} must be greater than zero");
+            throw new ValueOutOfRangeException(
+                $"{nameof(pricePerMinute)} must be greater than zero");
         if (pricePerHour <= 0)
             throw new ValueOutOfRangeException($"{nameof(pricePerHour)} must be greater than zero");
         if (pricePerDay <= 0)

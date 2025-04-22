@@ -25,6 +25,7 @@ public class VehicleReleasedHandlerShould
 
         // Assert
         _messageBusMock.Verify(
-            x => x.Publish(It.IsAny<VehicleReleasedDomainEvent>(), It.IsAny<CancellationToken>()), Times.Once);
+            x => x.Publish(It.IsAny<VehicleReleasedDomainEvent>(), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

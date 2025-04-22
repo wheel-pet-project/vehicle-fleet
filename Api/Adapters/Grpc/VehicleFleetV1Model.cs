@@ -54,7 +54,8 @@ public partial class VehicleFleetV1(
         UpdateModelTariffReq request,
         ServerCallContext context)
     {
-        var result = await mediator.Send(new UpdateModelTariffCommand(ParseGuidOrThrow(request.ModelId),
+        var result = await mediator.Send(new UpdateModelTariffCommand(
+            ParseGuidOrThrow(request.ModelId),
             request.PricePerMin,
             request.PricePerHour,
             request.PricePerDay));
@@ -64,7 +65,9 @@ public partial class VehicleFleetV1(
             : ParseErrorToRpcException<UpdateModelTariffRes>(result.Errors);
     }
 
-    public override async Task<GetAllModelsRes> GetAllModels(GetAllModelsReq request, ServerCallContext context)
+    public override async Task<GetAllModelsRes> GetAllModels(
+        GetAllModelsReq request,
+        ServerCallContext context)
     {
         var result = await mediator.Send(new GetAllModelsQuery(
                 request.Page,
@@ -74,13 +77,16 @@ public partial class VehicleFleetV1(
         if (result.IsFailed) return ParseErrorToRpcException<GetAllModelsRes>(result.Errors);
 
         var response = new GetAllModelsRes();
-        response.Models.AddRange(result.Value.Models.Select(x => new GetAllModelsRes.Types.ModelShortView
-            { ModelId = x.Id.ToString(), Brand = x.Brand, CarModel = x.CarModel }));
+        response.Models.AddRange(result.Value.Models.Select(x =>
+            new GetAllModelsRes.Types.ModelShortView
+                { ModelId = x.Id.ToString(), Brand = x.Brand, CarModel = x.CarModel }));
 
         return response;
     }
 
-    public override async Task<GetModelByIdRes> GetModelById(GetModelByIdReq request, ServerCallContext context)
+    public override async Task<GetModelByIdRes> GetModelById(
+        GetModelByIdReq request,
+        ServerCallContext context)
     {
         var result = await mediator.Send(new GetModelByIdQuery(ParseGuidOrThrow(request.ModelId)),
             context.CancellationToken);
@@ -102,12 +108,15 @@ public partial class VehicleFleetV1(
     private T ParseErrorToRpcException<T>(List<IError> errors)
     {
         if (errors.Exists(x => x is NotFound))
-            throw new RpcException(new Status(StatusCode.NotFound, string.Join(' ', errors.Select(x => x.Message))));
+            throw new RpcException(new Status(StatusCode.NotFound,
+                string.Join(' ', errors.Select(x => x.Message))));
 
         if (errors.Exists(x => x is CommitFail))
-            throw new RpcException(new Status(StatusCode.Unavailable, string.Join(' ', errors.Select(x => x.Message))));
+            throw new RpcException(new Status(StatusCode.Unavailable,
+                string.Join(' ', errors.Select(x => x.Message))));
 
-        throw new RpcException(new Status(StatusCode.InvalidArgument, string.Join(' ', errors.Select(x => x.Message))));
+        throw new RpcException(new Status(StatusCode.InvalidArgument,
+            string.Join(' ', errors.Select(x => x.Message))));
     }
 
     private Guid ParseGuidOrThrow(string potentialId)

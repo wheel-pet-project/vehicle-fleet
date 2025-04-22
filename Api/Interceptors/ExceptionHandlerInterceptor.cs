@@ -21,7 +21,8 @@ public class ExceptionHandlerInterceptor(ILogger<ExceptionHandlerInterceptor> lo
         catch (NpgsqlException e)
         {
             logger.LogError("NpgsqlException handled: {@exception}", e);
-            throw new RpcException(new Status(StatusCode.Unavailable, "Db unavailable, please try again later."));
+            throw new RpcException(new Status(StatusCode.Unavailable,
+                "Db unavailable, please try again later."));
         }
         catch (ArgumentException e)
         {
@@ -41,7 +42,8 @@ public class ExceptionHandlerInterceptor(ILogger<ExceptionHandlerInterceptor> lo
         catch (AlreadyHaveThisStateException)
         {
             logger.LogWarning("AlreadyHaveThisStateException handled");
-            throw new RpcException(new Status(StatusCode.FailedPrecondition, "Resource already have this state"));
+            throw new RpcException(new Status(StatusCode.FailedPrecondition,
+                "Resource already have this state"));
         }
         catch (Exception e) when (e is not RpcException)
         {

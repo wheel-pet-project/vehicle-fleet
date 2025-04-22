@@ -20,7 +20,8 @@ public class ModelCreatedDomainEventShould
         // Arrange
 
         // Act
-        var actual = new ModelCreatedDomainEvent(_modelId, _category, _pricePerMinute, _pricePerHour, _pricePerDay);
+        var actual = new ModelCreatedDomainEvent(_modelId, _category, _pricePerMinute,
+            _pricePerHour, _pricePerDay);
 
         // Assert
         Assert.NotNull(actual);
@@ -39,7 +40,8 @@ public class ModelCreatedDomainEventShould
         // Act
         void Act()
         {
-            new ModelCreatedDomainEvent(Guid.Empty, _category, _pricePerMinute, _pricePerHour, _pricePerDay);
+            new ModelCreatedDomainEvent(Guid.Empty, _category, _pricePerMinute, _pricePerHour,
+                _pricePerDay);
         }
 
         // Assert
@@ -57,7 +59,8 @@ public class ModelCreatedDomainEventShould
         // Act
         void Act()
         {
-            new ModelCreatedDomainEvent(_modelId, invalidCharacter, _pricePerMinute, _pricePerHour, _pricePerDay);
+            new ModelCreatedDomainEvent(_modelId, invalidCharacter, _pricePerMinute, _pricePerHour,
+                _pricePerDay);
         }
 
 
@@ -80,7 +83,8 @@ public class ModelCreatedDomainEventShould
         // Act
         void Act()
         {
-            new ModelCreatedDomainEvent(_modelId, _category, pricePerMinute, pricePerHour, pricePerDay);
+            new ModelCreatedDomainEvent(_modelId, _category, pricePerMinute, pricePerHour,
+                pricePerDay);
         }
 
 

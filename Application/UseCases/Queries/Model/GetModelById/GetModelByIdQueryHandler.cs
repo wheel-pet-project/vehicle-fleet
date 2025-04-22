@@ -7,7 +7,8 @@ using Npgsql;
 namespace Application.UseCases.Queries.Model.GetModelById;
 
 public class GetModelByIdQueryHandler(
-    NpgsqlDataSource dataSource) : IRequestHandler<GetModelByIdQuery, Result<GetModelByIdQueryResponse>>
+    NpgsqlDataSource dataSource)
+    : IRequestHandler<GetModelByIdQuery, Result<GetModelByIdQueryResponse>>
 {
     public async Task<Result<GetModelByIdQueryResponse>> Handle(
         GetModelByIdQuery request,

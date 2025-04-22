@@ -24,7 +24,8 @@ public class ModelCreatedHandlerShould
         await handler.Handle(_event, TestContext.Current.CancellationToken);
 
         // Assert
-        _messageBusMock.Verify(x => x.Publish(It.IsAny<ModelCreatedDomainEvent>(), It.IsAny<CancellationToken>()),
+        _messageBusMock.Verify(
+            x => x.Publish(It.IsAny<ModelCreatedDomainEvent>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

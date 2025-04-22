@@ -9,7 +9,9 @@ public class MarkAsReadiedForReleaseVehicleHandler(
     IVehicleRepository vehicleRepository,
     IUnitOfWork unitOfWork) : IRequestHandler<MarkAsReadiedForReleaseVehicleCommand, Result>
 {
-    public async Task<Result> Handle(MarkAsReadiedForReleaseVehicleCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(
+        MarkAsReadiedForReleaseVehicleCommand command,
+        CancellationToken cancellationToken)
     {
         var vehicle = await vehicleRepository.GetById(command.VehicleId);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));

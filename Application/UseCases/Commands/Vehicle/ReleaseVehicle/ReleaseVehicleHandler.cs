@@ -1,5 +1,5 @@
 using Application.Ports.Postgres;
-using Domain.SharedKernel.Errors;
+using Domain.SharedKernel.Exceptions.DataConsistencyViolationException;
 using FluentResults;
 using MediatR;
 
@@ -9,10 +9,14 @@ public class ReleaseVehicleHandler(
     IVehicleRepository vehicleRepository,
     IUnitOfWork unitOfWork) : IRequestHandler<ReleaseVehicleCommand, Result>
 {
-    public async Task<Result> Handle(ReleaseVehicleCommand command, CancellationToken cancellationToken)
+    public async Task<Result> Handle(
+        ReleaseVehicleCommand command,
+        CancellationToken cancellationToken)
     {
         var vehicle = await vehicleRepository.GetById(command.VehicleId);
-        if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
+        if (vehicle == null)
+            throw new DataConsistencyViolationException(
+                $"Vehicle with id: {command.VehicleId} not found");
 
         vehicle.Release();
 

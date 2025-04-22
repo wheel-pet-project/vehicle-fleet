@@ -52,7 +52,7 @@ public class VehicleRepositoryShould : IntegrationTestBase
         await uowForArrange.Commit();
 
         var (repository, uow) = repositoryAnUowBuilder.Build(Context);
-        vehicle.MarkAsReadiedForRelease();
+        vehicle.MarkAsAdded();
 
         // Act
         repository.Update(vehicle);
@@ -111,9 +111,11 @@ public class VehicleRepositoryShould : IntegrationTestBase
 
     private class RepositoryAndUnitOfWorkBuilder
     {
-        public (VehicleRepository, Infrastructure.Adapters.Postgres.UnitOfWork) Build(DataContext context)
+        public (VehicleRepository, Infrastructure.Adapters.Postgres.UnitOfWork) Build(
+            DataContext context)
         {
-            return (new VehicleRepository(context), new Infrastructure.Adapters.Postgres.UnitOfWork(context));
+            return (new VehicleRepository(context),
+                new Infrastructure.Adapters.Postgres.UnitOfWork(context));
         }
     }
 }

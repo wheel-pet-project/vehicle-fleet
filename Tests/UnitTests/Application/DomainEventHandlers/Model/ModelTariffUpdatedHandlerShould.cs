@@ -24,7 +24,9 @@ public class ModelTariffUpdatedHandlerShould
         await handler.Handle(_event, TestContext.Current.CancellationToken);
 
         // Assert
-        _messageBusMock.Verify(x => x.Publish(It.IsAny<ModelTariffUpdatedDomainEvent>(), It.IsAny<CancellationToken>()),
+        _messageBusMock.Verify(
+            x => x.Publish(It.IsAny<ModelTariffUpdatedDomainEvent>(),
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

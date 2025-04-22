@@ -25,7 +25,8 @@ public class ModelCategoryUpdatedHandlerShould
 
         // Assert
         _messageBusMock.Verify(
-            x => x.Publish(It.IsAny<ModelCategoryUpdatedDomainEvent>(), It.IsAny<CancellationToken>()),
+            x => x.Publish(It.IsAny<ModelCategoryUpdatedDomainEvent>(),
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

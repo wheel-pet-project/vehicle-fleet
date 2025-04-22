@@ -7,7 +7,7 @@ public class KafkaTopicsConfiguration
     public required string ModelTariffUpdatedTopic { get; set; }
     public required string VehicleAddedTopic { get; set; }
     public required string VehicleDeletedTopic { get; set; }
-    public required string VehicleOccupiedTopic { get; set; }
+    public required string VehicleOccupyingProcessedTopic { get; set; }
     public required string VehicleReadiedForReleaseTopic { get; set; }
     public required string VehicleReleasedTopic { get; set; }
     public required string VehicleServicedTopic { get; set; }

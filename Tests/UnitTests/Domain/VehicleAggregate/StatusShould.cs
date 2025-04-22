@@ -96,7 +96,8 @@ public class StatusShould
     }
 
     [Fact]
-    public void CanBeChangedToThisStatusThrowAlreadyHaveThisStateExceptionIfPotentialStatusIsEqualCurrent()
+    public void
+        CanBeChangedToThisStatusThrowAlreadyHaveThisStateExceptionIfPotentialStatusIsEqualCurrent()
     {
         // Arrange
         var added = Status.Added;
@@ -143,16 +144,21 @@ public class StatusShould
         // Act
         var addingInProgressToReadiedForRelease =
             Status.AddingInProgress.CanBeChangedToThisStatus(Status.ReadiedForRelease);
-        var addingInProgressToRelease = Status.AddingInProgress.CanBeChangedToThisStatus(Status.Released);
-        var addingInProgressToOccupied = Status.AddingInProgress.CanBeChangedToThisStatus(Status.Occupied);
-        var addingInProgressToServiced = Status.AddingInProgress.CanBeChangedToThisStatus(Status.Serviced);
-        var addingInProgressToDeleted = Status.AddingInProgress.CanBeChangedToThisStatus(Status.Deleted);
-        
+        var addingInProgressToRelease =
+            Status.AddingInProgress.CanBeChangedToThisStatus(Status.Released);
+        var addingInProgressToOccupied =
+            Status.AddingInProgress.CanBeChangedToThisStatus(Status.Occupied);
+        var addingInProgressToServiced =
+            Status.AddingInProgress.CanBeChangedToThisStatus(Status.Serviced);
+        var addingInProgressToDeleted =
+            Status.AddingInProgress.CanBeChangedToThisStatus(Status.Deleted);
+
         var addedToReleased = added.CanBeChangedToThisStatus(released);
         var addedToOccupied = added.CanBeChangedToThisStatus(occupied);
-        var addedToAddingInProgress = Status.Added.CanBeChangedToThisStatus(Status.AddingInProgress);
+        var addedToAddingInProgress =
+            Status.Added.CanBeChangedToThisStatus(Status.AddingInProgress);
         var addedToNotAdded = Status.Added.CanBeChangedToThisStatus(Status.NotAdded);
-        
+
         var notAddedToReadiedForRelease =
             Status.NotAdded.CanBeChangedToThisStatus(Status.ReadiedForRelease);
         var notAddedToReleased = Status.NotAdded.CanBeChangedToThisStatus(Status.Released);
@@ -188,12 +194,12 @@ public class StatusShould
         Assert.False(addingInProgressToOccupied);
         Assert.False(addingInProgressToServiced);
         Assert.False(addingInProgressToDeleted);
-        
+
         Assert.False(addedToReleased);
         Assert.False(addedToOccupied);
         Assert.False(addedToAddingInProgress);
         Assert.False(addedToNotAdded);
-        
+
         Assert.False(notAddedToReadiedForRelease);
         Assert.False(notAddedToReleased);
         Assert.False(notAddedToOccupied);
@@ -235,9 +241,11 @@ public class StatusShould
         var deleted = Status.Deleted;
 
         // Act
-        var addingInProgressToAdded = Status.AddingInProgress.CanBeChangedToThisStatus(Status.Added);
-        var addingInProgressToNotAdded = Status.AddingInProgress.CanBeChangedToThisStatus(Status.NotAdded);
-        
+        var addingInProgressToAdded =
+            Status.AddingInProgress.CanBeChangedToThisStatus(Status.Added);
+        var addingInProgressToNotAdded =
+            Status.AddingInProgress.CanBeChangedToThisStatus(Status.NotAdded);
+
         var addedToReadiedForRelease = added.CanBeChangedToThisStatus(readiedForRelease);
         var addedToDeleted = added.CanBeChangedToThisStatus(deleted);
         var addedToServiced = added.CanBeChangedToThisStatus(serviced);
@@ -257,7 +265,7 @@ public class StatusShould
         // Assert
         Assert.True(addingInProgressToAdded);
         Assert.True(addingInProgressToNotAdded);
-        
+
         Assert.True(addedToReadiedForRelease);
         Assert.True(addedToDeleted);
         Assert.True(addedToServiced);

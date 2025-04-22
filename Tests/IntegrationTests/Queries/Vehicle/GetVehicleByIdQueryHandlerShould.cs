@@ -58,7 +58,8 @@ public class GetVehicleByIdQueryHandlerShould : IntegrationTestBase
         await Context.Models.AddAsync(model);
         await Context.SaveChangesAsync();
 
-        var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
+        var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id,
+            PlateNumber.Create("К333ОТ77"), Color.Red,
             Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create());
 
         Context.Attach(vehicle.Status);

@@ -17,7 +17,8 @@ public class TracingInterceptor : Interceptor
             .StartActivity($"handling {request.GetType().Name}")!
             .SetTag("correlation-id",
                 context.RequestHeaders.FirstOrDefault(x =>
-                        x.Key.Equals("X-Correlation-Id", StringComparison.InvariantCultureIgnoreCase))
+                        x.Key.Equals("X-Correlation-Id",
+                            StringComparison.InvariantCultureIgnoreCase))
                     ?.Value ??
                 "without correlation id");
 

@@ -23,7 +23,8 @@ public class PlateNumber : ValueObject
     public static PlateNumber Create(string input)
     {
         if (string.IsNullOrWhiteSpace(input))
-            throw new ValueIsRequiredException($"{nameof(input)} plate number cannot be null or whitespace");
+            throw new ValueIsRequiredException(
+                $"{nameof(input)} plate number cannot be null or whitespace");
 
         var plateNumber = input.Trim();
 

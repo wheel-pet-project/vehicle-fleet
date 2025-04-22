@@ -7,7 +7,8 @@ using Npgsql;
 namespace Application.UseCases.Queries.Vehicle.GetAllVehicles;
 
 public class GetAllVehiclesQueryHandler(
-    NpgsqlDataSource dataSource) : IRequestHandler<GetAllVehiclesQuery, Result<GetAllVehiclesQueryResponse>>
+    NpgsqlDataSource dataSource)
+    : IRequestHandler<GetAllVehiclesQuery, Result<GetAllVehiclesQueryResponse>>
 {
     public async Task<Result<GetAllVehiclesQueryResponse>> Handle(
         GetAllVehiclesQuery query,
@@ -22,7 +23,8 @@ public class GetAllVehiclesQueryHandler(
             });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-        var vehiclesEnumerable = await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command);
+        var vehiclesEnumerable =
+            await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command);
         var vehicles = vehiclesEnumerable.AsList();
 
         return Result.Ok(new GetAllVehiclesQueryResponse(vehicles.Select(x =>
@@ -35,12 +37,12 @@ public class GetAllVehiclesQueryHandler(
                     x.Longitude))
             .ToList()));
     }
-    
+
     private int CalculateOffset(int? page, int? pageSize)
     {
         page ??= 1;
         pageSize ??= 10;
-        
+
         return page.Value < 1
             ? 1
             : (page.Value - 1) * pageSize.Value;

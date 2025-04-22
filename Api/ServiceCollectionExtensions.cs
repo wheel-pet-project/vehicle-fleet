@@ -1,16 +1,21 @@
-using System.Reflection;
 using Api.Adapters.Grpc.EnumMappers;
+using Api.Adapters.Kafka;
 using Application.Ports.Kafka;
 using Application.Ports.Postgres;
+using Application.Ports.Postgres.Saga;
 using Application.UseCases.Commands.Model.AddModel;
+using Confluent.Kafka;
+using From.BookingKafkaEvents;
 using From.VehicleFleetKafkaEvents.Model;
 using From.VehicleFleetKafkaEvents.Vehicle;
 using Infrastructure.Adapters.Kafka;
 using Infrastructure.Adapters.Postgres;
+using Infrastructure.Adapters.Postgres.Inbox;
 using Infrastructure.Adapters.Postgres.Outbox;
 using Infrastructure.Adapters.Postgres.Repositories;
+using Infrastructure.Adapters.Postgres.Saga;
+using Infrastructure.Adapters.Postgres.Saga.ConsumingSagaEvents;
 using MassTransit;
-using MassTransit.KafkaIntegration.Serializers;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using OpenTelemetry.Metrics;
@@ -25,7 +30,97 @@ namespace Api;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection RegisterPostgresContextAndDataSource(this IServiceCollection services)
+    private static readonly Configuration Configuration;
+
+    static ServiceCollectionExtensions()
+    {
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+        Configuration = environment switch
+        {
+            "Development" => new Configuration
+            {
+                ApplicationName = "Vehicle_fleet#" + Environment.MachineName,
+                PostgresHost = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost",
+                PostgresPort =
+                    int.Parse(Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5440"),
+                PostgresDatabase = Environment.GetEnvironmentVariable("POSTGRES_DB") ??
+                                   "vehiclefleet_db",
+                PostgresUsername =
+                    Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
+                PostgresPassword = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ??
+                                   "password",
+                BootstrapServers = (Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ??
+                                    "localhost:9092").Split("__"),
+                MongoConnectionString =
+                    Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING") ??
+                    "mongodb://carsharing:password@localhost:27017/drivinglicense?authSource=admin",
+                VehicleAddedTopic = Environment.GetEnvironmentVariable("VEHICLE_ADDED_TOPIC") ??
+                                    "vehicle-added-topic",
+                VehicleDeletedTopic = Environment.GetEnvironmentVariable("VEHICLE_DELETED_TOPIC") ??
+                                      "vehicle-deleted-topic",
+                BookingCreatedTopic = Environment.GetEnvironmentVariable("BOOKING_CREATED_TOPIC") ??
+                                      "booking-created-topic",
+                ModelCreatedTopic = Environment.GetEnvironmentVariable("MODEL_CREATED_TOPIC") ??
+                                    "model-created-topic",
+                ModelCategoryUpdatedTopic =
+                    Environment.GetEnvironmentVariable("MODEL_CATEGORY_UPDATED_TOPIC") ??
+                    "model-category-updated-topic",
+                ModelTariffUpdatedTopic =
+                    Environment.GetEnvironmentVariable("MODEL_TARIFF_UPDATED_TOPIC")
+                    ?? "model-tariff-updated-topic",
+                VehicleOccupyingProcessedTopic =
+                    Environment.GetEnvironmentVariable("VEHICLE_OCCUPYING_PROCESSED_TOPIC") ??
+                    "vehicle-occupying-processed-topic",
+                VehicleReadiedForReleasesTopic =
+                    Environment.GetEnvironmentVariable("VEHICLE_READIED_FOR_RELEASE_TOPIC") ??
+                    "vehicle-readied-for-releases-topic",
+                VehicleReleasedTopic =
+                    Environment.GetEnvironmentVariable("VEHICLE_RELEASED_TOPIC") ??
+                    "vehicle-released-topic",
+                VehicleServicedTopic =
+                    Environment.GetEnvironmentVariable("VEHICLE_SERVICED_TOPIC") ??
+                    "vehicle-serviced-topic"
+            },
+            "Production" => new Configuration
+            {
+                ApplicationName = "Vehicle_check#" + Environment.MachineName,
+                PostgresHost = GetEnvironmentOrThrow("POSTGRES_HOST"),
+                PostgresPort = int.Parse(GetEnvironmentOrThrow("POSTGRES_PORT")),
+                PostgresDatabase = GetEnvironmentOrThrow("POSTGRES_DB"),
+                PostgresUsername = GetEnvironmentOrThrow("POSTGRES_USER"),
+                PostgresPassword = GetEnvironmentOrThrow("POSTGRES_PASSWORD"),
+                BootstrapServers = GetEnvironmentOrThrow("BOOTSTRAP_SERVERS")
+                    .Split("__"),
+                BookingCreatedTopic = GetEnvironmentOrThrow("BOOKING_CREATED_TOPIC"),
+                MongoConnectionString = GetEnvironmentOrThrow("MONGO_CONNECTION_STRING"),
+                ModelCreatedTopic = GetEnvironmentOrThrow("MODEL_CREATED_TOPIC"),
+                ModelCategoryUpdatedTopic = GetEnvironmentOrThrow("MODEL_CATEGORY_UPDATED_TOPIC"),
+                ModelTariffUpdatedTopic = GetEnvironmentOrThrow("MODEL_TARIFF_UPDATED_TOPIC"),
+                VehicleAddedTopic = GetEnvironmentOrThrow("VEHICLE_ADDED_TOPIC"),
+                VehicleDeletedTopic = GetEnvironmentOrThrow("VEHICLE_DELETED_TOPIC"),
+                VehicleOccupyingProcessedTopic =
+                    GetEnvironmentOrThrow("VEHICLE_OCCUPYING_PROCESSED_TOPIC"),
+                VehicleReadiedForReleasesTopic =
+                    GetEnvironmentOrThrow("VEHICLE_READIED_FOR_RELEASE_TOPIC"),
+                VehicleReleasedTopic = GetEnvironmentOrThrow("VEHICLE_RELEASED_TOPIC"),
+                VehicleServicedTopic = GetEnvironmentOrThrow("VEHICLE_SERVICED_TOPIC")
+            },
+            _ => throw new ArgumentException("Unknown environment")
+        };
+
+        return;
+
+        string GetEnvironmentOrThrow(string environmentName)
+        {
+            return Environment.GetEnvironmentVariable(environmentName) ??
+                   throw new ArgumentNullException(environmentName,
+                       "not exist in environment variables");
+        }
+    }
+
+    public static IServiceCollection RegisterPostgresContextAndDataSource(
+        this IServiceCollection services)
     {
         services.AddScoped<NpgsqlDataSource>(_ =>
         {
@@ -33,12 +128,12 @@ public static class ServiceCollectionExtensions
             {
                 ConnectionStringBuilder =
                 {
-                    ApplicationName = "Vehicle_fleet#" + Environment.MachineName,
-                    Host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost",
-                    Port = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5440"),
-                    Database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "vehiclefleet_db",
-                    Username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
-                    Password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password",
+                    ApplicationName = Configuration.ApplicationName,
+                    Host = Configuration.PostgresHost,
+                    Port = Configuration.PostgresPort,
+                    Database = Configuration.PostgresDatabase,
+                    Username = Configuration.PostgresUsername,
+                    Password = Configuration.PostgresPassword,
                     BrowsableConnectionString = false
                 }
             };
@@ -59,9 +154,26 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
+    public static IServiceCollection RegisterSagaVehicleAdding(this IServiceCollection services)
+    {
+        services.AddTransient<ISagaCreator, SagaCreator>();
+        services.AddTransient<ISagaSaveOnlyRepository, SagaSaveOnlyRepository>();
+        services.AddTransient<ISagaConsumeProcessor, SagaConsumeProcessor>();
+        
+        return services;
+    }
+
+    public static IServiceCollection RegisterInbox(this IServiceCollection services)
+    {
+        services.AddTransient<IInbox, Inbox>();
+
+        return services;
+    }
+
     public static IServiceCollection RegisterMediatorAndHandlers(this IServiceCollection services)
     {
-        services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(AddModelHandler).Assembly));
+        services.AddMediatR(cfg =>
+            cfg.RegisterServicesFromAssembly(typeof(AddModelHandler).Assembly));
 
         return services;
     }
@@ -70,8 +182,7 @@ public static class ServiceCollectionExtensions
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console(theme: AnsiConsoleTheme.Sixteen)
-            .WriteTo.MongoDBBson(Environment.GetEnvironmentVariable("MONGO_CONNECTION_STRING")
-                                 ?? "mongodb://carsharing:password@localhost:27017/drivinglicense?authSource=admin",
+            .WriteTo.MongoDBBson(Configuration.MongoConnectionString,
                 "logs",
                 LogEventLevel.Verbose,
                 50,
@@ -107,27 +218,17 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection RegisterMassTransit(this IServiceCollection services)
     {
-        const string modelCreatedTopic = "model-created-topic";
-        const string modelCategoryUpdatedTopic = "model-category-updated-topic";
-        const string modelTariffUpdatedTopic = "model-tariff-updated-topic";
-        const string vehicleAddedTopic = "vehicle-added-topic";
-        const string vehicleDeletedTopic = "vehicle-deleted-topic";
-        const string vehicleOccupiedTopic = "vehicle-occupied-topic";
-        const string vehicleReadiedForReleasesTopic = "vehicle-readied-for-releases-topic";
-        const string vehicleReleasedTopic = "vehicle-released-topic";
-        const string vehicleServicedTopic = "vehicle-serviced-topic";
-
         services.Configure<KafkaTopicsConfiguration>(config =>
         {
-            config.ModelCreatedTopic = modelCreatedTopic;
-            config.ModelCategoryUpdatedTopic = modelCategoryUpdatedTopic;
-            config.ModelTariffUpdatedTopic = modelTariffUpdatedTopic;
-            config.VehicleAddedTopic = vehicleAddedTopic;
-            config.VehicleDeletedTopic = vehicleDeletedTopic;
-            config.VehicleOccupiedTopic = vehicleOccupiedTopic;
-            config.VehicleReadiedForReleaseTopic = vehicleReadiedForReleasesTopic;
-            config.VehicleReleasedTopic = vehicleReleasedTopic;
-            config.VehicleServicedTopic = vehicleServicedTopic;
+            config.ModelCreatedTopic = Configuration.ModelCreatedTopic;
+            config.ModelCategoryUpdatedTopic = Configuration.ModelCategoryUpdatedTopic;
+            config.ModelTariffUpdatedTopic = Configuration.ModelTariffUpdatedTopic;
+            config.VehicleAddedTopic = Configuration.VehicleAddedTopic;
+            config.VehicleDeletedTopic = Configuration.VehicleDeletedTopic;
+            config.VehicleOccupyingProcessedTopic = Configuration.VehicleOccupyingProcessedTopic;
+            config.VehicleReadiedForReleaseTopic = Configuration.VehicleReadiedForReleasesTopic;
+            config.VehicleReleasedTopic = Configuration.VehicleReleasedTopic;
+            config.VehicleServicedTopic = Configuration.VehicleServicedTopic;
         });
 
         services.AddTransient<IMessageBus, KafkaProducer>();
@@ -135,29 +236,57 @@ public static class ServiceCollectionExtensions
         services.AddMassTransit(x =>
         {
             x.UsingInMemory();
-            
+
             x.AddRider(rider =>
             {
-                rider.AddProducer<string, ModelCreated>(modelCreatedTopic);
-                rider.AddProducer<string, ModelCategoryUpdated>(modelCategoryUpdatedTopic);
-                rider.AddProducer<string, ModelTariffUpdated>(modelTariffUpdatedTopic);
+                rider.AddConsumer<BookingCreatedConsumer>();
 
-                rider.AddProducer<string, VehicleAdded>(vehicleAddedTopic);
-                rider.AddProducer<string, VehicleDeleted>(vehicleDeletedTopic);
-                rider.AddProducer<string, VehicleOccupied>(vehicleOccupiedTopic);
-                rider.AddProducer<string, VehicleReadiedForRelease>(vehicleReadiedForReleasesTopic);
-                rider.AddProducer<string, VehicleReleased>(vehicleReleasedTopic);
-                rider.AddProducer<string, VehicleServiced>(vehicleServicedTopic);
-                
-                rider.UsingKafka((_, k) => k.Host((Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS") ?? "localhost:9092")
-                    .Split("__")));
+                rider.AddProducer<string, ModelCreated>(Configuration.ModelCreatedTopic);
+                rider.AddProducer<string, ModelCategoryUpdated>(Configuration
+                    .ModelCategoryUpdatedTopic);
+                rider.AddProducer<string, ModelTariffUpdated>(Configuration
+                    .ModelTariffUpdatedTopic);
+
+                rider.AddProducer<string, VehicleAdded>(Configuration.VehicleAddedTopic);
+                rider.AddProducer<string, VehicleDeleted>(Configuration.VehicleDeletedTopic);
+                rider.AddProducer<string, VehicleOccupyingProcessed>(Configuration
+                    .VehicleOccupyingProcessedTopic);
+                rider.AddProducer<string, VehicleReadiedForRelease>(Configuration
+                    .VehicleReadiedForReleasesTopic);
+                rider.AddProducer<string, VehicleReleased>(Configuration.VehicleReleasedTopic);
+                rider.AddProducer<string, VehicleServiced>(Configuration.VehicleServicedTopic);
+
+                rider.UsingKafka((context, k) =>
+                {
+                    k.TopicEndpoint<BookingCreated>(Configuration.BookingCreatedTopic,
+                        "vehicle-check-consumer-group",
+                        e =>
+                        {
+                            e.EnableAutoOffsetStore = false;
+                            e.EnablePartitionEof = true;
+                            e.AutoOffsetReset = AutoOffsetReset.Earliest;
+                            e.CreateIfMissing();
+                            e.UseKillSwitch(cfg =>
+                                cfg.SetActivationThreshold(1)
+                                    .SetRestartTimeout(TimeSpan.FromMinutes(1))
+                                    .SetTripThreshold(0.05)
+                                    .SetTrackingPeriod(TimeSpan.FromMinutes(1)));
+                            e.UseMessageRetry(retry =>
+                                retry.Interval(200, TimeSpan.FromSeconds(1)));
+                            e.ConfigureConsumer<BookingCreatedConsumer>(context);
+                        });
+
+
+                    k.Host(Configuration.BootstrapServers);
+                });
             });
         });
 
         return services;
     }
 
-    public static IServiceCollection RegisterInboxAndOutboxBackgroundJobs(this IServiceCollection services)
+    public static IServiceCollection RegisterInboxAndOutboxBackgroundJobs(
+        this IServiceCollection services)
     {
         services.AddQuartz(configure =>
         {
@@ -165,7 +294,15 @@ public static class ServiceCollectionExtensions
             configure
                 .AddJob<OutboxBackgroundJob>(j => j.WithIdentity(outboxJobKey))
                 .AddTrigger(trigger => trigger.ForJob(outboxJobKey)
-                    .WithSimpleSchedule(scheduleBuilder => scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
+                    .WithSimpleSchedule(scheduleBuilder =>
+                        scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
+
+            var inboxJobKey = new JobKey(nameof(InboxBackgroundJob));
+            configure
+                .AddJob<InboxBackgroundJob>(j => j.WithIdentity(inboxJobKey))
+                .AddTrigger(trigger => trigger.ForJob(inboxJobKey)
+                    .WithSimpleSchedule(scheduleBuilder =>
+                        scheduleBuilder.WithIntervalInSeconds(3).RepeatForever()));
         });
 
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
@@ -214,12 +351,12 @@ public static class ServiceCollectionExtensions
         {
             var connectionBuilder = new NpgsqlConnectionStringBuilder
             {
-                ApplicationName = "Vehicle_fleet#" + Environment.MachineName,
-                Host = Environment.GetEnvironmentVariable("POSTGRES_HOST") ?? "localhost",
-                Port = int.Parse(Environment.GetEnvironmentVariable("POSTGRES_PORT") ?? "5440"),
-                Database = Environment.GetEnvironmentVariable("POSTGRES_DB") ?? "vehiclefleet_db",
-                Username = Environment.GetEnvironmentVariable("POSTGRES_USER") ?? "postgres",
-                Password = Environment.GetEnvironmentVariable("POSTGRES_PASSWORD") ?? "password",
+                ApplicationName = Configuration.ApplicationName,
+                Host = Configuration.PostgresHost,
+                Port = Configuration.PostgresPort,
+                Database = Configuration.PostgresDatabase,
+                Username = Configuration.PostgresUsername,
+                Password = Configuration.PostgresPassword,
                 BrowsableConnectionString = false
             };
 
@@ -229,10 +366,39 @@ public static class ServiceCollectionExtensions
         services.AddGrpcHealthChecks()
             .AddNpgSql(getConnectionString(), timeout: TimeSpan.FromSeconds(10))
             .AddKafka(cfg =>
-                    cfg.BootstrapServers = (Environment.GetEnvironmentVariable("BOOTSTRAP_SERVERS")
-                                            ?? "localhost:9092").Split("__")[0],
+                    cfg.BootstrapServers = Configuration.BootstrapServers[0],
                 timeout: TimeSpan.FromSeconds(10));
 
         return services;
     }
+}
+
+internal class Configuration
+{
+    public required string ApplicationName { get; init; }
+
+    // Postgres
+    public required string PostgresHost { get; init; }
+    public required int PostgresPort { get; init; }
+    public required string PostgresDatabase { get; init; }
+    public required string PostgresUsername { get; init; }
+    public required string PostgresPassword { get; init; }
+
+
+    // Kafka
+    public required string[] BootstrapServers { get; init; }
+    public required string BookingCreatedTopic { get; init; }
+    public required string ModelCreatedTopic { get; init; }
+    public required string ModelCategoryUpdatedTopic { get; init; }
+    public required string ModelTariffUpdatedTopic { get; init; }
+    public required string VehicleAddedTopic { get; init; }
+    public required string VehicleDeletedTopic { get; init; }
+    public required string VehicleOccupyingProcessedTopic { get; init; }
+    public required string VehicleReadiedForReleasesTopic { get; init; }
+    public required string VehicleReleasedTopic { get; init; }
+    public required string VehicleServicedTopic { get; init; }
+
+
+    // Mongo
+    public required string MongoConnectionString { get; init; }
 }

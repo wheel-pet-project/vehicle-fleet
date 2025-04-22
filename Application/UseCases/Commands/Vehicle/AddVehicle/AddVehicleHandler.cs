@@ -1,4 +1,5 @@
 using Application.Ports.Postgres;
+using Application.Ports.Postgres.Saga;
 using Domain.SharedKernel.Errors;
 using Domain.SharedKernel.ValueObjects;
 using FluentResults;
@@ -9,9 +10,13 @@ namespace Application.UseCases.Commands.Vehicle.AddVehicle;
 public class AddVehicleHandler(
     IModelRepository modelRepository,
     IVehicleRepository vehicleRepository,
-    IUnitOfWork unitOfWork) : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
+    IUnitOfWork unitOfWork,
+    ISagaCreator sagaCreator,
+    ISagaSaveOnlyRepository sagaSaveOnlyRepository) : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
 {
-    public async Task<Result<AddVehicleResponse>> Handle(AddVehicleCommand command, CancellationToken cancellationToken)
+    public async Task<Result<AddVehicleResponse>> Handle(
+        AddVehicleCommand command,
+        CancellationToken cancellationToken)
     {
         var model = await modelRepository.GetById(command.ModelId);
         if (model == null) return Result.Fail(new NotFound("Model not found"));
@@ -20,15 +25,21 @@ public class AddVehicleHandler(
         var color = command.Color;
         var vin = Vin.Create(command.Vin);
         var location = command.Location != null
-            ? Domain.SharedKernel.ValueObjects.Location.Create(command.Location.Latitude, command.Location.Longitude)
+            ? Domain.SharedKernel.ValueObjects.Location.Create(
+                command.Location.Latitude,
+                command.Location.Longitude)
             : null;
 
         var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id, plateNumber, color, vin, location);
+        var saga = sagaCreator.CreateSagaVehicleAdding(vehicle);
 
         await vehicleRepository.Add(vehicle);
+        await sagaSaveOnlyRepository.Add(saga);
 
         var commitResult = await unitOfWork.Commit();
 
-        return commitResult.IsSuccess ? Result.Ok(new AddVehicleResponse(vehicle.Id)) : commitResult;
+        return commitResult.IsSuccess
+            ? Result.Ok(new AddVehicleResponse(vehicle.Id))
+            : commitResult;
     }
 }

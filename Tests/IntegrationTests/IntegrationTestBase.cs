@@ -24,14 +24,17 @@ public class IntegrationTestBase : IAsyncLifetime
         await _postgreSqlContainer.StartAsync();
 
         var connectionString = _postgreSqlContainer.GetConnectionString();
-        var connectionBuilder = new NpgsqlConnectionStringBuilder(connectionString) { IncludeErrorDetail = true };
-        var options = new DbContextOptionsBuilder<DataContext>().UseNpgsql(connectionBuilder.ConnectionString,
+        var connectionBuilder = new NpgsqlConnectionStringBuilder(connectionString)
+            { IncludeErrorDetail = true };
+        var options = new DbContextOptionsBuilder<DataContext>().UseNpgsql(
+            connectionBuilder.ConnectionString,
             npgsqlOptions => npgsqlOptions.MigrationsAssembly(typeof(DataContext).Assembly));
         Context = new DataContext(options.Options);
 
         await Context.Database.MigrateAsync();
 
-        DataSource = new NpgsqlDataSourceBuilder(_postgreSqlContainer.GetConnectionString()).Build();
+        DataSource = new NpgsqlDataSourceBuilder(_postgreSqlContainer.GetConnectionString())
+            .Build();
     }
 
     public async ValueTask DisposeAsync()

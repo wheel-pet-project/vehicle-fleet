@@ -24,7 +24,8 @@ public class VehicleDeletedHandlerShould
         await handler.Handle(_event, TestContext.Current.CancellationToken);
 
         // Assert
-        _messageBusMock.Verify(x => x.Publish(It.IsAny<VehicleDeletedDomainEvent>(), It.IsAny<CancellationToken>()),
+        _messageBusMock.Verify(
+            x => x.Publish(It.IsAny<VehicleDeletedDomainEvent>(), It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

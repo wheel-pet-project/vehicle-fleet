@@ -19,7 +19,9 @@ public class ModelTariffUpdateDomainEventShould
         // Arrange
 
         // Act
-        var actual = new ModelTariffUpdatedDomainEvent(_modelId, _pricePerMinute, _pricePerHour, _pricePerDay);
+        var actual =
+            new ModelTariffUpdatedDomainEvent(_modelId, _pricePerMinute, _pricePerHour,
+                _pricePerDay);
 
         // Assert
         Assert.NotNull(actual);
@@ -37,7 +39,8 @@ public class ModelTariffUpdateDomainEventShould
         // Act
         void Act()
         {
-            new ModelTariffUpdatedDomainEvent(Guid.Empty, _pricePerMinute, _pricePerHour, _pricePerDay);
+            new ModelTariffUpdatedDomainEvent(Guid.Empty, _pricePerMinute, _pricePerHour,
+                _pricePerDay);
         }
 
         // Assert

@@ -47,13 +47,15 @@ public class OutboxBackgroundJobShould : IntegrationTestBase
         await job.Execute(jobExecutionContextMock.Object);
 
         // Assert
-        var eventFromDb = await Context.Outbox.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
+        var eventFromDb =
+            await Context.Outbox.FirstOrDefaultAsync(TestContext.Current.CancellationToken);
         Assert.NotNull(eventFromDb.ProcessedOnUtc);
     }
 
     private async Task AddDomainEventToDb(DomainEvent domainEvent)
     {
-        var jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+        var jsonSerializerSettings = new JsonSerializerSettings
+            { TypeNameHandling = TypeNameHandling.All };
         var outboxEvent = new OutboxEvent
         {
             EventId = domainEvent.EventId,
@@ -79,7 +81,8 @@ public class OutboxBackgroundJobShould : IntegrationTestBase
 
         public void VerifyMediatorCalls(int times)
         {
-            _mediatorMock.Verify(x => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()),
+            _mediatorMock.Verify(
+                x => x.Publish(It.IsAny<INotification>(), It.IsAny<CancellationToken>()),
                 Times.Exactly(times));
         }
     }

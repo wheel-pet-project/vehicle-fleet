@@ -10,7 +10,8 @@ public record ModelCategoryUpdatedDomainEvent : DomainEvent
         if (modelId == Guid.Empty)
             throw new ValueIsRequiredException($"'{nameof(modelId)}' cannot be empty");
         if (char.IsBetween(category, 'A', 'Z') is false)
-            throw new ValueOutOfRangeException($"'{nameof(category)}' category character must be between 'A' and 'Z'");
+            throw new ValueOutOfRangeException(
+                $"'{nameof(category)}' category character must be between 'A' and 'Z'");
 
         ModelId = modelId;
         Category = category;

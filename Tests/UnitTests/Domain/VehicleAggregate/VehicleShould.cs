@@ -2,6 +2,7 @@ using Domain.SharedKernel.Exceptions.ArgumentException;
 using Domain.SharedKernel.Exceptions.DomainRulesViolationException;
 using Domain.SharedKernel.ValueObjects;
 using Domain.VehicleAggregate;
+using Domain.VehicleAggregate.DomainEvents;
 using JetBrains.Annotations;
 using Xunit;
 
@@ -152,7 +153,10 @@ public class VehicleShould
         vehicle.MarkAsNotAdded();
 
         // Act
-        void Act() => vehicle.MarkAsAdded();
+        void Act()
+        {
+            vehicle.MarkAsAdded();
+        }
 
         // Assert
         Assert.Throws<DomainRulesViolationException>(Act);
@@ -163,7 +167,7 @@ public class VehicleShould
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location);
-        
+
         // Act
         vehicle.MarkAsNotAdded();
 
@@ -172,19 +176,23 @@ public class VehicleShould
     }
 
     [Fact]
-    public void MarkAsNotAddedThrowDomainRulesViolationExceptionIfVehicleCannotBeChangedToThisStatus()
+    public void
+        MarkAsNotAddedThrowDomainRulesViolationExceptionIfVehicleCannotBeChangedToThisStatus()
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location);
         vehicle.MarkAsAdded();
 
         // Act
-        void Act() => vehicle.MarkAsNotAdded();
+        void Act()
+        {
+            vehicle.MarkAsNotAdded();
+        }
 
         // Assert
         Assert.Throws<DomainRulesViolationException>(Act);
     }
-    
+
     [Fact]
     public void MarkAsReadiedForRelease()
     {
@@ -290,14 +298,14 @@ public class VehicleShould
         vehicle.Release();
 
         // Act
-        vehicle.Occupy();
+        vehicle.Occupy(Guid.NewGuid());
 
         // Assert
         Assert.Equal(Status.Occupied, vehicle.Status);
     }
 
     [Fact]
-    public void AddDomainEventWhenOccupying()
+    public void AddVehicleOccupyingProcessedDomainEventWithOccupiedPropertyIsTrueWhenOccupying()
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
@@ -307,27 +315,35 @@ public class VehicleShould
         vehicle.ClearDomainEvents();
 
         // Act
-        vehicle.Occupy();
+        vehicle.Occupy(Guid.NewGuid());
 
         // Assert
         Assert.NotEmpty(vehicle.DomainEvents);
+        Assert.True(
+            vehicle.DomainEvents.Count(x => x is VehicleOccupyingProcessedDomainEvent
+            {
+                IsOccupied: true
+            }) == 1);
     }
 
     [Fact]
-    public void ThrowDomainRulesViolationExceptionIfOccupyingForInvalidStatus()
+    public void
+        AddVehicleOccupyingProcessedDomainEventWithOccupiedPropertyIsFalseIfOccupyingForInvalidStatus()
     {
         // Arrange
         var vehicle = Vehicle.Create(_modelId, _plateNumber, _color, _vin, _location, _fuelLevel);
         vehicle.MarkAsAdded();
 
         // Act
-        void Act()
-        {
-            vehicle.Occupy();
-        }
+        vehicle.Occupy(Guid.NewGuid());
 
         // Assert
-        Assert.Throws<DomainRulesViolationException>(Act);
+        Assert.NotEmpty(vehicle.DomainEvents);
+        Assert.True(
+            vehicle.DomainEvents.Count(x => x is VehicleOccupyingProcessedDomainEvent
+            {
+                IsOccupied: false
+            }) == 1);
     }
 
     [Fact]
@@ -366,7 +382,7 @@ public class VehicleShould
         vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
         vehicle.Release();
-        vehicle.Occupy();
+        vehicle.Occupy(Guid.NewGuid());
 
         // Act
         void Act()
@@ -414,7 +430,7 @@ public class VehicleShould
         vehicle.MarkAsAdded();
         vehicle.MarkAsReadiedForRelease();
         vehicle.Release();
-        vehicle.Occupy();
+        vehicle.Occupy(Guid.NewGuid());
 
         // Act
         void Act()

@@ -7,7 +7,9 @@ namespace Application.DomainEventHandlers.Vehicle;
 public class VehicleReadiedForReleaseHandler(IMessageBus messageBus)
     : INotificationHandler<VehicleReadiedForReleaseDomainEvent>
 {
-    public async Task Handle(VehicleReadiedForReleaseDomainEvent domainEvent, CancellationToken cancellationToken)
+    public async Task Handle(
+        VehicleReadiedForReleaseDomainEvent domainEvent,
+        CancellationToken cancellationToken)
     {
         await messageBus.Publish(domainEvent, cancellationToken);
     }

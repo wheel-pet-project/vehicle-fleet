@@ -1,4 +1,5 @@
 using Application.Ports.Postgres;
+using Application.Ports.Postgres.Saga;
 using Application.UseCases.Commands.Vehicle.AddVehicle;
 using Domain.SharedKernel.Errors;
 using Domain.SharedKernel.ValueObjects;
@@ -15,13 +16,18 @@ public class AddVehicleHandlerShould
     private readonly AddVehicleCommand _command = new(Guid.NewGuid(), "К513ОТ77", Color.White,
         "SALYA2BN2KA791786");
 
-    private readonly global::Domain.ModelAggregate.Model _modelFromDb = global::Domain.ModelAggregate.Model.Create(
-        Brand.Create("Kia"), CarModel.Create("Rio"),
-        Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
+    private readonly global::Domain.ModelAggregate.Model _modelFromDb =
+        global::Domain.ModelAggregate.Model.Create(
+            Brand.Create("Kia"), CarModel.Create("Rio"),
+            Category.Create(Category.BCategory), Tariff.Create(10.0M, 300.0M, 4000.0M));
 
     private readonly Mock<IModelRepository> _modelRepositoryMock = new();
     private readonly Mock<IVehicleRepository> _vehicleRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
+    private readonly Mock<ISagaCreator> _sagaCreatorMock = new();
+    private readonly Mock<ISagaSaveOnlyRepository> _sagaRepositoryMock = new();
+    
+    
     private readonly AddVehicleHandler _handler;
 
     public AddVehicleHandlerShould()
@@ -29,7 +35,7 @@ public class AddVehicleHandlerShould
         _modelRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).ReturnsAsync(_modelFromDb);
         _unitOfWorkMock.Setup(x => x.Commit()).ReturnsAsync(Result.Ok);
         _handler = new AddVehicleHandler(_modelRepositoryMock.Object, _vehicleRepositoryMock.Object,
-            _unitOfWorkMock.Object);
+            _unitOfWorkMock.Object, _sagaCreatorMock.Object, _sagaRepositoryMock.Object);
     }
 
     [Fact]

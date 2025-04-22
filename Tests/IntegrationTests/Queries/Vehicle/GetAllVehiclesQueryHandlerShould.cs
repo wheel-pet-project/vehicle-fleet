@@ -18,7 +18,8 @@ public class GetAllVehiclesQueryHandlerShould : IntegrationTestBase
 
         // Act
         var actual =
-            await queryHandler.Handle(new GetAllVehiclesQuery(Status.Added), TestContext.Current.CancellationToken);
+            await queryHandler.Handle(new GetAllVehiclesQuery(Status.AddingInProgress),
+                TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotEmpty(actual.Value.Vehicles);
@@ -39,7 +40,8 @@ public class GetAllVehiclesQueryHandlerShould : IntegrationTestBase
 
         // Act
         var actual =
-            await queryHandler.Handle(new GetAllVehiclesQuery(Status.Added), TestContext.Current.CancellationToken);
+            await queryHandler.Handle(new GetAllVehiclesQuery(Status.AddingInProgress),
+                TestContext.Current.CancellationToken);
 
         // Assert
         Assert.NotEmpty(actual.Value.Vehicles);
@@ -58,14 +60,16 @@ public class GetAllVehiclesQueryHandlerShould : IntegrationTestBase
 
         // Act
         var actual =
-            await queryHandler.Handle(new GetAllVehiclesQuery(Status.Added), TestContext.Current.CancellationToken);
+            await queryHandler.Handle(new GetAllVehiclesQuery(Status.AddingInProgress),
+                TestContext.Current.CancellationToken);
 
         // Assert
         Assert.Empty(actual.Value.Vehicles);
     }
 
-    private async Task<(Domain.ModelAggregate.Model, List<Domain.VehicleAggregate.Vehicle>)> AddModelAndVehicles(
-        int vehiclesCount)
+    private async Task<(Domain.ModelAggregate.Model, List<Domain.VehicleAggregate.Vehicle>)>
+        AddModelAndVehicles(
+            int vehiclesCount)
     {
         var model = Domain.ModelAggregate.Model.Create(Brand.Create("Kia"), CarModel.Create("Rio"),
             Category.Create('B'), Tariff.Create(1, 2, 3));
@@ -76,7 +80,8 @@ public class GetAllVehiclesQueryHandlerShould : IntegrationTestBase
         var vehicles = new List<Domain.VehicleAggregate.Vehicle>();
         for (var i = 0; i < vehiclesCount; i++)
         {
-            var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id, PlateNumber.Create("К333ОТ77"), Color.Red,
+            var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id,
+                PlateNumber.Create("К333ОТ77"), Color.Red,
                 Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create());
             vehicles.Add(vehicle);
 

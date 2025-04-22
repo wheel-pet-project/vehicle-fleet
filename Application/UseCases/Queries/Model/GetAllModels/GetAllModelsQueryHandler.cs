@@ -6,7 +6,8 @@ using Npgsql;
 namespace Application.UseCases.Queries.Model.GetAllModels;
 
 public class GetAllModelsQueryHandler(
-    NpgsqlDataSource dataSource) : IRequestHandler<GetAllModelsQuery, Result<GetAllModelsQueryResponse>>
+    NpgsqlDataSource dataSource)
+    : IRequestHandler<GetAllModelsQuery, Result<GetAllModelsQueryResponse>>
 {
     public async Task<Result<GetAllModelsQueryResponse>> Handle(
         GetAllModelsQuery query,
@@ -15,7 +16,7 @@ public class GetAllModelsQueryHandler(
         var command = new CommandDefinition(_sql,
             new
             {
-                Offset = CalculateOffset(query.Page, query.PageSize), 
+                Offset = CalculateOffset(query.Page, query.PageSize),
                 Limit = query.PageSize
             });
 
@@ -29,12 +30,12 @@ public class GetAllModelsQueryHandler(
 
         return response;
     }
-    
+
     private int CalculateOffset(int? page, int? pageSize)
     {
         page ??= 1;
         pageSize ??= 10;
-        
+
         return page.Value < 1
             ? 1
             : (page.Value - 1) * pageSize.Value;

@@ -6,7 +6,6 @@ namespace Domain.VehicleAggregate;
 
 public sealed class Status : Entity<int>
 {
-    
     public static readonly Status AddingInProgress = new(1, nameof(AddingInProgress).ToLowerInvariant());
     public static readonly Status Added = new(2, nameof(Added).ToLowerInvariant());
     public static readonly Status NotAdded = new(3, nameof(NotAdded).ToLowerInvariant());
@@ -30,7 +29,8 @@ public sealed class Status : Entity<int>
 
     public bool CanBeChangedToThisStatus(Status potentialStatus)
     {
-        if (potentialStatus is null) throw new ValueIsRequiredException($"{nameof(potentialStatus)} cannot be null");
+        if (potentialStatus is null)
+            throw new ValueIsRequiredException($"{nameof(potentialStatus)} cannot be null");
         if (!All().Contains(potentialStatus))
             throw new ValueOutOfRangeException($"{nameof(potentialStatus)} cannot be unsupported");
 
@@ -72,15 +72,19 @@ public sealed class Status : Entity<int>
 
     public static Status FromName(string name)
     {
-        var status = All().SingleOrDefault(s => string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
-        if (status == null) throw new ValueOutOfRangeException($"{nameof(name)} unknown status or null");
+        var status = All()
+            .SingleOrDefault(s =>
+                string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
+        if (status == null)
+            throw new ValueOutOfRangeException($"{nameof(name)} unknown status or null");
         return status;
     }
 
     public static Status FromId(int id)
     {
         var status = All().SingleOrDefault(s => s.Id == id);
-        if (status == null) throw new ValueOutOfRangeException($"{nameof(id)} unknown status or null");
+        if (status == null)
+            throw new ValueOutOfRangeException($"{nameof(id)} unknown status or null");
         return status;
     }
 

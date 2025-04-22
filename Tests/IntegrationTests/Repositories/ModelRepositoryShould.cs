@@ -38,7 +38,8 @@ public class ModelRepositoryShould : IntegrationTestBase
     {
         // Arrange
         var repositoryAndUowAndUnitOfWorkBuilderBuilder = new RepositoryAndUnitOfWorkBuilder();
-        var (repositoryForArrange, uowForArrange) = repositoryAndUowAndUnitOfWorkBuilderBuilder.Build(Context);
+        var (repositoryForArrange, uowForArrange) =
+            repositoryAndUowAndUnitOfWorkBuilderBuilder.Build(Context);
 
         await repositoryForArrange.Add(_model);
         await uowForArrange.Commit();
@@ -78,9 +79,11 @@ public class ModelRepositoryShould : IntegrationTestBase
 
     private class RepositoryAndUnitOfWorkBuilder
     {
-        public (ModelRepository, Infrastructure.Adapters.Postgres.UnitOfWork) Build(DataContext context)
+        public (ModelRepository, Infrastructure.Adapters.Postgres.UnitOfWork) Build(
+            DataContext context)
         {
-            return (new ModelRepository(context), new Infrastructure.Adapters.Postgres.UnitOfWork(context));
+            return (new ModelRepository(context),
+                new Infrastructure.Adapters.Postgres.UnitOfWork(context));
         }
     }
 }

@@ -1,6 +1,6 @@
 using Application.Ports.Postgres;
 using Application.UseCases.Commands.Vehicle.ReleaseVehicle;
-using Domain.SharedKernel.Errors;
+using Domain.SharedKernel.Exceptions.DataConsistencyViolationException;
 using Domain.SharedKernel.ValueObjects;
 using FluentResults;
 using JetBrains.Annotations;
@@ -15,7 +15,8 @@ public class ReleaseVehicleHandlerShould
     private readonly ReleaseVehicleCommand _command = new(Guid.NewGuid());
 
     private readonly global::Domain.VehicleAggregate.Vehicle _vehicleFromDb =
-        global::Domain.VehicleAggregate.Vehicle.Create(Guid.NewGuid(), PlateNumber.Create("К333ОТ77"), Color.White,
+        global::Domain.VehicleAggregate.Vehicle.Create(Guid.NewGuid(),
+            PlateNumber.Create("К333ОТ77"), Color.White,
             Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0));
 
     private readonly Mock<IVehicleRepository> _vehicleRepositoryMock = new();
@@ -24,6 +25,7 @@ public class ReleaseVehicleHandlerShould
 
     public ReleaseVehicleHandlerShould()
     {
+        _vehicleFromDb.MarkAsAdded();
         _vehicleFromDb.MarkAsReadiedForRelease(); // for state machine rules
 
         _vehicleRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).ReturnsAsync(_vehicleFromDb);
@@ -45,18 +47,20 @@ public class ReleaseVehicleHandlerShould
     }
 
     [Fact]
-    public async Task ReturnFailIfVehicleNotFound()
+    public async Task ThrowDataConsistencyExceptionIfVehicleNotFound()
     {
         // Arrange
         _vehicleRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>()))
             .ReturnsAsync((global::Domain.VehicleAggregate.Vehicle?)null);
 
         // Act
-        var actual = await _handler.Handle(_command, TestContext.Current.CancellationToken);
+        async Task Act()
+        {
+            await _handler.Handle(_command, TestContext.Current.CancellationToken);
+        }
 
         // Assert
-        Assert.True(actual.IsFailed);
-        Assert.IsType<NotFound>(actual.Errors[0]);
+        await Assert.ThrowsAsync<DataConsistencyViolationException>(Act);
     }
 
     [Fact]

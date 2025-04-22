@@ -7,7 +7,8 @@ using Npgsql;
 namespace Application.UseCases.Queries.Vehicle.GetVehiclesInSquare;
 
 public class GetVehiclesInSquareQueryHandler(
-    NpgsqlDataSource dataSource) : IRequestHandler<GetVehiclesInSquareQuery, Result<GetVehiclesInSquareQueryResponse>>
+    NpgsqlDataSource dataSource)
+    : IRequestHandler<GetVehiclesInSquareQuery, Result<GetVehiclesInSquareQueryResponse>>
 {
     public async Task<Result<GetVehiclesInSquareQueryResponse>> Handle(
         GetVehiclesInSquareQuery request,
@@ -21,10 +22,13 @@ public class GetVehiclesInSquareQueryHandler(
         var command = new CommandDefinition(_sql, new { StatusId = request.FilteringStatus.Id });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-        var vehicles = (await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command)).AsList();
+        var vehicles = (await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command))
+            .AsList();
 
         var vehiclesInSquare = vehicles
-            .Where(x => Location.Create(x.Latitude, x.Longitude).InSquare(upperLeftLocation, lowerRightLocation))
+            .Where(x =>
+                Location.Create(x.Latitude, x.Longitude)
+                    .InSquare(upperLeftLocation, lowerRightLocation))
             .ToList();
 
         return Result.Ok(new GetVehiclesInSquareQueryResponse(vehiclesInSquare.Select(x =>

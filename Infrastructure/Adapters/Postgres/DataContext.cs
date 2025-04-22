@@ -1,6 +1,8 @@
 using Domain.ModelAggregate;
 using Domain.VehicleAggregate;
+using Infrastructure.Adapters.Postgres.Inbox;
 using Infrastructure.Adapters.Postgres.Outbox;
+using Infrastructure.Adapters.Postgres.Saga.SagaSharedKernel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,13 +12,17 @@ public sealed class DataContext(DbContextOptions<DataContext> options) : DbConte
 {
     public DbSet<Vehicle> Vehicles { get; set; }
     public DbSet<Model> Models { get; set; }
+    public DbSet<InboxEvent> Inbox { get; set; }
     public DbSet<OutboxEvent> Outbox { get; set; }
+    public DbSet<SagaModel> Saga { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new ModelEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new VehicleEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new StatusEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new SagaModelEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new InboxEventTypeConfiguration());
         modelBuilder.ApplyConfiguration(new OutboxEventTypeConfiguration());
     }
 }
@@ -31,18 +37,29 @@ internal sealed class ModelEntityTypeConfiguration : IEntityTypeConfiguration<Mo
 
         builder.Property(x => x.Id).ValueGeneratedNever().HasColumnName("id").IsRequired();
 
-        builder.OwnsOne(x => x.Brand, cfg => { cfg.Property(x => x.Name).HasColumnName("brand").IsRequired(); });
+        builder.OwnsOne(x => x.Brand,
+            cfg => { cfg.Property(x => x.Name).HasColumnName("brand").IsRequired(); });
 
-        builder.OwnsOne(x => x.CarModel, cfg => { cfg.Property(x => x.Name).HasColumnName("car_model").IsRequired(); });
+        builder.OwnsOne(x => x.CarModel,
+            cfg => { cfg.Property(x => x.Name).HasColumnName("car_model").IsRequired(); });
 
         builder.OwnsOne(x => x.Category,
             cfg => { cfg.Property(x => x.Character).HasColumnName("category").IsRequired(); });
 
         builder.OwnsOne(x => x.Tariff, cfg =>
         {
-            cfg.Property(x => x.PricePerMinute).HasPrecision(10, 2).HasColumnName("price_per_minute").IsRequired();
-            cfg.Property(x => x.PricePerHour).HasPrecision(10, 2).HasColumnName("price_per_hour").IsRequired();
-            cfg.Property(x => x.PricePerDay).HasPrecision(10, 2).HasColumnName("price_per_day").IsRequired();
+            cfg.Property(x => x.PricePerMinute)
+                .HasPrecision(10, 2)
+                .HasColumnName("price_per_minute")
+                .IsRequired();
+            cfg.Property(x => x.PricePerHour)
+                .HasPrecision(10, 2)
+                .HasColumnName("price_per_hour")
+                .IsRequired();
+            cfg.Property(x => x.PricePerDay)
+                .HasPrecision(10, 2)
+                .HasColumnName("price_per_day")
+                .IsRequired();
         });
 
         builder.Ignore(x => x.DomainEvents);
@@ -60,7 +77,11 @@ internal sealed class VehicleEntityTypeConfiguration : IEntityTypeConfiguration<
         builder.Property(x => x.Id).ValueGeneratedNever().HasColumnName("id").IsRequired();
         builder.Property(x => x.ModelId).HasColumnName("model_id").IsRequired();
 
-        builder.HasOne<Model>().WithMany().HasForeignKey(x => x.ModelId).HasConstraintName("FK_model_id").IsRequired();
+        builder.HasOne<Model>()
+            .WithMany()
+            .HasForeignKey(x => x.ModelId)
+            .HasConstraintName("FK_model_id")
+            .IsRequired();
 
         builder.HasOne(x => x.Status)
             .WithMany()
@@ -71,9 +92,11 @@ internal sealed class VehicleEntityTypeConfiguration : IEntityTypeConfiguration<
         builder.OwnsOne(x => x.PlateNumber,
             cfg => { cfg.Property(x => x.Value).HasColumnName("plate_number").IsRequired(); });
 
-        builder.OwnsOne(x => x.Color, cfg => { cfg.Property(x => x.Name).HasColumnName("color").IsRequired(); });
+        builder.OwnsOne(x => x.Color,
+            cfg => { cfg.Property(x => x.Name).HasColumnName("color").IsRequired(); });
 
-        builder.OwnsOne(x => x.Vin, cfg => { cfg.Property(x => x.Number).HasColumnName("vin").IsRequired(); });
+        builder.OwnsOne(x => x.Vin,
+            cfg => { cfg.Property(x => x.Number).HasColumnName("vin").IsRequired(); });
 
         builder.OwnsOne(x => x.FuelLevel,
             cfg => { cfg.Property(x => x.Percents).HasColumnName("fuel_level_percents").IsRequired(); });
@@ -103,20 +126,66 @@ internal sealed class StatusEntityTypeConfiguration : IEntityTypeConfiguration<S
     }
 }
 
-internal sealed class OutboxEventTypeConfiguration : IEntityTypeConfiguration<OutboxEvent>
+internal class SagaModelEntityTypeConfiguration : IEntityTypeConfiguration<SagaModel>
+{
+    public void Configure(EntityTypeBuilder<SagaModel> builder)
+    {
+        builder.ToTable("saga");
+
+        builder.HasKey(x => x.SagaId);
+        
+        builder.Property(x => x.SagaId).HasColumnName("saga_id").IsRequired();
+        builder.Property(x => x.Type).HasColumnName("type").IsRequired();
+        builder.Property(x => x.Version).HasColumnName("version").IsRequired();
+        builder.Property(x => x.Content).HasColumnName("content").IsRequired();
+        builder.Property(x => x.IsCompleted).HasColumnName("is_completed").IsRequired();
+        builder.Property(x => x.IsFaulted).HasColumnName("is_faulted").IsRequired();
+    }
+}
+
+internal class OutboxEventTypeConfiguration : IEntityTypeConfiguration<OutboxEvent>
 {
     public void Configure(EntityTypeBuilder<OutboxEvent> builder)
     {
         builder.ToTable("outbox");
 
         builder.HasKey(x => x.EventId);
-        
-        builder.HasIndex(x => new { x.OccurredOnUtc, x.ProcessedOnUtc }, "IX_outbox_messages_unprocessed")
+
+        builder.HasIndex(x => new { x.OccurredOnUtc, x.ProcessedOnUtc },
+                "IX_outbox_messages_unprocessed")
             .IncludeProperties(x => new { x.EventId, x.Type })
             .IsDescending(false, false)
             .HasFilter("processed_on_utc IS NULL");
 
-        builder.Property(x => x.EventId).HasColumnName("event_id").ValueGeneratedNever().IsRequired();
+        builder.Property(x => x.EventId)
+            .ValueGeneratedNever()
+            .HasColumnName("event_id")
+            .IsRequired();
+        builder.Property(x => x.Type).HasColumnName("type").IsRequired();
+        builder.Property(x => x.Content).HasColumnName("content").IsRequired();
+        builder.Property(x => x.OccurredOnUtc).HasColumnName("occurred_on_utc").IsRequired();
+        builder.Property(x => x.ProcessedOnUtc).HasColumnName("processed_on_utc").IsRequired(false);
+    }
+}
+
+internal class InboxEventTypeConfiguration : IEntityTypeConfiguration<InboxEvent>
+{
+    public void Configure(EntityTypeBuilder<InboxEvent> builder)
+    {
+        builder.ToTable("inbox");
+
+        builder.HasKey(x => x.EventId);
+
+        builder.HasIndex(x => new { x.OccurredOnUtc, x.ProcessedOnUtc },
+                "IX_inbox_messages_unprocessed")
+            .IncludeProperties(x => new { x.EventId, x.Type })
+            .IsDescending(false, false)
+            .HasFilter("processed_on_utc IS NULL");
+
+        builder.Property(x => x.EventId)
+            .ValueGeneratedNever()
+            .HasColumnName("event_id")
+            .IsRequired();
         builder.Property(x => x.Type).HasColumnName("type").IsRequired();
         builder.Property(x => x.Content).HasColumnName("content").IsRequired();
         builder.Property(x => x.OccurredOnUtc).HasColumnName("occurred_on_utc").IsRequired();

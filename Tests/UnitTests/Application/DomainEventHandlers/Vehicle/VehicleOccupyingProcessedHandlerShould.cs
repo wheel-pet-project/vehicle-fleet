@@ -7,10 +7,11 @@ using Xunit;
 
 namespace UnitTests.Application.DomainEventHandlers.Vehicle;
 
-[TestSubject(typeof(VehicleOccupiedHandler))]
-public class VehicleOccupiedHandlerShould
+[TestSubject(typeof(VehicleOccupyingProcessedHandler))]
+public class VehicleOccupyingProcessedHandlerShould
 {
-    private readonly VehicleOccupiedDomainEvent _event = new(Guid.NewGuid());
+    private readonly VehicleOccupyingProcessedDomainEvent _event = new(Guid.NewGuid(),
+        Guid.NewGuid(), true);
 
     private readonly Mock<IMessageBus> _messageBusMock = new();
 
@@ -18,13 +19,15 @@ public class VehicleOccupiedHandlerShould
     public async Task CallMessageBusPublish()
     {
         // Arrange
-        var handler = new VehicleOccupiedHandler(_messageBusMock.Object);
+        var handler = new VehicleOccupyingProcessedHandler(_messageBusMock.Object);
 
         // Act
         await handler.Handle(_event, TestContext.Current.CancellationToken);
 
         // Assert
-        _messageBusMock.Verify(x => x.Publish(It.IsAny<VehicleOccupiedDomainEvent>(), It.IsAny<CancellationToken>()),
+        _messageBusMock.Verify(
+            x => x.Publish(It.IsAny<VehicleOccupyingProcessedDomainEvent>(),
+                It.IsAny<CancellationToken>()),
             Times.Once);
     }
 }

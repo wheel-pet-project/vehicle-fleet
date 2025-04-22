@@ -135,7 +135,8 @@ public class LocationShould
         var location = Location.Create(1.00000, 1.00000);
 
         // Act
-        var actual = location.InSquare(Location.Create(1.00001, 0.99999), Location.Create(0.99999, 1.00001));
+        var actual = location.InSquare(Location.Create(1.00001, 0.99999),
+            Location.Create(0.99999, 1.00001));
 
         // Assert
         Assert.True(actual);
