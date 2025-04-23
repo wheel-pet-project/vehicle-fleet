@@ -10,6 +10,7 @@ public class VehicleAddedDomainEventShould
 {
     private readonly Guid _vehicleId = Guid.NewGuid();
     private readonly Guid _modelId = Guid.NewGuid();
+    private readonly Guid _sagaId = Guid.NewGuid();
 
     [Fact]
     public void CreateNewInstanceWithCorrectValues()
@@ -18,7 +19,7 @@ public class VehicleAddedDomainEventShould
 
 
         // Act
-        var actual = new VehicleAddedDomainEvent(_vehicleId, _modelId);
+        var actual = new VehicleAddedDomainEvent(_vehicleId, _modelId, _sagaId);
 
         // Assert
         Assert.NotNull(actual);
@@ -34,7 +35,7 @@ public class VehicleAddedDomainEventShould
         // Act
         void Act()
         {
-            new VehicleAddedDomainEvent(Guid.Empty, _modelId);
+            new VehicleAddedDomainEvent(Guid.Empty, _modelId, _sagaId);
         }
 
         // Assert
@@ -49,9 +50,24 @@ public class VehicleAddedDomainEventShould
         // Act
         void Act()
         {
-            new VehicleAddedDomainEvent(_vehicleId, Guid.Empty);
+            new VehicleAddedDomainEvent(_vehicleId, Guid.Empty, _sagaId);
         }
 
+        // Assert
+        Assert.Throws<ValueIsRequiredException>(Act);
+    }
+
+    [Fact]
+    public void ThrowValueIsRequiredExceptionIfSagaIdIsEmpty()
+    {
+        // Arrange
+
+        // Act
+        void Act()
+        {
+            new VehicleAddedDomainEvent(_vehicleId, _sagaId, Guid.Empty);
+        }
+        
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
     }

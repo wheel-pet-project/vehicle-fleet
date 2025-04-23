@@ -1,12 +1,12 @@
-namespace Infrastructure.Adapters.Postgres.Saga.SagaSharedKernel;
+namespace Domain.SharedKernel.Saga;
 
-public abstract class SagaService(int number, string name)
+public abstract class SagaMicroservice(int number, string name)
 {
     public int Number { get; } = number;
     public string Name { get; } = name;
 
     
-    public static bool operator ==(SagaService a, SagaService b)
+    public static bool operator ==(SagaMicroservice a, SagaMicroservice b)
     {
         if (a is null && b is null)
             return true;
@@ -17,12 +17,12 @@ public abstract class SagaService(int number, string name)
         return a.Number == b.Number;
     }
 
-    public static bool operator !=(SagaService a, SagaService b)
+    public static bool operator !=(SagaMicroservice a, SagaMicroservice b)
     {
         return !(a == b);
     }
     
-    protected bool Equals(SagaService other)
+    protected bool Equals(SagaMicroservice other)
     {
         return Number == other.Number && Name == other.Name;
     }
@@ -32,7 +32,7 @@ public abstract class SagaService(int number, string name)
         if (obj is null) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != GetType()) return false;
-        return Equals((SagaService)obj);
+        return Equals((SagaMicroservice)obj);
     }
 
     public override int GetHashCode()

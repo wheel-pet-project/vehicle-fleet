@@ -80,7 +80,7 @@ public class GetAllVehiclesQueryHandlerShould : IntegrationTestBase
         var vehicles = new List<Domain.VehicleAggregate.Vehicle>();
         for (var i = 0; i < vehiclesCount; i++)
         {
-            var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id,
+            var (_, vehicle) = Domain.VehicleAggregate.Vehicle.Create(model.Id,
                 PlateNumber.Create("К333ОТ77"), Color.Red,
                 Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0), FuelLevel.Create());
             vehicles.Add(vehicle);

@@ -1,4 +1,4 @@
-namespace Infrastructure.Adapters.Postgres.Saga.SagaSharedKernel;
+namespace Domain.SharedKernel.Saga;
 
 public abstract class Saga
 { 
@@ -10,5 +10,5 @@ public abstract class Saga
     
     public Guid SagaId { get; private set; } = Guid.NewGuid();
     public int Version { get; private set; }
-    public ISagaState<IProcessState> SagaState { get; private set; } = null!;
+    public ISagaState<IProcessState> SagaState { get; private set; }
 }

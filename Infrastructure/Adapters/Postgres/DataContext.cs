@@ -2,7 +2,7 @@ using Domain.ModelAggregate;
 using Domain.VehicleAggregate;
 using Infrastructure.Adapters.Postgres.Inbox;
 using Infrastructure.Adapters.Postgres.Outbox;
-using Infrastructure.Adapters.Postgres.Saga.SagaSharedKernel;
+using Infrastructure.Adapters.Postgres.Saga;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

@@ -24,8 +24,7 @@ public class AddVehicleHandlerShould
     private readonly Mock<IModelRepository> _modelRepositoryMock = new();
     private readonly Mock<IVehicleRepository> _vehicleRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<ISagaCreator> _sagaCreatorMock = new();
-    private readonly Mock<ISagaSaveOnlyRepository> _sagaRepositoryMock = new();
+    private readonly Mock<IVehicleAddingSagaSaveOnlyRepository> _sagaRepositoryMock = new();
     
     
     private readonly AddVehicleHandler _handler;
@@ -35,7 +34,7 @@ public class AddVehicleHandlerShould
         _modelRepositoryMock.Setup(x => x.GetById(It.IsAny<Guid>())).ReturnsAsync(_modelFromDb);
         _unitOfWorkMock.Setup(x => x.Commit()).ReturnsAsync(Result.Ok);
         _handler = new AddVehicleHandler(_modelRepositoryMock.Object, _vehicleRepositoryMock.Object,
-            _unitOfWorkMock.Object, _sagaCreatorMock.Object, _sagaRepositoryMock.Object);
+            _unitOfWorkMock.Object, _sagaRepositoryMock.Object);
     }
 
     [Fact]

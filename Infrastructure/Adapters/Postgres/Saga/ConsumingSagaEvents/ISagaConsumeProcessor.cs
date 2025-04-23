@@ -1,8 +1,8 @@
-using Infrastructure.Adapters.Postgres.Saga.SagaVehicleAdding;
+using Domain.VehicleAddingSaga;
 
 namespace Infrastructure.Adapters.Postgres.Saga.ConsumingSagaEvents;
 
 public interface ISagaConsumeProcessor
 {
-    Task<bool> SagaVehicleAddingProcess(SagaVehicleAddingConsumerEvent @event);
+    Task<bool> SagaVehicleAddingProcess(VehicleAddingSagaEvent @event);
 }

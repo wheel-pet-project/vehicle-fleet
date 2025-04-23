@@ -156,8 +156,7 @@ public static class ServiceCollectionExtensions
 
     public static IServiceCollection RegisterSagaVehicleAdding(this IServiceCollection services)
     {
-        services.AddTransient<ISagaCreator, SagaCreator>();
-        services.AddTransient<ISagaSaveOnlyRepository, SagaSaveOnlyRepository>();
+        services.AddTransient<IVehicleAddingSagaSaveOnlyRepository, VehicleAddingSagaSaveOnlyRepository>();
         services.AddTransient<ISagaConsumeProcessor, SagaConsumeProcessor>();
         
         return services;

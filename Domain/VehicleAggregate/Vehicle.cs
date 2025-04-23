@@ -115,7 +115,7 @@ public sealed class Vehicle : Aggregate
         AddDomainEvent(new VehicleDeletedDomainEvent(Id));
     }
 
-    public static Vehicle Create(
+    public static (VehicleAddingSaga.VehicleAddingSaga saga, Vehicle vehicle) Create(
         Guid modelId,
         PlateNumber plateNumber,
         Color color,
@@ -123,21 +123,20 @@ public sealed class Vehicle : Aggregate
         Location? location = null,
         FuelLevel? fuelLevel = null)
     {
-        if (modelId == Guid.Empty)
-            throw new ValueIsRequiredException($"{nameof(modelId)} cannot be empty");
-        if (plateNumber == null)
-            throw new ValueIsRequiredException($"{nameof(plateNumber)} cannot be null");
+        if (modelId == Guid.Empty) throw new ValueIsRequiredException($"{nameof(modelId)} cannot be empty");
+        if (plateNumber == null) throw new ValueIsRequiredException($"{nameof(plateNumber)} cannot be null");
         if (color == null) throw new ValueIsRequiredException($"{nameof(color)} cannot be null");
         if (vin == null) throw new ValueIsRequiredException($"{nameof(vin)} cannot be null");
 
-        if (location == null)
-            location = Location.Create(56.0357178825, 37.7567042515); // Учинское вдхр.
+        if (location == null) location = Location.Create(56.0357178825, 37.7567042515); // Учинское вдхр.
         if (fuelLevel == null) fuelLevel = FuelLevel.Create();
 
         var vehicle = new Vehicle(modelId, plateNumber, color, vin, fuelLevel, location);
 
-        vehicle.AddDomainEvent(new VehicleAddedDomainEvent(vehicle.Id, vehicle.ModelId));
+        var saga = new VehicleAddingSaga.VehicleAddingSaga(vehicle.Id);
+        
+        vehicle.AddDomainEvent(new VehicleAddedDomainEvent(vehicle.Id, vehicle.ModelId, saga.SagaId));
 
-        return vehicle;
+        return (saga, vehicle);
     }
 }

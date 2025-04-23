@@ -11,8 +11,7 @@ public class AddVehicleHandler(
     IModelRepository modelRepository,
     IVehicleRepository vehicleRepository,
     IUnitOfWork unitOfWork,
-    ISagaCreator sagaCreator,
-    ISagaSaveOnlyRepository sagaSaveOnlyRepository) : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
+    IVehicleAddingSagaSaveOnlyRepository vehicleAddingSagaSaveOnlyRepository) : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
 {
     public async Task<Result<AddVehicleResponse>> Handle(
         AddVehicleCommand command,
@@ -30,11 +29,10 @@ public class AddVehicleHandler(
                 command.Location.Longitude)
             : null;
 
-        var vehicle = Domain.VehicleAggregate.Vehicle.Create(model.Id, plateNumber, color, vin, location);
-        var saga = sagaCreator.CreateSagaVehicleAdding(vehicle);
+        var (saga, vehicle) = Domain.VehicleAggregate.Vehicle.Create(model.Id, plateNumber, color, vin, location);
 
         await vehicleRepository.Add(vehicle);
-        await sagaSaveOnlyRepository.Add(saga);
+        await vehicleAddingSagaSaveOnlyRepository.Add(saga);
 
         var commitResult = await unitOfWork.Commit();
 

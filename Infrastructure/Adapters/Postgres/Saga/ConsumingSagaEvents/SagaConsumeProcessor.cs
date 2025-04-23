@@ -1,6 +1,6 @@
 using Dapper;
 using Domain.SharedKernel.Exceptions.DataConsistencyViolationException;
-using Infrastructure.Adapters.Postgres.Saga.SagaVehicleAdding;
+using Domain.VehicleAddingSaga;
 using JsonNet.ContractResolvers;
 using Newtonsoft.Json;
 using Npgsql;
@@ -12,7 +12,7 @@ public class SagaConsumeProcessor(NpgsqlDataSource dataSource) : ISagaConsumePro
     private readonly JsonSerializerSettings _jsonSettings = new()
         { TypeNameHandling = TypeNameHandling.All, ContractResolver = new PrivateSetterContractResolver() };
     
-    public async Task<bool> SagaVehicleAddingProcess(SagaVehicleAddingConsumerEvent @event)
+    public async Task<bool> SagaVehicleAddingProcess(VehicleAddingSagaEvent @event)
     {
         await using var connection = new NpgsqlConnection(dataSource.ConnectionString);
         return await Process(async () =>
@@ -26,24 +26,24 @@ public class SagaConsumeProcessor(NpgsqlDataSource dataSource) : ISagaConsumePro
             await Update(saga);
         });
         
-        async Task<SagaVehicleAdding.SagaVehicleAdding?> GetSagaById(Guid sagaId) 
+        async Task<VehicleAddingSaga?> GetSagaById(Guid sagaId) 
         {
             var saga = await connection.QueryFirstOrDefaultAsync<SagaDapperModel>(SqlSelect, new { SagaId = sagaId });
             if (saga == null) throw new DataConsistencyViolationException(
                 $"Saga with id {sagaId} not found for update");
 
-            var deserializedSaga = JsonConvert.DeserializeObject<SagaVehicleAdding.SagaVehicleAdding>(saga.Content, _jsonSettings);
+            var deserializedSaga = JsonConvert.DeserializeObject<VehicleAddingSaga>(saga.Content, _jsonSettings);
             return deserializedSaga;
         }
         
-        async Task Update(SagaVehicleAdding.SagaVehicleAdding saga) 
+        async Task Update(VehicleAddingSaga vehicleAddingSaga) 
         {
             await connection.ExecuteAsync(SqlUpdate, new
             {    
-                SagaId = saga.SagaId,
-                Content = JsonConvert.SerializeObject(saga, _jsonSettings),
-                IsCompleted = saga.SagaState.IsCompleted,
-                IsFaulted = saga.SagaState.IsFaulted
+                SagaId = vehicleAddingSaga.SagaId,
+                Content = JsonConvert.SerializeObject(vehicleAddingSaga, _jsonSettings),
+                IsCompleted = vehicleAddingSaga.SagaState.IsCompleted,
+                IsFaulted = vehicleAddingSaga.SagaState.IsFaulted
             });
         }
     }

@@ -1,4 +1,4 @@
-namespace Infrastructure.Adapters.Postgres.Saga.SagaSharedKernel;
+namespace Domain.SharedKernel.Saga;
 
 public interface ISagaState<out TSagaState> 
     where TSagaState : IProcessState 

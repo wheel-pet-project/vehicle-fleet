@@ -73,7 +73,7 @@ public class KafkaProducer(
             new Uri($"topic:{_topicsConfiguration.VehicleAddedTopic}"));
 
         await producer.Produce(domainEvent.EventId.ToString(),
-            new VehicleAdded(domainEvent.EventId, domainEvent.VehicleId, domainEvent.ModelId),
+            new VehicleAdded(domainEvent.EventId, domainEvent.SagaId, domainEvent.VehicleId, domainEvent.ModelId),
             SetMessageId<VehicleAdded, VehicleAddedDomainEvent>(domainEvent),
             cancellationToken);
     }

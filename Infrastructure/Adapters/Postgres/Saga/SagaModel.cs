@@ -1,4 +1,4 @@
-namespace Infrastructure.Adapters.Postgres.Saga.SagaSharedKernel;
+namespace Infrastructure.Adapters.Postgres.Saga;
 
 public class SagaModel
 {

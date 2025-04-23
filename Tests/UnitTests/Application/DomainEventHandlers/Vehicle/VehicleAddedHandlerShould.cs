@@ -10,7 +10,7 @@ namespace UnitTests.Application.DomainEventHandlers.Vehicle;
 [TestSubject(typeof(VehicleAddedHandlerShould))]
 public class VehicleAddedHandlerShould
 {
-    private readonly VehicleAddedDomainEvent _event = new(Guid.NewGuid(), Guid.NewGuid());
+    private readonly VehicleAddedDomainEvent _event = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
     private readonly Mock<IMessageBus> _messageBusMock = new();
 

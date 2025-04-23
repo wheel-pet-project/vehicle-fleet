@@ -16,7 +16,7 @@ namespace IntegrationTests.Outbox;
 [TestSubject(typeof(OutboxBackgroundJob))]
 public class OutboxBackgroundJobShould : IntegrationTestBase
 {
-    private readonly VehicleAddedDomainEvent _domainEvent = new(Guid.NewGuid(), Guid.NewGuid());
+    private readonly VehicleAddedDomainEvent _domainEvent = new(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
     [Fact]
     public async Task CallMediatorPublishMethod()
