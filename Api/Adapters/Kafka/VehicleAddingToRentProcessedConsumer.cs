@@ -10,7 +10,6 @@ public class VehicleAddingToRentProcessedConsumer(
 {
     public async Task Consume(ConsumeContext<VehicleAddingToRentProcessed> context)
     {
-        // todo: заменить Guid.NewGuid() на SagaId
         var @event = context.Message;
         var sagaEvent = new VehicleAddingSagaEvent(
             @event.SagaId,
