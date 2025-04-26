@@ -80,11 +80,14 @@ public static class ServiceCollectionExtensions
                 VehicleServicedTopic =
                     Environment.GetEnvironmentVariable("VEHICLE_SERVICED_TOPIC") ??
                     "vehicle-serviced-topic",
-                AddingToBookingProcessedTopic = Environment.GetEnvironmentVariable("VEHICLE_ADDING_TO_BOOKING_PROCESSED_TOPIC") ?? "vehicle-adding-to-booking-processed-topic",
-                AddingToRentProcessedTopic = Environment.GetEnvironmentVariable("VEHICLE_ADDING_TO_RENT_PROCESSED_TOPIC") ??
+                AddingToBookingProcessedTopic =
+                    Environment.GetEnvironmentVariable("VEHICLE_ADDING_TO_BOOKING_PROCESSED_TOPIC") ??
+                    "vehicle-adding-to-booking-processed-topic",
+                AddingToRentProcessedTopic =
+                    Environment.GetEnvironmentVariable("VEHICLE_ADDING_TO_RENT_PROCESSED_TOPIC") ??
                     "vehicle-adding-to-rent-processed-topic",
                 DocumentAddingCompletedTopic = Environment.GetEnvironmentVariable("DOCUMENTS_ADDING_COMPLETED_TOPIC") ??
-                                               "documents-adding-completed-topic",
+                                               "documents-adding-completed-topic"
             },
             "Production" => new Configuration
             {
@@ -273,7 +276,7 @@ public static class ServiceCollectionExtensions
                                 retry.Interval(200, TimeSpan.FromSeconds(1)));
                             e.ConfigureConsumer<BookingCreatedConsumer>(context);
                         });
-                    
+
                     k.TopicEndpoint<VehicleAddingToBookingProcessed>(Configuration.AddingToBookingProcessedTopic,
                         "vehicle-fleet-consumer-group",
                         e =>
@@ -291,7 +294,7 @@ public static class ServiceCollectionExtensions
                                 retry.Interval(200, TimeSpan.FromSeconds(1)));
                             e.ConfigureConsumer<VehicleAddingToBookingProcessedConsumer>(context);
                         });
-                    
+
                     k.TopicEndpoint<VehicleAddingToRentProcessed>(Configuration.AddingToRentProcessedTopic,
                         "vehicle-fleet-consumer-group",
                         e =>
@@ -309,7 +312,7 @@ public static class ServiceCollectionExtensions
                                 retry.Interval(200, TimeSpan.FromSeconds(1)));
                             e.ConfigureConsumer<VehicleAddingToRentProcessedConsumer>(context);
                         });
-                    
+
                     k.TopicEndpoint<DocumentAddingCompleted>(Configuration.DocumentAddingCompletedTopic,
                         "vehicle-fleet-consumer-group",
                         e =>

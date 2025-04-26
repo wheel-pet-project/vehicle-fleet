@@ -17,7 +17,7 @@ public class VehicleAddingToBookingProcessedConsumer(IInbox inbox) : IConsumer<V
             @event.VehicleId,
             @event.IsSuccess,
             VehicleAddingSagaMicroservice.Booking);
-        
+
         var isSaved = await inbox.Save(sagaConsumerEvent);
         if (isSaved == false) throw new ConsumerCanceledException("Could not save event in inbox");
 

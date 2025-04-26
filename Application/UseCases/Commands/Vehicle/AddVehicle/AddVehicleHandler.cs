@@ -10,7 +10,8 @@ public class AddVehicleHandler(
     IModelRepository modelRepository,
     IVehicleRepository vehicleRepository,
     IUnitOfWork unitOfWork,
-    IVehicleAddingSagaRepository vehicleAddingSagaRepository) : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
+    IVehicleAddingSagaRepository vehicleAddingSagaRepository)
+    : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
 {
     public async Task<Result<AddVehicleResponse>> Handle(
         AddVehicleCommand command,

@@ -134,7 +134,7 @@ public sealed class Vehicle : Aggregate
         var vehicle = new Vehicle(modelId, plateNumber, color, vin, fuelLevel, location);
 
         var saga = new VehicleAddingSaga.VehicleAddingSaga(vehicle.Id);
-        
+
         vehicle.AddDomainEvent(new VehicleAddedDomainEvent(vehicle.Id, vehicle.ModelId, saga.SagaId));
 
         return (saga, vehicle);

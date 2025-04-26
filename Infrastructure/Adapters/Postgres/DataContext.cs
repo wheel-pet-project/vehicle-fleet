@@ -156,7 +156,7 @@ internal class VehicleAddingSagaEntityTypeConfiguration : IEntityTypeConfigurati
         builder.Property(x => x.State)
             .HasConversion<string>(
                 to =>
-                    JsonConvert.SerializeObject(to, 
+                    JsonConvert.SerializeObject(to,
                         new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }),
                 from => JsonConvert.DeserializeObject<VehicleAddingState>(from, new JsonSerializerSettings
                 {

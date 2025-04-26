@@ -23,7 +23,7 @@ public class VehicleAddingStateShould
         _saga = saga;
         _state = _saga.State;
     }
-    
+
     [Fact]
     public void MarkAsFaultedIfOneOfProcessesFault()
     {
@@ -71,7 +71,9 @@ public class VehicleAddingStateShould
     public void MarkAsCompleteIfEachProcessesCompleted()
     {
         // Arrange
-        var events = VehicleAddingSagaMicroservice.All().Select(x => new VehicleAddingSagaEvent(_saga.SagaId, _saga.VehicleId, true, x)).ToList();
+        var events = VehicleAddingSagaMicroservice.All()
+            .Select(x => new VehicleAddingSagaEvent(_saga.SagaId, _saga.VehicleId, true, x))
+            .ToList();
 
         // Act
         events.ForEach(x => _state.UpdateSagaState(x));

@@ -11,7 +11,7 @@ namespace UnitTests.Domain.VehicleAddingSaga;
 public class VehicleAddingSagaShould
 {
     private readonly global::Domain.VehicleAddingSaga.VehicleAddingSaga _saga;
-    
+
     public VehicleAddingSagaShould()
     {
         var (saga, _) = Vehicle.Create(Guid.NewGuid(),
@@ -20,7 +20,7 @@ public class VehicleAddingSagaShould
 
         _saga = saga;
     }
-    
+
     [Fact]
     public void ProcessSagaEventThrowValueIsInvalidExceptionIfEventFromAnotherSagaAndIdMismatch()
     {
@@ -29,7 +29,10 @@ public class VehicleAddingSagaShould
             new VehicleAddingSagaEvent(Guid.NewGuid(), Guid.NewGuid(), true, VehicleAddingSagaMicroservice.Booking);
 
         // Act
-        void Act() => _saga.ProcessSagaEvent(sagaEvent);
+        void Act()
+        {
+            _saga.ProcessSagaEvent(sagaEvent);
+        }
 
         // Assert
         Assert.Throws<ValueIsInvalidException>(Act);
@@ -41,7 +44,8 @@ public class VehicleAddingSagaShould
         // Arrange
         var vehicleAddingSaga = _saga;
         var sagaEvent =
-            new VehicleAddingSagaEvent(vehicleAddingSaga.SagaId, vehicleAddingSaga.VehicleId, false, VehicleAddingSagaMicroservice.Booking);
+            new VehicleAddingSagaEvent(vehicleAddingSaga.SagaId, vehicleAddingSaga.VehicleId, false,
+                VehicleAddingSagaMicroservice.Booking);
 
         // Act
         vehicleAddingSaga.ProcessSagaEvent(sagaEvent);

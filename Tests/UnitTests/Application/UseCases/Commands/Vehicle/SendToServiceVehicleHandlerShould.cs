@@ -16,8 +16,9 @@ public class SendToServiceVehicleHandlerShould
 
     private readonly global::Domain.VehicleAggregate.Vehicle _vehicleFromDb =
         global::Domain.VehicleAggregate.Vehicle.Create(Guid.NewGuid(),
-            PlateNumber.Create("К333ОТ77"), Color.White,
-            Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0)).vehicle;
+                PlateNumber.Create("К333ОТ77"), Color.White,
+                Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0))
+            .vehicle;
 
     private readonly Mock<IVehicleRepository> _vehicleRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();

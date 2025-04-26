@@ -10,7 +10,7 @@ public class VehicleAddingSagaRepository(DataContext context) : IVehicleAddingSa
     {
         return await context.VehicleAddingSaga.FirstOrDefaultAsync(x => x.SagaId == id);
     }
-    
+
     public async Task Add(VehicleAddingSaga saga)
     {
         await context.VehicleAddingSaga.AddAsync(saga);

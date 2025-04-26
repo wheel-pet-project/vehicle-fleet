@@ -67,7 +67,7 @@ public class VehicleAddedDomainEventShould
         {
             new VehicleAddedDomainEvent(_vehicleId, _sagaId, Guid.Empty);
         }
-        
+
         // Assert
         Assert.Throws<ValueIsRequiredException>(Act);
     }

@@ -17,11 +17,11 @@ public class SagaRepositoryShould : IntegrationTestBase
     {
         var (saga, _) = Vehicle.Create(Guid.NewGuid(),
             PlateNumber.Create("К333ОТ77"), Color.White,
-            Vin.Create("SALYA2BN2KA791786"), Domain.SharedKernel.ValueObjects.Location.Create(10.0, 10.0));
+            Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0));
 
         _saga = saga;
     }
-    
+
     [Fact]
     public async Task Add()
     {
@@ -49,7 +49,7 @@ public class SagaRepositoryShould : IntegrationTestBase
         var uow = new Infrastructure.Adapters.Postgres.UnitOfWork(Context);
 
         ChangeSagaToFaultedState();
-        
+
         // Act
         repository.Update(_saga);
         await uow.Commit();
@@ -80,12 +80,13 @@ public class SagaRepositoryShould : IntegrationTestBase
 
     private void ChangeSagaToFaultedState()
     {
-        var sagaEvent = new VehicleAddingSagaEvent(_saga.SagaId, _saga.VehicleId, false, VehicleAddingSagaMicroservice.Booking);
+        var sagaEvent =
+            new VehicleAddingSagaEvent(_saga.SagaId, _saga.VehicleId, false, VehicleAddingSagaMicroservice.Booking);
 
         // Act
         _saga.State.UpdateSagaState(sagaEvent);
     }
-    
+
     private async Task AddSagaToDb()
     {
         var repository = new VehicleAddingSagaRepository(Context);

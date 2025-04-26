@@ -9,7 +9,7 @@ public class VehicleAddingSaga : Saga
     {
         VehicleId = vehicleId;
     }
-    
+
     public Guid VehicleId { get; }
 
     public void ProcessSagaEvent(VehicleAddingSagaEvent saga)

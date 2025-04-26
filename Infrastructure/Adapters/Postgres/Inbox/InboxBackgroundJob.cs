@@ -103,9 +103,7 @@ public class InboxBackgroundJob(
             parameters.Add($"EventId{i}", updates[i].EventId);
             if (updates[i].ProcessedOnUtc.HasValue) parameters.Add($"ProcessedOnUtc{i}", updates[i].ProcessedOnUtc);
             else
-            {
                 parameters.Add($"ProcessedOnUtc{i}", null);
-            }
         }
 
         return parameters;

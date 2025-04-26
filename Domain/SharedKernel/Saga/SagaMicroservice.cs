@@ -5,7 +5,7 @@ public abstract class SagaMicroservice(int number, string name)
     public int Number { get; } = number;
     public string Name { get; } = name;
 
-    
+
     public static bool operator ==(SagaMicroservice a, SagaMicroservice b)
     {
         if (a is null && b is null)
@@ -21,7 +21,7 @@ public abstract class SagaMicroservice(int number, string name)
     {
         return !(a == b);
     }
-    
+
     protected bool Equals(SagaMicroservice other)
     {
         return Number == other.Number && Name == other.Name;

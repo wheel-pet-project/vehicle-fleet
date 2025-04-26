@@ -24,8 +24,8 @@ public class AddVehicleHandlerShould
     private readonly Mock<IVehicleRepository> _vehicleRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
     private readonly Mock<IVehicleAddingSagaRepository> _sagaRepositoryMock = new();
-    
-    
+
+
     private readonly AddVehicleHandler _handler;
 
     public AddVehicleHandlerShould()

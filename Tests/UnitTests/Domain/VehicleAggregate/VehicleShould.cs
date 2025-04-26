@@ -47,7 +47,7 @@ public class VehicleShould
         // Assert
         Assert.IsType<global::Domain.VehicleAddingSaga.VehicleAddingSaga>(saga);
     }
-    
+
     [Fact]
     public void ThrowValueIsRequiredExceptionIfModelIdIsEmpty()
     {

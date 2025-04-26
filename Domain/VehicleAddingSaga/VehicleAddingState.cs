@@ -9,16 +9,16 @@ public class VehicleAddingState : ISagaState<VehicleAddingProcess>
     {
         States = [..VehicleAddingSagaMicroservice.All().Select(x => new VehicleAddingProcess(x)).ToList()];
     }
-    
+
     public List<IProcessState> States { get; init; }
     public bool IsCompleted => States.All(x => x.IsCompleted);
     public bool IsFaulted => States.Any(x => x.IsFaulted);
-    
+
     public void UpdateSagaState(ISagaEvent sagaEvent)
     {
         if (States.All(x => x.Microservice != sagaEvent.Microservice))
             throw new ValueOutOfRangeException("Service is unknown for saga");
-        
+
         States
             .First(x => x.Microservice == sagaEvent.Microservice)
             .UpdateProcessState(sagaEvent.IsSuccess);
