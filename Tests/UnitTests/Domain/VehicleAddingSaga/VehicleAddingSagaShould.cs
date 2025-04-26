@@ -47,6 +47,6 @@ public class VehicleAddingSagaShould
         vehicleAddingSaga.ProcessSagaEvent(sagaEvent);
 
         // Assert
-        Assert.True(vehicleAddingSaga.SagaState.IsFaulted);
+        Assert.True(vehicleAddingSaga.State.IsFaulted);
     }
 }

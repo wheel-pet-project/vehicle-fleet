@@ -1,7 +1,6 @@
 using Domain.SharedKernel.Exceptions.ArgumentException;
 using Domain.SharedKernel.Exceptions.DomainRulesViolationException;
 using Domain.SharedKernel.ValueObjects;
-using Domain.VehicleAddingSaga;
 using Domain.VehicleAggregate;
 using Domain.VehicleAggregate.DomainEvents;
 using JetBrains.Annotations;

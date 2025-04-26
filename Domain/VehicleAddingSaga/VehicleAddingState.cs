@@ -16,11 +16,11 @@ public class VehicleAddingState : ISagaState<VehicleAddingProcess>
     
     public void UpdateSagaState(ISagaEvent sagaEvent)
     {
-        if (States.All(x => x.Microservice != sagaEvent.Service))
+        if (States.All(x => x.Microservice != sagaEvent.Microservice))
             throw new ValueOutOfRangeException("Service is unknown for saga");
         
         States
-            .First(x => x.Microservice == sagaEvent.Service)
+            .First(x => x.Microservice == sagaEvent.Microservice)
             .UpdateProcessState(sagaEvent.IsSuccess);
     }
 }

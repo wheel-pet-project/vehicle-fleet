@@ -1,5 +1,4 @@
 using Application.Ports.Postgres;
-using Application.Ports.Postgres.Saga;
 using Domain.SharedKernel.Errors;
 using Domain.SharedKernel.ValueObjects;
 using FluentResults;
@@ -11,7 +10,7 @@ public class AddVehicleHandler(
     IModelRepository modelRepository,
     IVehicleRepository vehicleRepository,
     IUnitOfWork unitOfWork,
-    IVehicleAddingSagaSaveOnlyRepository vehicleAddingSagaSaveOnlyRepository) : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
+    IVehicleAddingSagaRepository vehicleAddingSagaRepository) : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
 {
     public async Task<Result<AddVehicleResponse>> Handle(
         AddVehicleCommand command,
@@ -32,7 +31,7 @@ public class AddVehicleHandler(
         var (saga, vehicle) = Domain.VehicleAggregate.Vehicle.Create(model.Id, plateNumber, color, vin, location);
 
         await vehicleRepository.Add(vehicle);
-        await vehicleAddingSagaSaveOnlyRepository.Add(saga);
+        await vehicleAddingSagaRepository.Add(saga);
 
         var commitResult = await unitOfWork.Commit();
 

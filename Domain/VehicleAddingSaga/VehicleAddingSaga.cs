@@ -16,8 +16,8 @@ public class VehicleAddingSaga : Saga
     {
         if (saga.SagaId != SagaId || saga.VehicleId != VehicleId)
             throw new ValueIsInvalidException(
-                "Saga id and/or vehicle id are not matched with ids from saga event");
+                $"Saga id and/or vehicle id are not matched with ids from saga event, current saga id: {SagaId}, current vehicle id: {VehicleId}");
 
-        SagaState.UpdateSagaState(saga);
+        State.UpdateSagaState(saga);
     }
 }

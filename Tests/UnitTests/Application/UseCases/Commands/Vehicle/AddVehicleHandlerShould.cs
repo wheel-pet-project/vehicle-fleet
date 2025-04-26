@@ -1,5 +1,4 @@
 using Application.Ports.Postgres;
-using Application.Ports.Postgres.Saga;
 using Application.UseCases.Commands.Vehicle.AddVehicle;
 using Domain.SharedKernel.Errors;
 using Domain.SharedKernel.ValueObjects;
@@ -24,7 +23,7 @@ public class AddVehicleHandlerShould
     private readonly Mock<IModelRepository> _modelRepositoryMock = new();
     private readonly Mock<IVehicleRepository> _vehicleRepositoryMock = new();
     private readonly Mock<IUnitOfWork> _unitOfWorkMock = new();
-    private readonly Mock<IVehicleAddingSagaSaveOnlyRepository> _sagaRepositoryMock = new();
+    private readonly Mock<IVehicleAddingSagaRepository> _sagaRepositoryMock = new();
     
     
     private readonly AddVehicleHandler _handler;

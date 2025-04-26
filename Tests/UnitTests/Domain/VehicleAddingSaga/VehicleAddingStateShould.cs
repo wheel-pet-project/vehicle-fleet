@@ -21,7 +21,7 @@ public class VehicleAddingStateShould
                 Vin.Create("SALYA2BN2KA791786"), Location.Create(10.0, 10.0));
 
         _saga = saga;
-        _state = _saga.SagaState;
+        _state = _saga.State;
     }
     
     [Fact]

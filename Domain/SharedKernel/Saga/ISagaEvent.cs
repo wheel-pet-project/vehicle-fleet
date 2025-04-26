@@ -4,5 +4,5 @@ public interface ISagaEvent
 {
     public Guid SagaId { get; } 
     public bool IsSuccess { get; }
-    public SagaMicroservice Service { get; }
+    public SagaMicroservice Microservice { get; }
 }

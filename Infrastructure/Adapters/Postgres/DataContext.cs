@@ -1,10 +1,12 @@
 using Domain.ModelAggregate;
+using Domain.VehicleAddingSaga;
 using Domain.VehicleAggregate;
 using Infrastructure.Adapters.Postgres.Inbox;
 using Infrastructure.Adapters.Postgres.Outbox;
-using Infrastructure.Adapters.Postgres.Saga;
+using JsonNet.ContractResolvers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Newtonsoft.Json;
 
 namespace Infrastructure.Adapters.Postgres;
 
@@ -14,14 +16,14 @@ public sealed class DataContext(DbContextOptions<DataContext> options) : DbConte
     public DbSet<Model> Models { get; set; }
     public DbSet<InboxEvent> Inbox { get; set; }
     public DbSet<OutboxEvent> Outbox { get; set; }
-    public DbSet<SagaModel> Saga { get; set; }
+    public DbSet<VehicleAddingSaga> VehicleAddingSaga { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfiguration(new ModelEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new VehicleEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new StatusEntityTypeConfiguration());
-        modelBuilder.ApplyConfiguration(new SagaModelEntityTypeConfiguration());
+        modelBuilder.ApplyConfiguration(new VehicleAddingSagaEntityTypeConfiguration());
         modelBuilder.ApplyConfiguration(new InboxEventTypeConfiguration());
         modelBuilder.ApplyConfiguration(new OutboxEventTypeConfiguration());
     }
@@ -126,20 +128,43 @@ internal sealed class StatusEntityTypeConfiguration : IEntityTypeConfiguration<S
     }
 }
 
-internal class SagaModelEntityTypeConfiguration : IEntityTypeConfiguration<SagaModel>
+internal class VehicleAddingSagaEntityTypeConfiguration : IEntityTypeConfiguration<VehicleAddingSaga>
 {
-    public void Configure(EntityTypeBuilder<SagaModel> builder)
+    // public void Configure(EntityTypeBuilder<SagaModel> builder)
+    // {
+    //     builder.ToTable("saga");
+    //
+    //     builder.HasKey(x => x.SagaId);
+    //     
+    //     builder.Property(x => x.SagaId).HasColumnName("saga_id").IsRequired();
+    //     builder.Property(x => x.Type).HasColumnName("type").IsRequired();
+    //     builder.Property(x => x.Version).HasColumnName("version").IsRequired();
+    //     builder.Property(x => x.Content).HasColumnName("content").IsRequired();
+    //     builder.Property(x => x.IsCompleted).HasColumnName("is_completed").IsRequired();
+    //     builder.Property(x => x.IsFaulted).HasColumnName("is_faulted").IsRequired();
+    // }
+
+    public void Configure(EntityTypeBuilder<VehicleAddingSaga> builder)
     {
-        builder.ToTable("saga");
+        builder.ToTable("vehicle_adding_saga");
 
         builder.HasKey(x => x.SagaId);
-        
-        builder.Property(x => x.SagaId).HasColumnName("saga_id").IsRequired();
-        builder.Property(x => x.Type).HasColumnName("type").IsRequired();
+
+        builder.Property(x => x.SagaId).ValueGeneratedNever().HasColumnName("saga_id").IsRequired();
+        builder.Property(x => x.VehicleId).ValueGeneratedNever().HasColumnName("vehicle_id").IsRequired();
         builder.Property(x => x.Version).HasColumnName("version").IsRequired();
-        builder.Property(x => x.Content).HasColumnName("content").IsRequired();
-        builder.Property(x => x.IsCompleted).HasColumnName("is_completed").IsRequired();
-        builder.Property(x => x.IsFaulted).HasColumnName("is_faulted").IsRequired();
+        builder.Property(x => x.State)
+            .HasConversion<string>(
+                to =>
+                    JsonConvert.SerializeObject(to, 
+                        new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }),
+                from => JsonConvert.DeserializeObject<VehicleAddingState>(from, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All,
+                    ContractResolver = new PrivateSetterAndCtorContractResolver(),
+                    ObjectCreationHandling = ObjectCreationHandling.Replace
+                })!
+            );
     }
 }
 

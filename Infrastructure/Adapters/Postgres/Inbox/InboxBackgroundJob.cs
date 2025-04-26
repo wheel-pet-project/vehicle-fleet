@@ -101,7 +101,11 @@ public class InboxBackgroundJob(
         for (var i = 0; i < updates.Count; i++)
         {
             parameters.Add($"EventId{i}", updates[i].EventId);
-            parameters.Add($"ProcessedOnUtc{i}", updates[i].ProcessedOnUtc);
+            if (updates[i].ProcessedOnUtc.HasValue) parameters.Add($"ProcessedOnUtc{i}", updates[i].ProcessedOnUtc);
+            else
+            {
+                parameters.Add($"ProcessedOnUtc{i}", null);
+            }
         }
 
         return parameters;

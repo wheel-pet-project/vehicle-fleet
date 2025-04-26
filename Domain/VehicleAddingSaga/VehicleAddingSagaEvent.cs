@@ -6,4 +6,4 @@ public record VehicleAddingSagaEvent(
     Guid SagaId, 
     Guid VehicleId,
     bool IsSuccess,
-    SagaMicroservice Service) : ISagaEvent;
+    SagaMicroservice Microservice) : ISagaEvent;

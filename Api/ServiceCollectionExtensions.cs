@@ -2,10 +2,11 @@ using Api.Adapters.Grpc.EnumMappers;
 using Api.Adapters.Kafka;
 using Application.Ports.Kafka;
 using Application.Ports.Postgres;
-using Application.Ports.Postgres.Saga;
 using Application.UseCases.Commands.Model.AddModel;
 using Confluent.Kafka;
 using From.BookingKafkaEvents;
+using From.RentKafkaEvents;
+using From.VehicleDocumentsKafkaEvents;
 using From.VehicleFleetKafkaEvents.Model;
 using From.VehicleFleetKafkaEvents.Vehicle;
 using Infrastructure.Adapters.Kafka;
@@ -14,7 +15,6 @@ using Infrastructure.Adapters.Postgres.Inbox;
 using Infrastructure.Adapters.Postgres.Outbox;
 using Infrastructure.Adapters.Postgres.Repositories;
 using Infrastructure.Adapters.Postgres.Saga;
-using Infrastructure.Adapters.Postgres.Saga.ConsumingSagaEvents;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
@@ -67,8 +67,7 @@ public static class ServiceCollectionExtensions
                     Environment.GetEnvironmentVariable("MODEL_CATEGORY_UPDATED_TOPIC") ??
                     "model-category-updated-topic",
                 ModelTariffUpdatedTopic =
-                    Environment.GetEnvironmentVariable("MODEL_TARIFF_UPDATED_TOPIC")
-                    ?? "model-tariff-updated-topic",
+                    Environment.GetEnvironmentVariable("MODEL_TARIFF_UPDATED_TOPIC") ?? "model-tariff-updated-topic",
                 VehicleOccupyingProcessedTopic =
                     Environment.GetEnvironmentVariable("VEHICLE_OCCUPYING_PROCESSED_TOPIC") ??
                     "vehicle-occupying-processed-topic",
@@ -80,7 +79,12 @@ public static class ServiceCollectionExtensions
                     "vehicle-released-topic",
                 VehicleServicedTopic =
                     Environment.GetEnvironmentVariable("VEHICLE_SERVICED_TOPIC") ??
-                    "vehicle-serviced-topic"
+                    "vehicle-serviced-topic",
+                AddingToBookingProcessedTopic = Environment.GetEnvironmentVariable("VEHICLE_ADDING_TO_BOOKING_PROCESSED_TOPIC") ?? "vehicle-adding-to-booking-processed-topic",
+                AddingToRentProcessedTopic = Environment.GetEnvironmentVariable("VEHICLE_ADDING_TO_RENT_PROCESSED_TOPIC") ??
+                    "vehicle-adding-to-rent-processed-topic",
+                DocumentAddingCompletedTopic = Environment.GetEnvironmentVariable("DOCUMENTS_ADDING_COMPLETED_TOPIC") ??
+                                               "documents-adding-completed-topic",
             },
             "Production" => new Configuration
             {
@@ -104,7 +108,10 @@ public static class ServiceCollectionExtensions
                 VehicleReadiedForReleasesTopic =
                     GetEnvironmentOrThrow("VEHICLE_READIED_FOR_RELEASE_TOPIC"),
                 VehicleReleasedTopic = GetEnvironmentOrThrow("VEHICLE_RELEASED_TOPIC"),
-                VehicleServicedTopic = GetEnvironmentOrThrow("VEHICLE_SERVICED_TOPIC")
+                VehicleServicedTopic = GetEnvironmentOrThrow("VEHICLE_SERVICED_TOPIC"),
+                AddingToBookingProcessedTopic = GetEnvironmentOrThrow("VEHICLE_ADDING_TO_BOOKING_PROCESSED_TOPIC"),
+                AddingToRentProcessedTopic = GetEnvironmentOrThrow("VEHICLE_ADDING_TO_RENT_PROCESSED_TOPIC"),
+                DocumentAddingCompletedTopic = GetEnvironmentOrThrow("DOCUMENTS_ADDING_COMPLETED_TOPIC")
             },
             _ => throw new ArgumentException("Unknown environment")
         };
@@ -154,14 +161,6 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection RegisterSagaVehicleAdding(this IServiceCollection services)
-    {
-        services.AddTransient<IVehicleAddingSagaSaveOnlyRepository, VehicleAddingSagaSaveOnlyRepository>();
-        services.AddTransient<ISagaConsumeProcessor, SagaConsumeProcessor>();
-        
-        return services;
-    }
-
     public static IServiceCollection RegisterInbox(this IServiceCollection services)
     {
         services.AddTransient<IInbox, Inbox>();
@@ -196,6 +195,7 @@ public static class ServiceCollectionExtensions
     {
         services.AddTransient<IModelRepository, ModelRepository>();
         services.AddTransient<IVehicleRepository, VehicleRepository>();
+        services.AddTransient<IVehicleAddingSagaRepository, VehicleAddingSagaRepository>();
 
         return services;
     }
@@ -239,26 +239,25 @@ public static class ServiceCollectionExtensions
             x.AddRider(rider =>
             {
                 rider.AddConsumer<BookingCreatedConsumer>();
+                rider.AddConsumer<VehicleAddingToBookingProcessedConsumer>();
+                rider.AddConsumer<VehicleAddingToRentProcessedConsumer>();
+                rider.AddConsumer<VehicleDocumentAddedConsumer>();
 
                 rider.AddProducer<string, ModelCreated>(Configuration.ModelCreatedTopic);
-                rider.AddProducer<string, ModelCategoryUpdated>(Configuration
-                    .ModelCategoryUpdatedTopic);
-                rider.AddProducer<string, ModelTariffUpdated>(Configuration
-                    .ModelTariffUpdatedTopic);
+                rider.AddProducer<string, ModelCategoryUpdated>(Configuration.ModelCategoryUpdatedTopic);
+                rider.AddProducer<string, ModelTariffUpdated>(Configuration.ModelTariffUpdatedTopic);
 
                 rider.AddProducer<string, VehicleAdded>(Configuration.VehicleAddedTopic);
                 rider.AddProducer<string, VehicleDeleted>(Configuration.VehicleDeletedTopic);
-                rider.AddProducer<string, VehicleOccupyingProcessed>(Configuration
-                    .VehicleOccupyingProcessedTopic);
-                rider.AddProducer<string, VehicleReadiedForRelease>(Configuration
-                    .VehicleReadiedForReleasesTopic);
+                rider.AddProducer<string, VehicleOccupyingProcessed>(Configuration.VehicleOccupyingProcessedTopic);
+                rider.AddProducer<string, VehicleReadiedForRelease>(Configuration.VehicleReadiedForReleasesTopic);
                 rider.AddProducer<string, VehicleReleased>(Configuration.VehicleReleasedTopic);
                 rider.AddProducer<string, VehicleServiced>(Configuration.VehicleServicedTopic);
 
                 rider.UsingKafka((context, k) =>
                 {
                     k.TopicEndpoint<BookingCreated>(Configuration.BookingCreatedTopic,
-                        "vehicle-check-consumer-group",
+                        "vehicle-fleet-consumer-group",
                         e =>
                         {
                             e.EnableAutoOffsetStore = false;
@@ -274,7 +273,60 @@ public static class ServiceCollectionExtensions
                                 retry.Interval(200, TimeSpan.FromSeconds(1)));
                             e.ConfigureConsumer<BookingCreatedConsumer>(context);
                         });
-
+                    
+                    k.TopicEndpoint<VehicleAddingToBookingProcessed>(Configuration.AddingToBookingProcessedTopic,
+                        "vehicle-fleet-consumer-group",
+                        e =>
+                        {
+                            e.EnableAutoOffsetStore = false;
+                            e.EnablePartitionEof = true;
+                            e.AutoOffsetReset = AutoOffsetReset.Earliest;
+                            e.CreateIfMissing();
+                            e.UseKillSwitch(cfg =>
+                                cfg.SetActivationThreshold(1)
+                                    .SetRestartTimeout(TimeSpan.FromMinutes(1))
+                                    .SetTripThreshold(0.05)
+                                    .SetTrackingPeriod(TimeSpan.FromMinutes(1)));
+                            e.UseMessageRetry(retry =>
+                                retry.Interval(200, TimeSpan.FromSeconds(1)));
+                            e.ConfigureConsumer<VehicleAddingToBookingProcessedConsumer>(context);
+                        });
+                    
+                    k.TopicEndpoint<VehicleAddingToRentProcessed>(Configuration.AddingToRentProcessedTopic,
+                        "vehicle-fleet-consumer-group",
+                        e =>
+                        {
+                            e.EnableAutoOffsetStore = false;
+                            e.EnablePartitionEof = true;
+                            e.AutoOffsetReset = AutoOffsetReset.Earliest;
+                            e.CreateIfMissing();
+                            e.UseKillSwitch(cfg =>
+                                cfg.SetActivationThreshold(1)
+                                    .SetRestartTimeout(TimeSpan.FromMinutes(1))
+                                    .SetTripThreshold(0.05)
+                                    .SetTrackingPeriod(TimeSpan.FromMinutes(1)));
+                            e.UseMessageRetry(retry =>
+                                retry.Interval(200, TimeSpan.FromSeconds(1)));
+                            e.ConfigureConsumer<VehicleAddingToRentProcessedConsumer>(context);
+                        });
+                    
+                    k.TopicEndpoint<DocumentAddingCompleted>(Configuration.DocumentAddingCompletedTopic,
+                        "vehicle-fleet-consumer-group",
+                        e =>
+                        {
+                            e.EnableAutoOffsetStore = false;
+                            e.EnablePartitionEof = true;
+                            e.AutoOffsetReset = AutoOffsetReset.Earliest;
+                            e.CreateIfMissing();
+                            e.UseKillSwitch(cfg =>
+                                cfg.SetActivationThreshold(1)
+                                    .SetRestartTimeout(TimeSpan.FromMinutes(1))
+                                    .SetTripThreshold(0.05)
+                                    .SetTrackingPeriod(TimeSpan.FromMinutes(1)));
+                            e.UseMessageRetry(retry =>
+                                retry.Interval(200, TimeSpan.FromSeconds(1)));
+                            e.ConfigureConsumer<VehicleDocumentAddedConsumer>(context);
+                        });
 
                     k.Host(Configuration.BootstrapServers);
                 });
@@ -396,6 +448,9 @@ internal class Configuration
     public required string VehicleReadiedForReleasesTopic { get; init; }
     public required string VehicleReleasedTopic { get; init; }
     public required string VehicleServicedTopic { get; init; }
+    public required string AddingToBookingProcessedTopic { get; init; }
+    public required string AddingToRentProcessedTopic { get; init; }
+    public required string DocumentAddingCompletedTopic { get; init; }
 
 
     // Mongo

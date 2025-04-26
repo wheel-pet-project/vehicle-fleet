@@ -22,7 +22,6 @@ public class Program
             .RegisterMediatorAndHandlers()
             .RegisterInbox()
             .RegisterUnitOfWork()
-            .RegisterSagaVehicleAdding()
             .RegisterRepositories()
             .RegisterMappers()
             .RegisterMassTransit()
