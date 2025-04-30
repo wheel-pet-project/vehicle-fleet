@@ -17,7 +17,7 @@ public class VehicleAddingState : ISagaState<VehicleAddingProcess>
     public void UpdateSagaState(ISagaEvent sagaEvent)
     {
         if (States.All(x => x.Microservice != sagaEvent.Microservice))
-            throw new ValueUnsupportedException("Service is unknown for saga");
+            throw new ValueIsUnsupportedException("Service is unknown for saga");
 
         States
             .First(x => x.Microservice == sagaEvent.Microservice)

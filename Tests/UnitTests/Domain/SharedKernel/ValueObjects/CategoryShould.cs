@@ -36,7 +36,7 @@ public class CategoryShould
         }
 
         // Assert
-        Assert.Throws<ValueUnsupportedException>(Act);
+        Assert.Throws<ValueIsUnsupportedException>(Act);
     }
 
     [Fact]

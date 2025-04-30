@@ -37,7 +37,7 @@ public class FuelLevelShould
         }
 
         // Assert
-        Assert.Throws<ValueUnsupportedException>(Act);
+        Assert.Throws<ValueIsUnsupportedException>(Act);
     }
 
     [Fact]

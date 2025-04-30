@@ -25,7 +25,7 @@ public class Vin : ValueObject
         var vinNumber = input.Trim();
 
         if (vinNumber.Length != 17)
-            throw new ValueUnsupportedException($"{nameof(vinNumber)} must be 17 characters long");
+            throw new ValueIsUnsupportedException($"{nameof(vinNumber)} must be 17 characters long");
 
         vinNumber = vinNumber.ToUpper();
 

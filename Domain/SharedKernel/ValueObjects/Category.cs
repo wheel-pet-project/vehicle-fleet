@@ -26,7 +26,7 @@ public class Category : ValueObject
     public static Category Create(char input)
     {
         if (GetSupportedCategories().Contains(input) is false)
-            throw new ValueUnsupportedException(
+            throw new ValueIsUnsupportedException(
                 $"{nameof(input)} category is a not supported category");
 
         return new Category(input);

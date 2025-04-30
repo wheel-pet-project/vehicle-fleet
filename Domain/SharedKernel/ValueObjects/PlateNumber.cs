@@ -29,7 +29,7 @@ public class PlateNumber : ValueObject
         var plateNumber = input.Trim();
 
         if (plateNumber.Length is < 8 or > 9)
-            throw new ValueUnsupportedException($"{nameof(plateNumber)} must be 8-9 characters");
+            throw new ValueIsUnsupportedException($"{nameof(plateNumber)} must be 8-9 characters");
 
         plateNumber = plateNumber.ToUpper();
 

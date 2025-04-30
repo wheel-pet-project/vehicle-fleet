@@ -65,7 +65,7 @@ public class VinShould
         }
 
         // Assert
-        Assert.Throws<ValueUnsupportedException>(Act);
+        Assert.Throws<ValueIsUnsupportedException>(Act);
     }
 
     [Fact]

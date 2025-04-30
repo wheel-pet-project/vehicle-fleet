@@ -41,7 +41,7 @@ public sealed class VehicleRepository(DataContext context) : IVehicleRepository
 
         bool PaginationIsNeeded(int? p, int? size)
         {
-            return p != null && size != null;
+            return !(p == null && size == null);
         }
     }
 }

@@ -66,7 +66,7 @@ public class PlateNumberShould
         }
 
         // Assert
-        Assert.Throws<ValueUnsupportedException>(Act);
+        Assert.Throws<ValueIsUnsupportedException>(Act);
     }
 
     [Fact]

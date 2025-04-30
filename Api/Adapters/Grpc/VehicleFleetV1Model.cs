@@ -123,6 +123,6 @@ public partial class VehicleFleetV1(
     {
         return Guid.TryParse(potentialId, out var id)
             ? id
-            : throw new ValueUnsupportedException($"{nameof(potentialId)} is invalid uuid");
+            : throw new ValueIsUnsupportedException($"{nameof(potentialId)} is invalid uuid");
     }
 }

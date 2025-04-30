@@ -16,7 +16,7 @@ public class StatusMapper
             Status.Occupied => DomainStatus.Occupied,
             Status.Serviced => DomainStatus.Serviced,
             Status.Deleted => DomainStatus.Deleted,
-            _ => throw new ValueUnsupportedException($"{nameof(protoStatus)} is unknown status")
+            _ => throw new ValueIsUnsupportedException($"{nameof(protoStatus)} is unknown status")
         };
     }
 
@@ -30,7 +30,7 @@ public class StatusMapper
             _ when domainStatus == DomainStatus.Occupied => Status.Occupied,
             _ when domainStatus == DomainStatus.Serviced => Status.Serviced,
             _ when domainStatus == DomainStatus.Deleted => Status.Deleted,
-            _ => throw new ValueUnsupportedException($"{nameof(domainStatus)} is unknown status")
+            _ => throw new ValueIsUnsupportedException($"{nameof(domainStatus)} is unknown status")
         };
     }
 }

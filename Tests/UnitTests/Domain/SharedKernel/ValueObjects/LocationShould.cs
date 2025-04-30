@@ -36,7 +36,7 @@ public class LocationShould
         }
 
         // Assert
-        Assert.Throws<ValueUnsupportedException>(Act);
+        Assert.Throws<ValueIsUnsupportedException>(Act);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class LocationShould
         }
 
         // Assert
-        Assert.Throws<ValueUnsupportedException>(Act);
+        Assert.Throws<ValueIsUnsupportedException>(Act);
     }
 
     [Fact]
@@ -66,7 +66,7 @@ public class LocationShould
         }
 
         // Assert
-        Assert.Throws<ValueUnsupportedException>(Act);
+        Assert.Throws<ValueIsUnsupportedException>(Act);
     }
 
     [Fact]
@@ -81,7 +81,7 @@ public class LocationShould
         }
 
         // Assert
-        Assert.Throws<ValueUnsupportedException>(Act);
+        Assert.Throws<ValueIsUnsupportedException>(Act);
     }
 
     [Fact]

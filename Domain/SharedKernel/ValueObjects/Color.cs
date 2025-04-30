@@ -48,7 +48,7 @@ public sealed class Color : ValueObject
             .SingleOrDefault(s =>
                 string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
         if (color == null)
-            throw new ValueUnsupportedException(
+            throw new ValueIsUnsupportedException(
                 $"{nameof(name)} unknown color or null, color must be one of: {string.Join(' ', All())}");
 
         return color;

@@ -23,12 +23,12 @@ public sealed class Tariff : ValueObject
     public static Tariff Create(decimal pricePerMinute, decimal pricePerHour, decimal pricePerDay)
     {
         if (pricePerMinute <= 0)
-            throw new ValueUnsupportedException(
+            throw new ValueIsUnsupportedException(
                 $"{nameof(pricePerMinute)} must be greater than zero");
         if (pricePerHour <= 0)
-            throw new ValueUnsupportedException($"{nameof(pricePerHour)} must be greater than zero");
+            throw new ValueIsUnsupportedException($"{nameof(pricePerHour)} must be greater than zero");
         if (pricePerDay <= 0)
-            throw new ValueUnsupportedException($"{nameof(pricePerDay)} must be greater than zero");
+            throw new ValueIsUnsupportedException($"{nameof(pricePerDay)} must be greater than zero");
 
         return new Tariff(pricePerMinute, pricePerHour, pricePerDay);
     }

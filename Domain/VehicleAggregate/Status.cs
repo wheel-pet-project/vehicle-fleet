@@ -32,7 +32,7 @@ public sealed class Status : Entity<int>
         if (potentialStatus is null)
             throw new ValueIsRequiredException($"{nameof(potentialStatus)} cannot be null");
         if (!All().Contains(potentialStatus))
-            throw new ValueUnsupportedException($"{nameof(potentialStatus)} cannot be unsupported");
+            throw new ValueIsUnsupportedException($"{nameof(potentialStatus)} cannot be unsupported");
 
         return potentialStatus switch
         {
@@ -76,7 +76,7 @@ public sealed class Status : Entity<int>
             .SingleOrDefault(s =>
                 string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
         if (status == null)
-            throw new ValueUnsupportedException($"{nameof(name)} unknown status or null");
+            throw new ValueIsUnsupportedException($"{nameof(name)} unknown status or null");
         return status;
     }
 
@@ -84,7 +84,7 @@ public sealed class Status : Entity<int>
     {
         var status = All().SingleOrDefault(s => s.Id == id);
         if (status == null)
-            throw new ValueUnsupportedException($"{nameof(id)} unknown status or null");
+            throw new ValueIsUnsupportedException($"{nameof(id)} unknown status or null");
         return status;
     }
 
