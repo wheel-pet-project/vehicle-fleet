@@ -2,7 +2,7 @@ using Application.Ports.Postgres;
 using Domain.VehicleAddingSaga;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Adapters.Postgres.Saga;
+namespace Infrastructure.Adapters.Postgres.Repositories;
 
 public class VehicleAddingSagaRepository(DataContext context) : IVehicleAddingSagaRepository
 {

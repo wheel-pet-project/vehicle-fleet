@@ -21,12 +21,9 @@ public class GetAllModelsQueryHandler(
             });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-        var modelsEnumerable = await connection.QueryAsync<ModelShortDapperModel>(command);
-        var models = modelsEnumerable.AsList();
+        var models = (await connection.QueryAsync<ModelShortDapperModel>(command)).AsList();
 
-        var response = new GetAllModelsQueryResponse(models.Select(x =>
-                new GetAllModelsQueryResponse.ModelShortView(x.Id, x.Brand, x.CarModel))
-            .ToList());
+        var response = MapToResponse(models);
 
         return response;
     }
@@ -39,6 +36,13 @@ public class GetAllModelsQueryHandler(
         return page.Value < 1
             ? 1
             : (page.Value - 1) * pageSize.Value;
+    }
+
+    private GetAllModelsQueryResponse MapToResponse(List<ModelShortDapperModel> dapperModels)
+    {
+        return new GetAllModelsQueryResponse(dapperModels.Select(x =>
+                new GetAllModelsQueryResponse.ModelShortView(x.Id, x.Brand, x.CarModel))
+            .ToList());
     }
 
     private record ModelShortDapperModel(Guid Id, string Brand, string CarModel);

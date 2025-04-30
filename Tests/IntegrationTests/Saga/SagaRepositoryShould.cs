@@ -1,7 +1,7 @@
 using Domain.SharedKernel.ValueObjects;
 using Domain.VehicleAddingSaga;
 using Domain.VehicleAggregate;
-using Infrastructure.Adapters.Postgres.Saga;
+using Infrastructure.Adapters.Postgres.Repositories;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore;
 using Xunit;

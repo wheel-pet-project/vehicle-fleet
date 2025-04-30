@@ -11,7 +11,7 @@ public class DeleteVehicleHandler(
 {
     public async Task<Result> Handle(
         DeleteVehicleCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken _)
     {
         var vehicle = await vehicleRepository.GetById(command.VehicleId);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));

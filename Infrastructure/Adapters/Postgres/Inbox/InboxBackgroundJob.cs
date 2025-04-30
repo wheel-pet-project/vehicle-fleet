@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
+using System.Data;
 using Dapper;
-using Domain.SharedKernel.Exceptions.AlreadyHaveThisState;
+using Domain.SharedKernel.Exceptions.InternalExceptions.AlreadyHaveThisState;
 using Infrastructure.Adapters.Postgres.Inbox.InputConsumerEvents;
 using JsonNet.ContractResolvers;
 using MediatR;
@@ -21,7 +22,7 @@ public class InboxBackgroundJob(
     private readonly JsonSerializerSettings _jsonSerializerSettings = new()
     {
         TypeNameHandling = TypeNameHandling.All,
-        ContractResolver = new PrivateSetterContractResolver()
+        ContractResolver = new PrivateSetterAndCtorContractResolver()
     };
 
     public async Task Execute(IJobExecutionContext jobExecutionContext)
@@ -38,9 +39,9 @@ public class InboxBackgroundJob(
 
             var consumerEvents = inboxEvents
                 .Select(ev =>
-                    JsonConvert.DeserializeObject<IInputConsumerEvent>(ev.Content,
+                    JsonConvert.DeserializeObject<IConvertibleToCommand>(ev.Content,
                         _jsonSerializerSettings))
-                .OfType<IInputConsumerEvent>()
+                .OfType<IConvertibleToCommand>()
                 .AsList()
                 .AsReadOnly();
 
@@ -64,7 +65,7 @@ public class InboxBackgroundJob(
         return;
 
         async Task SendToMediator(
-            IInputConsumerEvent @event,
+            IConvertibleToCommand @event,
             ConcurrentQueue<EventUpdate> updateQueue,
             CancellationToken cancellationToken)
         {
@@ -101,9 +102,7 @@ public class InboxBackgroundJob(
         for (var i = 0; i < updates.Count; i++)
         {
             parameters.Add($"EventId{i}", updates[i].EventId);
-            if (updates[i].ProcessedOnUtc.HasValue) parameters.Add($"ProcessedOnUtc{i}", updates[i].ProcessedOnUtc);
-            else
-                parameters.Add($"ProcessedOnUtc{i}", null);
+            parameters.Add($"ProcessedOnUtc{i}", (object?)updates[i].ProcessedOnUtc ?? DBNull.Value, DbType.DateTime);
         }
 
         return parameters;

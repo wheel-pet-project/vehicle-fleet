@@ -1,6 +1,5 @@
-using Domain.SharedKernel.Exceptions.AlreadyHaveThisState;
-using Domain.SharedKernel.Exceptions.DataConsistencyViolationException;
-using Domain.SharedKernel.Exceptions.DomainRulesViolationException;
+using Domain.SharedKernel.Exceptions.InternalExceptions;
+using Domain.SharedKernel.Exceptions.InternalExceptions.AlreadyHaveThisState;
 using Grpc.Core;
 using Grpc.Core.Interceptors;
 using Npgsql;

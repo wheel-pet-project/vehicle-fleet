@@ -13,17 +13,22 @@ public class GetVehicleDetailsByIdQueryHandler(
     : IRequestHandler<GetVehicleDetailsByIdQuery, Result<GetVehicleDetailsByIdQueryResponse>>
 {
     public async Task<Result<GetVehicleDetailsByIdQueryResponse>> Handle(
-        GetVehicleDetailsByIdQuery request,
+        GetVehicleDetailsByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(_sql, new { Id = request.VehicleId });
+        var command = new CommandDefinition(_sql, new { Id = query.VehicleId });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-        var vehicle =
-            await connection.QuerySingleOrDefaultAsync<VehicleDetailsDapperModel>(command);
-        if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
+        var vehicle = await connection.QuerySingleOrDefaultAsync<VehicleDetailsDapperModel>(command);
 
-        return Result.Ok(new GetVehicleDetailsByIdQueryResponse(
+        return vehicle == null
+            ? Result.Fail(new NotFound("Vehicle not found"))
+            : Result.Ok(MapToResponse(vehicle));
+    }
+
+    private static GetVehicleDetailsByIdQueryResponse MapToResponse(VehicleDetailsDapperModel vehicle)
+    {
+        return new GetVehicleDetailsByIdQueryResponse(
             vehicle.Id,
             Status.FromId(vehicle.StatusId),
             vehicle.Brand,
@@ -34,7 +39,7 @@ public class GetVehicleDetailsByIdQueryHandler(
             vehicle.FuelLevelPercents,
             (double)vehicle.PricePerMinute,
             (double)vehicle.PricePerHour,
-            (double)vehicle.PricePerDay));
+            (double)vehicle.PricePerDay);
     }
 
     private record VehicleDetailsDapperModel(

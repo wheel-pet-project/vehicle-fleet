@@ -10,7 +10,7 @@ public class BookingCreatedConsumer(IInbox inbox) : IConsumer<BookingCreated>
     public async Task Consume(ConsumeContext<BookingCreated> context)
     {
         var @event = context.Message;
-        var consumerEvent = new BookingCreatedInputConsumerEvent(
+        var consumerEvent = new BookingCreatedConsumerEvent(
             @event.EventId,
             @event.BookingId,
             @event.VehicleId);

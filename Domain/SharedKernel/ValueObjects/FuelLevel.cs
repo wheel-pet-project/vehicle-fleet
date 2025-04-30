@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using Domain.SharedKernel.Exceptions.ArgumentException;
+using Domain.SharedKernel.Exceptions.PublicExceptions;
 
 namespace Domain.SharedKernel.ValueObjects;
 
@@ -22,7 +22,7 @@ public class FuelLevel : ValueObject
     public static FuelLevel Create(int levelPercents = 0)
     {
         if (levelPercents is < 0 or > 100)
-            throw new ValueOutOfRangeException(
+            throw new ValueUnsupportedException(
                 $"{nameof(levelPercents)} for fuel tank must be between 0 and 100");
 
         return new FuelLevel(levelPercents);

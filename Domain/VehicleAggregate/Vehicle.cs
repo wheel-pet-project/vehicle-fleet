@@ -1,6 +1,6 @@
 using Domain.SharedKernel;
-using Domain.SharedKernel.Exceptions.ArgumentException;
-using Domain.SharedKernel.Exceptions.DomainRulesViolationException;
+using Domain.SharedKernel.Exceptions.InternalExceptions;
+using Domain.SharedKernel.Exceptions.PublicExceptions;
 using Domain.SharedKernel.ValueObjects;
 using Domain.VehicleAggregate.DomainEvents;
 
@@ -132,7 +132,6 @@ public sealed class Vehicle : Aggregate
         if (fuelLevel == null) fuelLevel = FuelLevel.Create();
 
         var vehicle = new Vehicle(modelId, plateNumber, color, vin, fuelLevel, location);
-
         var saga = new VehicleAddingSaga.VehicleAddingSaga(vehicle.Id);
 
         vehicle.AddDomainEvent(new VehicleAddedDomainEvent(vehicle.Id, vehicle.ModelId, saga.SagaId));

@@ -32,11 +32,16 @@ public sealed class VehicleRepository(DataContext context) : IVehicleRepository
             .AsQueryable()
             .AsNoTracking();
 
-        if (page == null || pageSize == null) return await queryable.ToListAsync();
+        if (PaginationIsNeeded(page, pageSize) is false) return await queryable.ToListAsync();
 
         return await queryable
             .Skip((page.Value - 1) * pageSize.Value)
             .Take(pageSize.Value)
             .ToListAsync();
+
+        bool PaginationIsNeeded(int? p, int? size)
+        {
+            return p != null && size != null;
+        }
     }
 }

@@ -1,6 +1,6 @@
 using Application.Ports.Postgres;
 using Application.UseCases.Commands.Vehicle.OccupyVehicle;
-using Domain.SharedKernel.Exceptions.DataConsistencyViolationException;
+using Domain.SharedKernel.Exceptions.InternalExceptions;
 using Domain.SharedKernel.ValueObjects;
 using FluentResults;
 using JetBrains.Annotations;

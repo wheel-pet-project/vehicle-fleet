@@ -1,5 +1,5 @@
 using CSharpFunctionalExtensions;
-using Domain.SharedKernel.Exceptions.ArgumentException;
+using Domain.SharedKernel.Exceptions.PublicExceptions;
 
 namespace Domain.SharedKernel.ValueObjects;
 
@@ -21,7 +21,7 @@ public class Location : ValueObject
     public bool InSquare(double sizeInDegree, Location center)
     {
         if (sizeInDegree <= 0)
-            throw new ValueOutOfRangeException($"{nameof(sizeInDegree)} must be greater than 0");
+            throw new ValueUnsupportedException($"{nameof(sizeInDegree)} must be greater than 0");
 
         return Latitude <= center.Latitude + sizeInDegree
                && Latitude >= center.Latitude - sizeInDegree
@@ -39,9 +39,9 @@ public class Location : ValueObject
     public static Location Create(double latitude, double longitude)
     {
         if (latitude is < 0 or > 90)
-            throw new ValueOutOfRangeException($"{nameof(latitude)} must be between 0 and 90");
+            throw new ValueUnsupportedException($"{nameof(latitude)} must be between 0 and 90");
         if (longitude is < 0 or > 180)
-            throw new ValueOutOfRangeException($"{nameof(longitude)} must be between 0 and 180");
+            throw new ValueUnsupportedException($"{nameof(longitude)} must be between 0 and 180");
 
         return new Location(latitude, longitude);
     }

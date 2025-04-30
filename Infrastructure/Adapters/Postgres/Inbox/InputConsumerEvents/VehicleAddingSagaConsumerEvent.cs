@@ -10,7 +10,7 @@ public class VehicleAddingSagaConsumerEvent(
     Guid sagaId,
     Guid vehicleId,
     bool isSuccess,
-    SagaMicroservice microservice) : IInputConsumerEvent
+    SagaMicroservice microservice) : IConvertibleToCommand
 {
     public Guid EventId { get; } = eventId;
     public Guid SagaId { get; } = sagaId;

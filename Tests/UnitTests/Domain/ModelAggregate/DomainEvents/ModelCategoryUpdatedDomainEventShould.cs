@@ -1,5 +1,4 @@
 using Domain.ModelAggregate.DomainEvents;
-using Domain.SharedKernel.Exceptions.ArgumentException;
 using JetBrains.Annotations;
 using Xunit;
 
@@ -26,7 +25,7 @@ public class ModelCategoryUpdatedDomainEventShould
     }
 
     [Fact]
-    public void ThrowValueIsRequiredExceptionIfModelIdIsEmpty()
+    public void ThrowArgumentExceptionIfModelIdIsEmpty()
     {
         // Arrange
 
@@ -37,14 +36,14 @@ public class ModelCategoryUpdatedDomainEventShould
         }
 
         // Assert
-        Assert.Throws<ValueIsRequiredException>(Act);
+        Assert.Throws<ArgumentException>(Act);
     }
 
     [Theory]
     [InlineData('d')]
     [InlineData('1')]
     [InlineData('-')]
-    public void ThrowOutOfRangeExceptionIfCategoryIsInvalid(char invalidCharacter)
+    public void ThrowArgumentExceptionIfCategoryIsInvalid(char invalidCharacter)
     {
         // Arrange
 
@@ -57,6 +56,6 @@ public class ModelCategoryUpdatedDomainEventShould
 
         // Assert
 
-        Assert.Throws<ValueOutOfRangeException>(Act);
+        Assert.Throws<ArgumentException>(Act);
     }
 }

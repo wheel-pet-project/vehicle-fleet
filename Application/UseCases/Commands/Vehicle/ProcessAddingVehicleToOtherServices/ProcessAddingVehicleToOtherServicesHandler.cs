@@ -1,5 +1,0 @@
-namespace Application.UseCases.Commands.Vehicle.ProcessAddingVehicleToOtherServices;
-
-public class ProcessAddingVehicleToOtherServicesHandler
-{
-}

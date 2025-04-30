@@ -1,5 +1,5 @@
 using Application.Ports.Postgres;
-using Domain.SharedKernel.Exceptions.DataConsistencyViolationException;
+using Domain.SharedKernel.Exceptions.InternalExceptions;
 using FluentResults;
 using MediatR;
 
@@ -11,7 +11,7 @@ public class ReleaseVehicleHandler(
 {
     public async Task<Result> Handle(
         ReleaseVehicleCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken _)
     {
         var vehicle = await vehicleRepository.GetById(command.VehicleId);
         if (vehicle == null)

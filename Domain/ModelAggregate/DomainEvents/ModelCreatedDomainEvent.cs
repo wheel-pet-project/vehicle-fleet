@@ -1,5 +1,4 @@
 using Domain.SharedKernel;
-using Domain.SharedKernel.Exceptions.ArgumentException;
 
 namespace Domain.ModelAggregate.DomainEvents;
 
@@ -13,12 +12,12 @@ public record ModelCreatedDomainEvent : DomainEvent
         decimal pricePerDay)
     {
         if (modelId == Guid.Empty)
-            throw new ValueIsRequiredException($"{nameof(modelId)} cannot be empty");
+            throw new ArgumentException($"{nameof(modelId)} cannot be empty");
         if (char.IsBetween(category, 'A', 'Z') is false)
-            throw new ValueOutOfRangeException(
+            throw new ArgumentException(
                 $"{nameof(category)} category character must be between 'A' and 'Z'");
         if (pricePerMinute <= 0 || pricePerHour <= 0 || pricePerDay <= 0)
-            throw new ValueOutOfRangeException("prices must be greater than zero");
+            throw new ArgumentException("prices must be greater than zero");
 
         ModelId = modelId;
         Category = category;

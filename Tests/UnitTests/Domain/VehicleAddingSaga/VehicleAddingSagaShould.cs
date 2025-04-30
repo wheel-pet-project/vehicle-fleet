@@ -1,4 +1,3 @@
-using Domain.SharedKernel.Exceptions.ArgumentException;
 using Domain.SharedKernel.ValueObjects;
 using Domain.VehicleAddingSaga;
 using Domain.VehicleAggregate;
@@ -22,7 +21,7 @@ public class VehicleAddingSagaShould
     }
 
     [Fact]
-    public void ProcessSagaEventThrowValueIsInvalidExceptionIfEventFromAnotherSagaAndIdMismatch()
+    public void ProcessSagaEventThrowArgumentExceptionIfEventFromAnotherSagaAndIdMismatch()
     {
         // Arrange
         var sagaEvent =
@@ -35,7 +34,7 @@ public class VehicleAddingSagaShould
         }
 
         // Assert
-        Assert.Throws<ValueIsInvalidException>(Act);
+        Assert.Throws<ArgumentException>(Act);
     }
 
     [Fact]

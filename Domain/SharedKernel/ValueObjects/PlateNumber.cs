@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
-using Domain.SharedKernel.Exceptions.ArgumentException;
+using Domain.SharedKernel.Exceptions.PublicExceptions;
 
 namespace Domain.SharedKernel.ValueObjects;
 
@@ -29,7 +29,7 @@ public class PlateNumber : ValueObject
         var plateNumber = input.Trim();
 
         if (plateNumber.Length is < 8 or > 9)
-            throw new ValueOutOfRangeException($"{nameof(plateNumber)} must be 8-9 characters");
+            throw new ValueUnsupportedException($"{nameof(plateNumber)} must be 8-9 characters");
 
         plateNumber = plateNumber.ToUpper();
 

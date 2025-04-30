@@ -1,4 +1,3 @@
-using Domain.SharedKernel.Exceptions.ArgumentException;
 using Domain.VehicleAggregate.DomainEvents;
 using JetBrains.Annotations;
 using Xunit;
@@ -28,7 +27,7 @@ public class VehicleAddedDomainEventShould
     }
 
     [Fact]
-    public void ThrowValueIsRequiredExceptionIfVehicleIdIsEmpty()
+    public void ThrowArgumentExceptionIfVehicleIdIsEmpty()
     {
         // Arrange
 
@@ -39,11 +38,11 @@ public class VehicleAddedDomainEventShould
         }
 
         // Assert
-        Assert.Throws<ValueIsRequiredException>(Act);
+        Assert.Throws<ArgumentException>(Act);
     }
 
     [Fact]
-    public void ThrowValueIsRequiredExceptionIfModelIdIsEmpty()
+    public void ThrowArgumentExceptionIfModelIdIsEmpty()
     {
         // Arrange
 
@@ -54,11 +53,11 @@ public class VehicleAddedDomainEventShould
         }
 
         // Assert
-        Assert.Throws<ValueIsRequiredException>(Act);
+        Assert.Throws<ArgumentException>(Act);
     }
 
     [Fact]
-    public void ThrowValueIsRequiredExceptionIfSagaIdIsEmpty()
+    public void ThrowArgumentExceptionIfSagaIdIsEmpty()
     {
         // Arrange
 
@@ -69,6 +68,6 @@ public class VehicleAddedDomainEventShould
         }
 
         // Assert
-        Assert.Throws<ValueIsRequiredException>(Act);
+        Assert.Throws<ArgumentException>(Act);
     }
 }

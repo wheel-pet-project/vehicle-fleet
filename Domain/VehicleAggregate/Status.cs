@@ -1,6 +1,6 @@
 using CSharpFunctionalExtensions;
-using Domain.SharedKernel.Exceptions.AlreadyHaveThisState;
-using Domain.SharedKernel.Exceptions.ArgumentException;
+using Domain.SharedKernel.Exceptions.InternalExceptions.AlreadyHaveThisState;
+using Domain.SharedKernel.Exceptions.PublicExceptions;
 
 namespace Domain.VehicleAggregate;
 
@@ -32,12 +32,12 @@ public sealed class Status : Entity<int>
         if (potentialStatus is null)
             throw new ValueIsRequiredException($"{nameof(potentialStatus)} cannot be null");
         if (!All().Contains(potentialStatus))
-            throw new ValueOutOfRangeException($"{nameof(potentialStatus)} cannot be unsupported");
+            throw new ValueUnsupportedException($"{nameof(potentialStatus)} cannot be unsupported");
 
         return potentialStatus switch
         {
             _ when this == potentialStatus => throw new AlreadyHaveThisStateException(
-                "Vehicle already have this status"),
+                "Vehicle already has this status"),
             _ when potentialStatus == Serviced &&
                    (this == Serviced || this == Occupied || this == Deleted ||
                     this == AddingInProgress || this == NotAdded) is false => true,
@@ -76,7 +76,7 @@ public sealed class Status : Entity<int>
             .SingleOrDefault(s =>
                 string.Equals(s.Name, name, StringComparison.CurrentCultureIgnoreCase));
         if (status == null)
-            throw new ValueOutOfRangeException($"{nameof(name)} unknown status or null");
+            throw new ValueUnsupportedException($"{nameof(name)} unknown status or null");
         return status;
     }
 
@@ -84,7 +84,7 @@ public sealed class Status : Entity<int>
     {
         var status = All().SingleOrDefault(s => s.Id == id);
         if (status == null)
-            throw new ValueOutOfRangeException($"{nameof(id)} unknown status or null");
+            throw new ValueUnsupportedException($"{nameof(id)} unknown status or null");
         return status;
     }
 

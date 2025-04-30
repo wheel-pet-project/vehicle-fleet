@@ -1,5 +1,5 @@
 using Application.Ports.Postgres;
-using Domain.SharedKernel.Exceptions.DataConsistencyViolationException;
+using Domain.SharedKernel.Exceptions.InternalExceptions;
 using Domain.SharedKernel.Saga;
 using Domain.VehicleAddingSaga;
 using FluentResults;

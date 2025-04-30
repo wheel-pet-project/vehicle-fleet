@@ -1,5 +1,4 @@
 using Domain.ModelAggregate.DomainEvents;
-using Domain.SharedKernel.Exceptions.ArgumentException;
 using JetBrains.Annotations;
 using Xunit;
 
@@ -32,7 +31,7 @@ public class ModelTariffUpdateDomainEventShould
     }
 
     [Fact]
-    public void ThrowValueIsRequiredExceptionIfModelIdIsEmpty()
+    public void ThrowArgumentExceptionIfModelIdIsEmpty()
     {
         // Arrange
 
@@ -44,14 +43,14 @@ public class ModelTariffUpdateDomainEventShould
         }
 
         // Assert
-        Assert.Throws<ValueIsRequiredException>(Act);
+        Assert.Throws<ArgumentException>(Act);
     }
 
     [Theory]
     [InlineData(-1, 0, 0)]
     [InlineData(0, -1, 0)]
     [InlineData(0, 0, -1)]
-    public void ThrowOutOfRangeExceptionIfOneOfPricesLessThanZero(
+    public void ThrowArgumentExceptionIfOneOfPricesLessThanZero(
         decimal pricePerMinute,
         decimal pricePerHour,
         decimal pricePerDay)
@@ -67,6 +66,6 @@ public class ModelTariffUpdateDomainEventShould
 
         // Assert
 
-        Assert.Throws<ValueOutOfRangeException>(Act);
+        Assert.Throws<ArgumentException>(Act);
     }
 }

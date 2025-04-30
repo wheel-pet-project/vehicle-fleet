@@ -1,4 +1,4 @@
-using Domain.SharedKernel.Exceptions.ArgumentException;
+using Domain.SharedKernel.Exceptions.PublicExceptions;
 using Domain.SharedKernel.Saga;
 
 namespace Domain.VehicleAddingSaga;
@@ -17,7 +17,7 @@ public class VehicleAddingState : ISagaState<VehicleAddingProcess>
     public void UpdateSagaState(ISagaEvent sagaEvent)
     {
         if (States.All(x => x.Microservice != sagaEvent.Microservice))
-            throw new ValueOutOfRangeException("Service is unknown for saga");
+            throw new ValueUnsupportedException("Service is unknown for saga");
 
         States
             .First(x => x.Microservice == sagaEvent.Microservice)

@@ -1,5 +1,4 @@
 using Domain.SharedKernel;
-using Domain.SharedKernel.Exceptions.ArgumentException;
 
 namespace Domain.VehicleAggregate.DomainEvents;
 
@@ -11,10 +10,8 @@ public record VehicleOccupyingProcessedDomainEvent : DomainEvent
         bool isOccupied,
         string? reason = "Vehicle already booked")
     {
-        if (vehicleId == Guid.Empty)
-            throw new ValueIsRequiredException($"{nameof(vehicleId)} cannot be empty");
-        if (bookingId == Guid.Empty)
-            throw new ValueIsRequiredException($"{nameof(bookingId)} cannot be empty");
+        if (vehicleId == Guid.Empty) throw new ArgumentException($"{nameof(vehicleId)} cannot be empty");
+        if (bookingId == Guid.Empty) throw new ArgumentException($"{nameof(bookingId)} cannot be empty");
 
         VehicleId = vehicleId;
         BookingId = bookingId;

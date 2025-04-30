@@ -1,4 +1,4 @@
-using Domain.SharedKernel.Exceptions.ArgumentException;
+using Domain.SharedKernel.Exceptions.PublicExceptions;
 using Proto.VehicleFleetV1;
 using DomainColor = Domain.SharedKernel.ValueObjects.Color;
 
@@ -19,7 +19,7 @@ public class ColorMapper
             Color.Orange => DomainColor.Orange,
             Color.Green => DomainColor.Green,
             Color.Beige => DomainColor.Beige,
-            _ => throw new ValueOutOfRangeException($"{nameof(protoColor)} is unknown color")
+            _ => throw new ValueUnsupportedException($"{nameof(protoColor)} is unknown color")
         };
     }
 
@@ -36,7 +36,7 @@ public class ColorMapper
             _ when domainColor == DomainColor.Orange => Color.Orange,
             _ when domainColor == DomainColor.Green => Color.Green,
             _ when domainColor == DomainColor.Beige => Color.Beige,
-            _ => throw new ValueOutOfRangeException($"{nameof(domainColor)} is unknown color")
+            _ => throw new ValueUnsupportedException($"{nameof(domainColor)} is unknown color")
         };
     }
 }

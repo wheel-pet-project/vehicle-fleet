@@ -1,7 +1,8 @@
 using System.Collections.Concurrent;
+using System.Data;
 using Dapper;
 using Domain.SharedKernel;
-using Domain.SharedKernel.Exceptions.AlreadyHaveThisState;
+using Domain.SharedKernel.Exceptions.InternalExceptions.AlreadyHaveThisState;
 using JsonNet.ContractResolvers;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -99,7 +100,7 @@ public class OutboxBackgroundJob(
         for (var i = 0; i < updates.Count; i++)
         {
             parameters.Add($"EventId{i}", updates[i].EventId);
-            parameters.Add($"ProcessedOnUtc{i}", updates[i].ProcessedOnUtc);
+            parameters.Add($"ProcessedOnUtc{i}", (object?)updates[i].ProcessedOnUtc ?? DBNull.Value, DbType.DateTime);
         }
 
         return parameters;

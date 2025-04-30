@@ -1,5 +1,4 @@
 using Domain.SharedKernel;
-using Domain.SharedKernel.Exceptions.ArgumentException;
 
 namespace Domain.ModelAggregate.DomainEvents;
 
@@ -12,9 +11,9 @@ public record ModelTariffUpdatedDomainEvent : DomainEvent
         decimal pricePerDay)
     {
         if (modelId == Guid.Empty)
-            throw new ValueIsRequiredException($"'{nameof(modelId)}' cannot be empty");
+            throw new ArgumentException($"{nameof(modelId)} cannot be empty");
         if (pricePerMinute <= 0 || pricePerHour <= 0 || pricePerDay <= 0)
-            throw new ValueOutOfRangeException($"prices must be greater than zero");
+            throw new ArgumentException("prices must be greater than zero");
 
         ModelId = modelId;
         PricePerMinute = pricePerMinute;

@@ -12,7 +12,7 @@ public class UpdateModelCategoryHandler(
 {
     public async Task<Result> Handle(
         UpdateModelCategoryCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken _)
     {
         var model = await modelRepository.GetById(command.ModelId);
         if (model == null) return Result.Fail(new NotFound("Model not found"));

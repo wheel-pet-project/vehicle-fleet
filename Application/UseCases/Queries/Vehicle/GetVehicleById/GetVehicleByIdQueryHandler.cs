@@ -13,16 +13,21 @@ public class GetVehicleByIdQueryHandler(
     : IRequestHandler<GetVehicleByIdQuery, Result<GetVehicleByIdQueryResponse>>
 {
     public async Task<Result<GetVehicleByIdQueryResponse>> Handle(
-        GetVehicleByIdQuery request,
+        GetVehicleByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(_sql, new { Id = request.VehicleId });
+        var command = new CommandDefinition(_sql, new { Id = query.VehicleId });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehicle = await connection.QuerySingleOrDefaultAsync<VehicleDapperModel>(command);
         if (vehicle == null) return Result.Fail(new NotFound("Vehicle not found"));
 
-        return Result.Ok(new GetVehicleByIdQueryResponse(
+        return Result.Ok(MapToResponse(vehicle));
+    }
+
+    private GetVehicleByIdQueryResponse MapToResponse(VehicleDapperModel vehicle)
+    {
+        return new GetVehicleByIdQueryResponse(
             vehicle.Id,
             Status.FromId(vehicle.StatusId),
             vehicle.Brand,
@@ -33,7 +38,7 @@ public class GetVehicleByIdQueryHandler(
             (double)vehicle.PricePerMinute,
             (double)vehicle.PricePerHour,
             vehicle.Latitude,
-            vehicle.Longitude));
+            vehicle.Longitude);
     }
 
     private record VehicleDapperModel(

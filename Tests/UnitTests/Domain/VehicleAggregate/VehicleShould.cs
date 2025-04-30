@@ -1,5 +1,5 @@
-using Domain.SharedKernel.Exceptions.ArgumentException;
-using Domain.SharedKernel.Exceptions.DomainRulesViolationException;
+using Domain.SharedKernel.Exceptions.InternalExceptions;
+using Domain.SharedKernel.Exceptions.PublicExceptions;
 using Domain.SharedKernel.ValueObjects;
 using Domain.VehicleAggregate;
 using Domain.VehicleAggregate.DomainEvents;

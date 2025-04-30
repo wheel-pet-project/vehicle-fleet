@@ -130,20 +130,6 @@ internal sealed class StatusEntityTypeConfiguration : IEntityTypeConfiguration<S
 
 internal class VehicleAddingSagaEntityTypeConfiguration : IEntityTypeConfiguration<VehicleAddingSaga>
 {
-    // public void Configure(EntityTypeBuilder<SagaModel> builder)
-    // {
-    //     builder.ToTable("saga");
-    //
-    //     builder.HasKey(x => x.SagaId);
-    //     
-    //     builder.Property(x => x.SagaId).HasColumnName("saga_id").IsRequired();
-    //     builder.Property(x => x.Type).HasColumnName("type").IsRequired();
-    //     builder.Property(x => x.Version).HasColumnName("version").IsRequired();
-    //     builder.Property(x => x.Content).HasColumnName("content").IsRequired();
-    //     builder.Property(x => x.IsCompleted).HasColumnName("is_completed").IsRequired();
-    //     builder.Property(x => x.IsFaulted).HasColumnName("is_faulted").IsRequired();
-    // }
-
     public void Configure(EntityTypeBuilder<VehicleAddingSaga> builder)
     {
         builder.ToTable("vehicle_adding_saga");

@@ -1,7 +1,7 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace Domain.SharedKernel.Exceptions.DataConsistencyViolationException;
+namespace Domain.SharedKernel.Exceptions.InternalExceptions;
 
 [ExcludeFromCodeCoverage]
 public class DataConsistencyViolationException(string message = "Data consistency violation")
-    : Exception(message);
+    : InternalException(message);

@@ -11,27 +11,47 @@ public class GetVehiclesInSquareQueryHandler(
     : IRequestHandler<GetVehiclesInSquareQuery, Result<GetVehiclesInSquareQueryResponse>>
 {
     public async Task<Result<GetVehiclesInSquareQueryResponse>> Handle(
-        GetVehiclesInSquareQuery request,
+        GetVehiclesInSquareQuery query,
         CancellationToken cancellationToken)
     {
-        var upperLeftLocation = Location.Create(request.UpperLeftLocation.Latitude,
-            request.UpperLeftLocation.Longitude);
-        var lowerRightLocation = Location.Create(request.LowerRightLocation.Latitude,
-            request.LowerRightLocation.Longitude);
+        var (upperLeftLocation, lowerRightLocation) = CreateBoundaries(query);
 
-        var command = new CommandDefinition(_sql, new { StatusId = request.FilteringStatus.Id });
+        var command = new CommandDefinition(_sql, new { StatusId = query.FilteringStatus.Id });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-        var vehicles = (await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command))
-            .AsList();
+        var vehicles = (await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command)).AsList();
 
         var vehiclesInSquare = vehicles
-            .Where(x =>
-                Location.Create(x.Latitude, x.Longitude)
-                    .InSquare(upperLeftLocation, lowerRightLocation))
+            .Where(x => LocationInBoundaries(x, upperLeftLocation, lowerRightLocation))
             .ToList();
 
-        return Result.Ok(new GetVehiclesInSquareQueryResponse(vehiclesInSquare.Select(x =>
+        return Result.Ok(MapToResponse(vehiclesInSquare));
+    }
+
+    private (Location upperLeftLocation, Location lowerRightLocation) CreateBoundaries(GetVehiclesInSquareQuery query)
+    {
+        var upperLeftLocation = Location.Create(
+            query.UpperLeftLocation.Latitude,
+            query.UpperLeftLocation.Longitude);
+        var lowerRightLocation = Location.Create(
+            query.LowerRightLocation.Latitude,
+            query.LowerRightLocation.Longitude);
+
+        return (upperLeftLocation, lowerRightLocation);
+    }
+
+    private bool LocationInBoundaries(
+        VehicleAggregatedShortDapperModel x,
+        Location upperLeftLocation,
+        Location lowerRightLocation)
+    {
+        return Location.Create(x.Latitude, x.Longitude)
+            .InSquare(upperLeftLocation, lowerRightLocation);
+    }
+
+    private GetVehiclesInSquareQueryResponse MapToResponse(List<VehicleAggregatedShortDapperModel> vehiclesInSquare)
+    {
+        return new GetVehiclesInSquareQueryResponse(vehiclesInSquare.Select(x =>
                 new VehicleInSquareShortView(
                     x.Id,
                     x.Brand,
@@ -39,7 +59,7 @@ public class GetVehiclesInSquareQueryHandler(
                     Color.FromName(x.Color),
                     x.Latitude,
                     x.Longitude))
-            .ToList()));
+            .ToList());
     }
 
     private record VehicleAggregatedShortDapperModel(

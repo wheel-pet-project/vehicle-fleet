@@ -11,7 +11,22 @@ public class AddModelHandler(
 {
     public async Task<Result<AddModelResponse>> Handle(
         AddModelCommand command,
-        CancellationToken cancellationToken)
+        CancellationToken _)
+    {
+        var (brand, carModel, category, tariff) = CreateValueObjects(command);
+        var model = Domain.ModelAggregate.Model.Create(brand, carModel, category, tariff);
+
+        await modelRepository.Add(model);
+
+        var commitResult = await unitOfWork.Commit();
+
+        return commitResult.IsSuccess
+            ? Result.Ok(new AddModelResponse(model.Id))
+            : commitResult;
+    }
+
+    private (Brand brand, CarModel carModel, Category category, Tariff tariff) CreateValueObjects(
+        AddModelCommand command)
     {
         var brand = Brand.Create(command.Brand);
         var carModel = CarModel.Create(command.CarModel);
@@ -21,14 +36,6 @@ public class AddModelHandler(
             new decimal(command.PricePerHour),
             new decimal(command.PricePerDay));
 
-        var model = Domain.ModelAggregate.Model.Create(brand, carModel, category, tariff);
-
-        await modelRepository.Add(model);
-
-        var transactionResult = await unitOfWork.Commit();
-
-        return transactionResult.IsSuccess
-            ? Result.Ok(new AddModelResponse(model.Id))
-            : transactionResult;
+        return (brand, carModel, category, tariff);
     }
 }

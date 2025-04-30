@@ -21,13 +21,15 @@ public class GetAllVehiclesQueryHandler(
                 Offset = CalculateOffset(query.Page, query.PageSize),
                 Limit = query.PageSize
             });
-
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
-        var vehiclesEnumerable =
-            await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command);
-        var vehicles = vehiclesEnumerable.AsList();
+        var vehicles = (await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command)).AsList();
 
-        return Result.Ok(new GetAllVehiclesQueryResponse(vehicles.Select(x =>
+        return Result.Ok(MapToResponse(vehicles));
+    }
+
+    private GetAllVehiclesQueryResponse MapToResponse(List<VehicleAggregatedShortDapperModel> vehicles)
+    {
+        return new GetAllVehiclesQueryResponse(vehicles.Select(x =>
                 new VehicleShortView(
                     x.Id,
                     x.Brand,
@@ -35,7 +37,7 @@ public class GetAllVehiclesQueryHandler(
                     Color.FromName(x.Color),
                     x.Latitude,
                     x.Longitude))
-            .ToList()));
+            .ToList());
     }
 
     private int CalculateOffset(int? page, int? pageSize)

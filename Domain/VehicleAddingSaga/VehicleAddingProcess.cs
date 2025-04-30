@@ -10,12 +10,7 @@ public class VehicleAddingProcess(VehicleAddingSagaMicroservice microservice) : 
 
     public void UpdateProcessState(bool processingResult)
     {
-        if (processingResult)
-        {
-            IsCompleted = true;
-            return;
-        }
-
-        IsFaulted = true;
+        if (processingResult) IsCompleted = true;
+        else IsFaulted = true;
     }
 }
