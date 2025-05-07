@@ -14,7 +14,7 @@ public class GetModelByIdQueryHandler(
         GetModelByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(_sql, new { Id = query.ModelId });
+        var command = new CommandDefinition(Sql, new { Id = query.ModelId }, cancellationToken: cancellationToken);
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var model = await connection.QuerySingleOrDefaultAsync<ModelDapperModel>(command);
@@ -44,7 +44,7 @@ public class GetModelByIdQueryHandler(
         decimal PricePerHour,
         decimal PricePerDay);
 
-    private readonly string _sql =
+    private const string Sql =
         """
         SELECT id AS Id,
                brand AS Brand,

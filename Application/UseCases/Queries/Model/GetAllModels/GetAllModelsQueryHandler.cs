@@ -13,12 +13,12 @@ public class GetAllModelsQueryHandler(
         GetAllModelsQuery query,
         CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(_sql,
+        var command = new CommandDefinition(Sql,
             new
             {
                 Offset = CalculateOffset(query.Page, query.PageSize),
                 Limit = query.PageSize
-            });
+            }, cancellationToken: cancellationToken);
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var models = (await connection.QueryAsync<ModelShortDapperModel>(command)).AsList();
@@ -47,7 +47,7 @@ public class GetAllModelsQueryHandler(
 
     private record ModelShortDapperModel(Guid Id, string Brand, string CarModel);
 
-    private readonly string _sql =
+    private const string Sql =
         """
         SELECT id AS Id, 
                brand AS Brand, 

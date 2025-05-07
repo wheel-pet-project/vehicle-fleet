@@ -10,9 +10,7 @@ public class UpdateModelTariffHandler(
     IModelRepository modelRepository,
     IUnitOfWork unitOfWork) : IRequestHandler<UpdateModelTariffCommand, Result>
 {
-    public async Task<Result> Handle(
-        UpdateModelTariffCommand command,
-        CancellationToken _)
+    public async Task<Result> Handle(UpdateModelTariffCommand command, CancellationToken _)
     {
         var model = await modelRepository.GetById(command.ModelId);
         if (model == null) return Result.Fail(new NotFound("Model not found"));

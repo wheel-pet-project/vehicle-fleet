@@ -14,13 +14,13 @@ public class GetAllVehiclesQueryHandler(
         GetAllVehiclesQuery query,
         CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(_sql,
+        var command = new CommandDefinition(Sql,
             new
             {
                 StatusId = query.FilteringStatus.Id,
                 Offset = CalculateOffset(query.Page, query.PageSize),
                 Limit = query.PageSize
-            });
+            }, cancellationToken: cancellationToken);
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehicles = (await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command)).AsList();
 
@@ -58,7 +58,7 @@ public class GetAllVehiclesQueryHandler(
         double Latitude,
         double Longitude);
 
-    private readonly string _sql =
+    private const string Sql =
         """
         SELECT vehicle.id AS Id,
                brand AS Brand, 

@@ -9,9 +9,7 @@ public class OccupyVehicleHandler(
     IVehicleRepository vehicleRepository,
     IUnitOfWork unitOfWork) : IRequestHandler<OccupyVehicleCommand, Result>
 {
-    public async Task<Result> Handle(
-        OccupyVehicleCommand command,
-        CancellationToken _)
+    public async Task<Result> Handle(OccupyVehicleCommand command, CancellationToken _)
     {
         var vehicle = await vehicleRepository.GetById(command.VehicleId);
         if (vehicle == null)

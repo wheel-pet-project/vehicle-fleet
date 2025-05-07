@@ -10,9 +10,7 @@ public class UpdateModelCategoryHandler(
     IModelRepository modelRepository,
     IUnitOfWork unitOfWork) : IRequestHandler<UpdateModelCategoryCommand, Result>
 {
-    public async Task<Result> Handle(
-        UpdateModelCategoryCommand command,
-        CancellationToken _)
+    public async Task<Result> Handle(UpdateModelCategoryCommand command, CancellationToken _)
     {
         var model = await modelRepository.GetById(command.ModelId);
         if (model == null) return Result.Fail(new NotFound("Model not found"));

@@ -14,9 +14,7 @@ public class AddVehicleHandler(
     IVehicleAddingSagaRepository vehicleAddingSagaRepository)
     : IRequestHandler<AddVehicleCommand, Result<AddVehicleResponse>>
 {
-    public async Task<Result<AddVehicleResponse>> Handle(
-        AddVehicleCommand command,
-        CancellationToken _)
+    public async Task<Result<AddVehicleResponse>> Handle(AddVehicleCommand command, CancellationToken _)
     {
         var model = await modelRepository.GetById(command.ModelId);
         if (model == null) return Result.Fail(new NotFound("Model not found"));

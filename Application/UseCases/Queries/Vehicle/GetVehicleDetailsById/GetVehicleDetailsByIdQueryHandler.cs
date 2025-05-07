@@ -16,7 +16,7 @@ public class GetVehicleDetailsByIdQueryHandler(
         GetVehicleDetailsByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(_sql, new { Id = query.VehicleId });
+        var command = new CommandDefinition(Sql, new { Id = query.VehicleId });
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehicle = await connection.QuerySingleOrDefaultAsync<VehicleDetailsDapperModel>(command);
@@ -55,7 +55,7 @@ public class GetVehicleDetailsByIdQueryHandler(
         decimal PricePerHour,
         decimal PricePerDay);
 
-    private readonly string _sql =
+    private const string Sql =
         """
         SELECT vehicle.id AS Id,
                status_id AS StatusId,

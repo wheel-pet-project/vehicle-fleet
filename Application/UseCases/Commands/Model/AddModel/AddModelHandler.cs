@@ -9,9 +9,7 @@ public class AddModelHandler(
     IModelRepository modelRepository,
     IUnitOfWork unitOfWork) : IRequestHandler<AddModelCommand, Result<AddModelResponse>>
 {
-    public async Task<Result<AddModelResponse>> Handle(
-        AddModelCommand command,
-        CancellationToken _)
+    public async Task<Result<AddModelResponse>> Handle(AddModelCommand command, CancellationToken _)
     {
         var (brand, carModel, category, tariff) = CreateValueObjects(command);
         var model = Domain.ModelAggregate.Model.Create(brand, carModel, category, tariff);

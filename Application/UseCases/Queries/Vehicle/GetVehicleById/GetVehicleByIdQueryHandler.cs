@@ -16,7 +16,7 @@ public class GetVehicleByIdQueryHandler(
         GetVehicleByIdQuery query,
         CancellationToken cancellationToken)
     {
-        var command = new CommandDefinition(_sql, new { Id = query.VehicleId });
+        var command = new CommandDefinition(Sql, new { Id = query.VehicleId }, cancellationToken: cancellationToken);
 
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehicle = await connection.QuerySingleOrDefaultAsync<VehicleDapperModel>(command);
@@ -54,7 +54,7 @@ public class GetVehicleByIdQueryHandler(
         double Latitude,
         double Longitude);
 
-    private readonly string _sql =
+    private const string Sql =
         """
         SELECT vehicle.id AS Id,
                status_id AS StatusId,

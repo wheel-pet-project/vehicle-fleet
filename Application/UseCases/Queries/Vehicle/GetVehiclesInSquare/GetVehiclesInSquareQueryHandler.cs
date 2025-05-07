@@ -16,8 +16,8 @@ public class GetVehiclesInSquareQueryHandler(
     {
         var (upperLeftLocation, lowerRightLocation) = CreateBoundaries(query);
 
-        var command = new CommandDefinition(_sql, new { StatusId = query.FilteringStatus.Id });
-
+        var command = new CommandDefinition(Sql, new { StatusId = query.FilteringStatus.Id },
+            cancellationToken: cancellationToken);
         await using var connection = await dataSource.OpenConnectionAsync(cancellationToken);
         var vehicles = (await connection.QueryAsync<VehicleAggregatedShortDapperModel>(command)).AsList();
 
@@ -70,7 +70,7 @@ public class GetVehiclesInSquareQueryHandler(
         double Latitude,
         double Longitude);
 
-    private readonly string _sql =
+    private const string Sql =
         """
         SELECT vehicle.id AS Id,
                brand AS Brand, 
