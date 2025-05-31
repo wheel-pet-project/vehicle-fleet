@@ -6,8 +6,8 @@ public interface ISagaState<out TSagaState>
     protected List<IProcessState> States { get; init; }
 
     public IReadOnlyList<TSagaState> ProcessStates => States.OfType<TSagaState>().ToList();
-    public abstract bool IsCompleted { get; }
-    public abstract bool IsFaulted { get; }
+    public bool IsCompleted { get; }
+    public bool IsFaulted { get; }
 
     public void UpdateSagaState(ISagaEvent sagaEvent);
 }

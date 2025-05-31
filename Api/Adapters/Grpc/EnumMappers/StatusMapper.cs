@@ -10,7 +10,9 @@ public class StatusMapper
     {
         return protoStatus switch
         {
+            Status.AddingInProgress => DomainStatus.AddingInProgress,
             Status.Added => DomainStatus.Added,
+            Status.NotAdded => DomainStatus.NotAdded,
             Status.ReadiedForRelease => DomainStatus.ReadiedForRelease,
             Status.ReleasedUnspecified => DomainStatus.Released,
             Status.Occupied => DomainStatus.Occupied,

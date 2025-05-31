@@ -16,6 +16,7 @@ public class VehicleAddingState : ISagaState<VehicleAddingProcess>
 
     public void UpdateSagaState(ISagaEvent sagaEvent)
     {
+        // todo: убрать два цикла
         if (States.All(x => x.Microservice != sagaEvent.Microservice))
             throw new ValueIsUnsupportedException("Service is unknown for saga");
 

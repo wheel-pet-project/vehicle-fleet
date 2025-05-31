@@ -19,7 +19,7 @@ public class AddModelHandler(
         var commitResult = await unitOfWork.Commit();
 
         return commitResult.IsSuccess
-            ? Result.Ok(new AddModelResponse(model.Id))
+            ? new AddModelResponse(model.Id)
             : commitResult;
     }
 
