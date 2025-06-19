@@ -3,7 +3,7 @@
   # Database  
   c-vehiclefleet-db:
     container_name: c-vehiclefleet-db
-    image: postgres:latest
+    image: postgres:17.5
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password

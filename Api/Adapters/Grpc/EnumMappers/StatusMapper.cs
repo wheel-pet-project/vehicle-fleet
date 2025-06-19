@@ -26,7 +26,9 @@ public class StatusMapper
     {
         return domainStatus switch
         {
+            _ when domainStatus == DomainStatus.AddingInProgress => Status.AddingInProgress,
             _ when domainStatus == DomainStatus.Added => Status.Added,
+            _ when domainStatus == DomainStatus.NotAdded => Status.NotAdded,
             _ when domainStatus == DomainStatus.ReadiedForRelease => Status.ReadiedForRelease,
             _ when domainStatus == DomainStatus.Released => Status.ReleasedUnspecified,
             _ when domainStatus == DomainStatus.Occupied => Status.Occupied,
